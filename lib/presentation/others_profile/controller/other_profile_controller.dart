@@ -16,7 +16,21 @@ class OtherProfileController extends GetxController {
 
   final interestOptions = <InterestOptionModel>[].obs;
 
-  final reasonsOptions = <InterestOptionModel>[].obs;
+  final reasonsOptions = <InterestOptionModel>[
+    InterestOptionModel(id: 1, text: "User is stalking me with messages/calls"),
+    InterestOptionModel(id: 2, text: "User is already engaged/married"),
+    InterestOptionModel(id: 3, text: "User has no intention to marry"),
+    InterestOptionModel(id: 4, text: "User is asking for money"),
+    InterestOptionModel(
+      id: 5,
+      text: "Profile is fake or publishes incorrect information",
+    ),
+    InterestOptionModel(id: 6, text: "User is using abusive/indecent language"),
+    InterestOptionModel(
+      id: 7,
+      text: "Photo on profile does not belong to the person",
+    ),
+  ].obs;
 
   RxnInt selectedId = RxnInt();
   RxnInt selectedReason = RxnInt();
