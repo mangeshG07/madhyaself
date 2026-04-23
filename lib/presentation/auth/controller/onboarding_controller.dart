@@ -2,7 +2,6 @@ import 'package:madhya/core/exporters/app_export.dart';
 
 @lazySingleton
 class AuthController extends GetxController {
-  ////////////////////////////////Onboarding Screen Content//////////////////////////////////
   final pageController = PageController(initialPage: 0);
   final currentPage = 0.0.obs;
   Timer? timer;

@@ -1,93 +1,143 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class GlobalSearch extends StatelessWidget {
-  GlobalSearch({super.key});
-  final controller = getIt<GlobalSearchController>();
+class GlobalSearch extends GetView<GlobalSearchController> {
+  const GlobalSearch({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppbar(title: 'Global Search'),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            _buildDropdown(
-              title: "I’m looking for a",
-              value: controller.lookingFor,
-              items: controller.lookingList,
-            ),
+      body: Obx(
+        () => controller.isLoading.isTrue
+            ? AppLoader.circular(color: AppColors.lightPrimary)
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  spacing: 12.h,
+                  children: [
+                    _dropdownField(
+                      title: "I’m looking for a",
+                      value: controller.selectedLookingFor,
+                      items: controller.lookingList,
+                    ),
 
-            _buildDropdown(
-              title: "Religion",
-              value: controller.religion,
-              items: controller.religionList,
-            ),
+                    // _buildDropdown(
+                    //   title: "I’m looking for a",
+                    //   value: controller.lookingFor,
+                    //   items: controller.lookingList,
+                    // ),
+                    _dropdownField(
+                      isDynamic: true,
+                      title: "Religion",
+                      value: controller.selectedReligion,
+                      items: controller.religionList,
+                    ),
 
-            _buildDropdown(
-              title: "Caste",
-              value: controller.caste,
-              items: controller.casteList,
-            ),
+                    _dropdownField(
+                      isDynamic: true,
+                      title: "Caste",
+                      value: controller.selectedCaste,
+                      items: controller.casteList,
+                    ),
 
-            _buildRangeRow(
-              title: "Height in cm",
-              fromValue: controller.heightFrom,
-              toValue: controller.heightTo,
-              items: controller.heightList,
-            ),
+                    // _buildDropdown(
+                    //   title: "Caste",
+                    //   value: controller.caste,
+                    //   items: controller.casteList,
+                    // ),
+                    // _dropdownField(
+                    //   isHeight: true,
+                    //   isDynamic: true,
+                    //   title: "Height in cm",
+                    //   value: controller.selectedHeightFrom,
+                    //   items: controller.heightList,
+                    // ),
+                    _buildRangeRow(
+                      isDynamic: true,
+                      isHeight: true,
+                      title: "Height in cm",
+                      fromValue: controller.selectedHeightFrom,
+                      toValue: controller.selectedHeightTo,
+                      items: controller.heightList,
+                    ),
 
-            _buildRangeRow(
-              title: "Age Between (Years)",
-              fromValue: controller.ageFrom,
-              toValue: controller.ageTo,
-              items: controller.ageList,
-            ),
-            _buildDropdown(
-              title: "Income",
-              value: controller.caste,
-              items: controller.casteList,
-            ),
-            _buildDropdown(
-              title: "Education",
-              value: controller.caste,
-              items: controller.casteList,
-            ),
-            _buildDropdown(
-              title: "Occupation",
-              value: controller.caste,
-              items: controller.casteList,
-            ),
-            _buildDropdown(
-              title: "Country",
-              value: controller.caste,
-              items: controller.casteList,
-            ),
-            _buildDropdown(
-              title: "State",
-              value: controller.caste,
-              items: controller.casteList,
-            ),
-            _buildDropdown(
-              title: "City",
-              value: controller.caste,
-              items: controller.casteList,
-            ),
-            TextButton(
-              onPressed: () {},
-              child: AppText(
-                text: 'Less Filters',
-                fontSize: 14.sp,
-                color: AppColors.lightTextMidColor,
+                    _buildRangeRow(
+                      title: "Age Between (Years)",
+                      fromValue: controller.selectedAgeFrom,
+                      toValue: controller.selectedAgeTo,
+                      items: controller.ageList
+                          .map<String>((e) => e['name'].toString())
+                          .toList(),
+                    ),
+                    _dropdownField(
+                      isDynamic: true,
+                      title: "Income",
+                      value: controller.selectedIncome,
+                      items: controller.annualIncomeList,
+                    ),
+
+                    _dropdownField(
+                      isDynamic: true,
+                      title: "Education",
+                      value: controller.selectedEducation,
+                      items: controller.educationCategoryList,
+                    ),
+
+                    _dropdownField(
+                      isDynamic: true,
+                      title: "Occupation",
+                      value: controller.selectedJob,
+                      items: controller.jobCategoryList,
+                    ),
+
+                    _dropdownField(
+                      title: "Country",
+                      value: controller.selectedCountry,
+                      items: controller.countryList,
+                    ),
+                    AppDropdownSearch<String>(
+                      title: "Select State",
+                      isRequired: true,
+                      value: controller.selectedState.value,
+                      items: controller.stateList
+                          .map<String>((e) => e['name'])
+                          .toList(),
+                      hintText: "State",
+                      showSearchBox: true,
+                      searchHintText: "",
+                      onChanged: (val) => controller.selectedState.value = val,
+                      validator: AppValidators.required,
+                    ),
+                    AppDropdownSearch<String>(
+                      title: "Select City",
+                      isRequired: true,
+                      value: controller.selectedCity.value,
+                      items: controller.cityList
+                          .map<String>((e) => e['name'])
+                          .toList(),
+                      hintText: "City",
+                      showSearchBox: true,
+                      searchHintText: "",
+                      onChanged: (val) => controller.selectedCity.value = val,
+                      validator: AppValidators.required,
+                    ),
+
+                    TextButton(
+                      onPressed: () {},
+                      child: AppText(
+                        text: 'Less Filters',
+                        fontSize: 14.sp,
+                        color: AppColors.lightTextMidColor,
+                      ),
+                    ),
+                    AppButton(
+                      text: 'Search',
+                      onTap: () {},
+                      backgroundColor: AppColors.lightPrimary,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            AppButton(
-              text: 'Search',
-              onTap: () {},
-              backgroundColor: AppColors.lightPrimary,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -99,23 +149,25 @@ class GlobalSearch extends StatelessWidget {
     );
   }
 
-  /// 🔹 Common Dropdown
-  Widget _buildDropdown({
+  /// ================= COMMON DROPDOWN =================
+  Widget _dropdownField({
     required String title,
-    required RxnString value,
-    required List<String> items,
+    required Rxn<String> value,
+    required List items,
+    bool isHeight = false,
+    bool isDynamic = false,
   }) {
     return Obx(
-      () => AppDropdownSearch<String>(
-        title: title,
+      () => AppDropdownField(
         isRequired: true,
+        title: title,
         value: value.value,
         items: items,
-        hintText: "Select",
-        showSearchBox: false,
-        onChanged: (val) => value.value = val,
+        hintText: "Select $title",
         validator: AppValidators.required,
-        searchHintText: '',
+        isHeight: isHeight,
+        isDynamic: isDynamic,
+        onChanged: (val) => value.value = val, // ✅ correct update
       ),
     );
   }
@@ -123,42 +175,34 @@ class GlobalSearch extends StatelessWidget {
   /// 🔹 Range Row (From - To)
   Widget _buildRangeRow({
     required String title,
-    required RxnString fromValue,
-    required RxnString toValue,
-    required List<String> items,
+    required Rxn<String> fromValue,
+    required Rxn<String> toValue,
+    required dynamic items,
+    bool isHeight = false,
+    bool isDynamic = false,
   }) {
     return Row(
       spacing: 16.w,
       children: [
         Expanded(
-          child: Obx(
-            () => AppDropdownSearch<String>(
-              showTitle: true,
-              value: fromValue.value,
-              items: items,
-              hintText: "From",
-              onChanged: (val) => fromValue.value = val,
-              validator: AppValidators.required,
-              searchHintText: '',
-              title: 'Height in cm',
-            ),
+          child: _dropdownField(
+            isHeight: isHeight,
+            isDynamic: isDynamic,
+            title: "From",
+            value: fromValue,
+            items: items,
           ),
         ),
 
         _buildToWord(),
 
         Expanded(
-          child: Obx(
-            () => AppDropdownSearch<String>(
-              showTitle: false,
-              value: toValue.value,
-              items: items,
-              hintText: "To",
-              onChanged: (val) => toValue.value = val,
-              validator: AppValidators.required,
-              searchHintText: '',
-              title: '',
-            ),
+          child: _dropdownField(
+            isHeight: isHeight,
+            isDynamic: isDynamic,
+            title: "To",
+            value: toValue,
+            items: items,
           ),
         ),
       ],

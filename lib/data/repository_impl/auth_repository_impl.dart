@@ -40,7 +40,6 @@ class AuthRepositoryImpl implements AuthRepository {
       profilePicture: request.profilePicture,
       attachment: request.photos as List<MultipartFile>,
     );
-    print("API CALL => Phone: ${request.toString()} ");
     return res;
   }
 

@@ -11,7 +11,7 @@ class AppConstants {
 
   /// Environment (dev, staging, prod)
   ///
-  /// Loaded from --dart-define=ENVIRONMENT=<env>
+  /// Loaded from --dart-define=ENVIRONMENT= <env>
   static const String environment = String.fromEnvironment(
     'ENVIRONMENT',
     defaultValue: 'dev',
@@ -80,6 +80,10 @@ class AppConstants {
   /// Firebase API Key (from .env)
   static String get firebaseApiKey {
     return dotenv.env['FIREBASE_API_KEY'] ?? '';
+  }
+
+  static String get chatApiKey {
+    return dotenv.env['CHAT_API_KEY'] ?? '';
   }
 
   // ========== Cache Keys ==========

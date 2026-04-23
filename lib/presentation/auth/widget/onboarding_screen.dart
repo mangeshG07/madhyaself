@@ -65,10 +65,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ? AppColors.grey300
                     : AppColors.grey800,
                 onTap: () async {
-                  await SecureStorageService.write(
-                    'isOnboarded',
-                    true.toString(),
-                  );
+                  await LocalStorage.setBool('isOnboarded', true);
+
+                  // await SecureStorageService.write(
+                  //   'isOnboarded',
+                  //   true.toString(),
+                  // );
                   Get.offAllNamed(Routes.login);
                 },
               ),

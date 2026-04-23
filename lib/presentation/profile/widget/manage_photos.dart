@@ -1,14 +1,7 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class ManagePhotos extends StatefulWidget {
+class ManagePhotos extends GetView<ProfileController> {
   const ManagePhotos({super.key});
-
-  @override
-  State<ManagePhotos> createState() => _ManagePhotosState();
-}
-
-class _ManagePhotosState extends State<ManagePhotos> {
-  final controller = getIt<ManagePhotosController>();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +12,7 @@ class _ManagePhotosState extends State<ManagePhotos> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildToggle(),
+            _buildToggle(isLight),
             Obx(() {
               if (controller.selectedType.value == 0) {
                 return _myPhoto(theme, isLight);
@@ -33,13 +26,13 @@ class _ManagePhotosState extends State<ManagePhotos> {
     );
   }
 
-  Widget _buildToggle() {
+  Widget _buildToggle(bool isLight) {
     return Obx(
       () => Container(
         padding: const EdgeInsets.all(6.0),
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
-          color: AppColors.grey100,
+          color: isLight ? AppColors.grey100 : AppColors.grey800,
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
@@ -49,12 +42,14 @@ class _ManagePhotosState extends State<ManagePhotos> {
               title: 'My Photos',
               isSelected: controller.selectedType.value == 0,
               onTap: () => controller.selectedType.value = 0,
+              isLight: isLight,
             ),
             SizedBox(width: 8.w),
             toggleItem(
               title: 'Verified Profile',
               isSelected: controller.selectedType.value == 1,
               onTap: () => controller.selectedType.value = 1,
+              isLight: isLight,
             ),
           ],
         ),
@@ -75,16 +70,39 @@ class _ManagePhotosState extends State<ManagePhotos> {
                 'Photo will be visible to other users only after the admins approval.',
             fontSize: 12.sp,
             maxLines: 2,
-            color: AppColors.lightTextMidColor,
+            style: theme.textTheme.labelMedium!.copyWith(
+              color: isLight
+                  ? AppColors.lightTextMidColor
+                  : AppColors.lightTextLowColor,
+            ),
           ),
           _buildProfileImage(theme, isLight),
           _buildAdditionalImages(theme),
-          AppButton(
-            text: 'Submit',
-            onTap: () {},
-            backgroundColor: AppColors.lightPrimary,
+          Obx(
+            () => controller.isUpdateLoading.isTrue
+                ? AppLoader.circular(
+                    color: AppColors.lightPrimary,
+                    strokeWidth: 2.5,
+                    size: 22.r,
+                  )
+                : AppButton(
+                    text: 'Submit',
+                    onTap: () async {
+                      if (controller.profileImages.length < 3) {
+                        Get.snackbar(
+                          "Minimum Required",
+                          "Please upload at least 3 images",
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                        return;
+                      }
+                      await controller.updatePhotosDetails();
+                    },
+                    backgroundColor: AppColors.lightPrimary,
+                  ),
           ),
-          _hidePhoto(),
+          _hidePhoto(theme),
         ],
       ),
     );
@@ -116,7 +134,15 @@ class _ManagePhotosState extends State<ManagePhotos> {
                 ),
               ),
             ),
-            child: controller.profileImage.value != null
+            child: controller.profileDetails['profile_image'] != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: Image.network(
+                      controller.profileDetails['profile_image'],
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : controller.profileImage.value != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
                     child: Image.file(
@@ -157,24 +183,38 @@ class _ManagePhotosState extends State<ManagePhotos> {
           childAspectRatio: 1,
         ),
         itemBuilder: (context, index) {
-          // ✅ Show Image if exists
           if (index < images.length) {
             return Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
-                  child: Image.file(
-                    images[index],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
+                  child: images[index] is String
+                      ? Image.network(
+                          images[index],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        )
+                      : Image.file(
+                          images[index],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
                 ),
                 Positioned(
                   top: 4,
                   right: 4,
                   child: GestureDetector(
                     onTap: () {
+                      final item = controller.profileImages[index];
+
+                      if (item is String) {
+                        final fileName = Uri.parse(item).pathSegments.last;
+                        controller.removedFiles.add(fileName);
+                      }
+
+                      // Remove from main list
                       controller.profileImages.removeAt(index);
                     },
                     child: Container(
@@ -237,9 +277,10 @@ class _ManagePhotosState extends State<ManagePhotos> {
     });
   }
 
-  Widget _hidePhoto() {
+  Widget _hidePhoto(ThemeData theme) {
+    final isLight = theme.brightness == Brightness.light;
     return ListTile(
-      tileColor: Color(0xffFFF3E6),
+      tileColor: isLight ? Color(0xffFFF3E6) : theme.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
         side: BorderSide(color: AppColors.lightSecondary, width: 0.5.w),
@@ -250,20 +291,31 @@ class _ManagePhotosState extends State<ManagePhotos> {
         fontSize: 14.sp,
         fontWeight: FontWeight.bold,
         color: AppColors.lightTextMidColor,
+        style: theme.textTheme.bodyMedium!.copyWith(
+          color: isLight
+              ? AppColors.lightTextMidColor
+              : AppColors.lightTextLowColor,
+        ),
       ),
       subtitle: AppText(
         text: 'Hide your photos from other users',
         fontSize: 12.sp,
-        color: AppColors.lightTextLowColor,
+        style: theme.textTheme.bodySmall!.copyWith(
+          color: isLight
+              ? AppColors.lightTextMidColor
+              : AppColors.lightTextLowColor,
+        ),
       ),
       trailing: Switch(
         activeTrackColor: Colors.grey,
         trackOutlineColor: WidgetStatePropertyAll(Colors.grey),
         inactiveThumbColor: Colors.grey,
         activeThumbColor: AppColors.lightSecondary,
-        trackColor: WidgetStatePropertyAll(AppColors.grey100),
-        value: true,
-        onChanged: (v) {},
+        trackColor: WidgetStatePropertyAll(theme.scaffoldBackgroundColor),
+        value: controller.isHide.value,
+        onChanged: (v) {
+          controller.isHide.toggle();
+        },
       ),
     );
   }
@@ -281,9 +333,13 @@ class _ManagePhotosState extends State<ManagePhotos> {
                 'Upload a valid ID (Aadhaar Card, Passport, or Driving License). After verification, your profile will receive a Verified Badge. ✔️',
             fontSize: 12.sp,
             maxLines: 5,
-            color: AppColors.lightTextMidColor,
+            style: theme.textTheme.labelMedium!.copyWith(
+              color: isLight
+                  ? AppColors.lightTextMidColor
+                  : AppColors.lightTextLowColor,
+            ),
           ),
-          _buildUploadDocuments(),
+          _buildUploadDocuments(theme),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -291,28 +347,60 @@ class _ManagePhotosState extends State<ManagePhotos> {
               AppText(text: 'Maximum size: 2MB', fontSize: 12.sp),
             ],
           ),
-          AppButton(
-            text: 'Submit',
-            onTap: () {},
-            backgroundColor: AppColors.lightPrimary,
+
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: controller.documentList.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final file = controller.documentList[index];
+
+              return _documentList(file, index);
+            },
           ),
-          _documentList(),
+          Obx(
+            () => controller.isUpdateLoading.isTrue
+                ? AppLoader.circular(
+                    color: AppColors.lightPrimary,
+                    strokeWidth: 2.5,
+                    size: 22.r,
+                  )
+                : AppButton(
+                    text: 'Submit',
+                    onTap: () async {
+                      await controller.updateDocumentsDetails();
+                    },
+                    backgroundColor: AppColors.lightPrimary,
+                  ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildUploadDocuments() {
+  Widget _buildUploadDocuments(ThemeData theme) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Color(0xffF4F4F4),
+        color: theme.scaffoldBackgroundColor,
       ),
       child: GestureDetector(
         onTap: () {
           AppFilePicker.open(
+            config: AppFilePickerConfig(
+              allowDocument: true,
+              allowMultiDocument: true,
+            ),
+
+            onMultiPicked: (files) {
+              if (files.isNotEmpty) {
+                controller.documentList.addAll(files);
+              }
+            },
             onPicked: (file) {
-              // controller.newAttachments.add(file);
+              if (file.path.isNotEmpty) {
+                controller.documentList.add(file);
+              }
             },
           );
         },
@@ -351,28 +439,34 @@ class _ManagePhotosState extends State<ManagePhotos> {
     );
   }
 
-  Widget _documentList() {
+  Widget _documentList(dynamic file, int index) {
+    String fileName = '';
+    if (file is String) {
+      fileName = Uri.parse(file).pathSegments.last;
+    } else if (file is File) {
+      fileName = file.path.split('/').last;
+    }
     return ListTile(
-      tileColor: Color(0xffFFF3E6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
         side: BorderSide(color: AppColors.lightSecondary, width: 0.5.w),
       ),
       leading: HugeIcon(
-        icon: HugeIcons.strokeRoundedFile01,
+        icon: HugeIcons.strokeRoundedPdf01,
         size: 20.r,
-        color: AppColors.lightPrimary,
+        color: Colors.red,
       ),
       title: AppText(
-        text: 'Aadhaar Card.pdf',
+        text: fileName,
         fontSize: 14.sp,
         fontWeight: FontWeight.bold,
         color: AppColors.lightTextMidColor,
       ),
-      trailing: HugeIcon(
-        icon: HugeIcons.strokeRoundedDownload01,
-        size: 20.r,
-        color: AppColors.lightPrimary,
+      trailing: GestureDetector(
+        child: Icon(Icons.delete, color: Colors.red, size: 20.r),
+        onTap: () {
+          controller.documentList.removeAt(index);
+        },
       ),
     );
   }

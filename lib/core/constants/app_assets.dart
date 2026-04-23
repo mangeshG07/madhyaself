@@ -11,10 +11,12 @@ class AppAssets {
   static const String splashLogo = '$_imagesPath/splash_screen.jpg';
 
   // ========== LOGOS ==========
-  static const String appLogo = '$_imagesPath/logo.png';
-  static const String appLogoHorizontal = '$_imagesPath/logo_h.png';
+  static const String appLogo = '$_imagesPath/app_logo_mar.png';
+  static const String appLogoHorizontal = '$_imagesPath/app_logo_mar.png';
+  static const String appLogoEnglish = '$_imagesPath/app_logo_eng.png';
   static const String bgImage = '$_imagesPath/bg_img.png';
   static const String bgImageDark = '$_imagesPath/bg_img_dark.png';
+  static const String noMatchFound = '$_imagesPath/no_match_found.png';
 
   // ==============Onboarding==============
   static const String onboarding_1 = '$_imagesPath/onb_1.png';

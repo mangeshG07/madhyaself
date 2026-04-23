@@ -116,7 +116,7 @@ class AppDropdownSearch<T> extends StatelessWidget {
             ),
           ),
 
-          onChanged: onChanged,
+          onSelected: onChanged,
         ),
       ],
     );

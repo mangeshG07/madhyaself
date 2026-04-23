@@ -1,7 +1,10 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
 @lazySingleton
-class MatchController extends GetxController {
+class MatchController extends GetxController with PaginationMixin {
+  final GetMatchesUsecase _getMatchesUsecase;
+  MatchController(this._getMatchesUsecase);
+
   final topMatchList = [
     {
       'image':
@@ -33,8 +36,6 @@ class MatchController extends GetxController {
       'isVerified': true,
       'isPremium': false,
     },
-    // https://s3.ap-south-1.amazonaws.com/awsimages.imagesbazaar.com/1200x1800-old/19805/SM964729.jpg?date=Mon%20Mar%2023%202026%2017:48:41%20GMT+0530%20(India%20Standard%20Time)
-    // https://s3.ap-south-1.amazonaws.com/awsimages.imagesbazaar.com/1200x1800-old/19804/SM964550.jpg?date=Mon%20Mar%2023%202026%2017:49:06%20GMT+0530%20(India%20Standard%20Time)
   ].obs;
   final selectedCategory = '0'.obs;
   final category = [
@@ -44,4 +45,34 @@ class MatchController extends GetxController {
     {'name': 'Premium Profiles', 'icon': HugeIcons.strokeRoundedCrown},
     {'name': 'Nearby Matches', 'icon': HugeIcons.strokeRoundedLocation04},
   ].obs;
+
+  Future<void> getMatchList({
+    bool isRefresh = false,
+    bool showLoading = true,
+  }) async {
+    if (isRefresh) resetPagination();
+
+    startLoading(showLoading: showLoading);
+
+    final userid = await SecureStorageService.read('user_id') ?? '';
+
+    try {
+      final response = await _getMatchesUsecase.call(
+        UserRequest(
+          userid,
+          type: selectedCategory.value.toString(),
+          pageNo: currentPage.toString(),
+        ),
+      );
+      if (response['common']['status'] == true) {
+        final List list = response['data']['matches'] ?? [];
+
+        handleSuccess(list);
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    } finally {
+      stopLoading();
+    }
+  }
 }

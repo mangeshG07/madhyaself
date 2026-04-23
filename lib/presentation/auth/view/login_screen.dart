@@ -46,13 +46,13 @@ class LoginScreen extends GetView<LoginController> {
               _buildNumberField(theme),
               const SizedBox(height: 22),
               _buildContinueButton(),
-              AppButton(
-                text: 'Login with Face ID / Fingerprint',
-                onTap: () {},
-                backgroundColor: theme.cardColor,
-                textColor: AppColors.lightTextLowColor,
-                type: AppButtonType.secondary,
-              ),
+              // AppButton(
+              //   text: 'Login with Face ID / Fingerprint',
+              //   onTap: () {},
+              //   backgroundColor: theme.cardColor,
+              //   textColor: AppColors.lightTextLowColor,
+              //   type: AppButtonType.secondary,
+              // ),
             ],
           ),
         ),
@@ -111,9 +111,9 @@ class LoginScreen extends GetView<LoginController> {
 
   ///Login Button///
   Widget _buildContinueButton() {
-    return Obx(()=>
-       AppButton(
-         size: AppButtonSize.medium,
+    return Obx(
+      () => AppButton(
+        size: AppButtonSize.medium,
         text: 'Continue',
         loading: controller.isLoading.value,
         onTap: controller.login,

@@ -2,17 +2,11 @@ import '../exporters/app_export.dart';
 
 class AppCustomSlider extends StatefulWidget {
   final List imageUrls;
-
   final double? height;
   final double borderRadius;
   final EdgeInsets? margin;
-
   final bool autoPlay;
   final Duration autoPlayInterval;
-
-  final Color activeIndicatorColor;
-  final Color inactiveIndicatorColor;
-
   final Widget? placeholder;
   final Widget? errorWidget;
 
@@ -24,8 +18,6 @@ class AppCustomSlider extends StatefulWidget {
     this.margin = const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     this.autoPlay = true,
     this.autoPlayInterval = const Duration(seconds: 3),
-    this.activeIndicatorColor = Colors.blue,
-    this.inactiveIndicatorColor = Colors.grey,
     this.placeholder,
     this.errorWidget,
   });

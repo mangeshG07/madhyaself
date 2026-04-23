@@ -12,6 +12,7 @@ class AppDropdownField extends StatelessWidget {
   final String? errorText;
   final bool? isDynamic;
   final bool? isWithColor;
+  final bool? isHeight;
 
   const AppDropdownField({
     super.key,
@@ -26,6 +27,7 @@ class AppDropdownField extends StatelessWidget {
     this.errorText,
     this.isWithColor = false,
     this.isDynamic = false,
+    this.isHeight = false,
   });
 
   @override
@@ -52,7 +54,11 @@ class AppDropdownField extends StatelessWidget {
           child: DropdownButtonFormField(
             borderRadius: BorderRadius.circular(12.r),
             initialValue: value,
-            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+            icon: const Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.grey,
+              size: 18,
+            ),
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 12.w,
@@ -74,10 +80,10 @@ class AppDropdownField extends StatelessWidget {
               errorMaxLines: 1,
             ),
             validator: validator,
-            dropdownColor: AppColors.grey300,
+            dropdownColor:Get.isDarkMode ? AppColors.grey800 : AppColors.grey300,
             hint: Text(
               hintText,
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+              style: TextStyle(fontSize: 13.sp, color: Colors.grey),
             ),
             style: Theme.of(context).textTheme.bodyMedium,
             isExpanded: isExpanded,
@@ -85,7 +91,9 @@ class AppDropdownField extends StatelessWidget {
             items: isDynamic!
                 ? items.map((value) {
                     return DropdownMenuItem(
-                      value: value['id'].toString(),
+                      value: isHeight == true
+                          ? value['height_in_cm'].toString()
+                          : value['id'].toString(),
                       child: isWithColor == true
                           ? Row(
                               spacing: 8,
@@ -100,15 +108,19 @@ class AppDropdownField extends StatelessWidget {
                                 AppText(
                                   textAlign: TextAlign.start,
                                   text: value['name'],
-                                  color: Colors.black,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   fontSize: 14.sp,
                                 ),
                               ],
                             )
                           : AppText(
                               textAlign: TextAlign.start,
-                              text: value['name'],
-                              color: Colors.black,
+                              text: isHeight == true
+                                  ? '${value['height_in_cm']} - ${value['height']}'
+                                  : value['name'],
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 14.sp,
                             ),
                     );
@@ -119,7 +131,7 @@ class AppDropdownField extends StatelessWidget {
                       child: AppText(
                         text: value,
                         fontSize: 14.sp,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     );
                   }).toList(),

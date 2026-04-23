@@ -1,8 +1,8 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class EditProfile extends StatelessWidget {
-  EditProfile({super.key});
-  final controller = getIt<ProfileController>();
+class EditProfile extends GetView<ProfileController> {
+  const EditProfile({super.key});
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -11,54 +11,50 @@ class EditProfile extends StatelessWidget {
           ? AppColors.bgColor
           : theme.scaffoldBackgroundColor,
       appBar: _buildAppBar(theme),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            _buildProfileImage(),
-            _buildBasicDetails(),
-            _buildAboutMe(),
-            _buildProfessionalDetails(),
-            _buildReligionDetails(),
-            _buildLocationDetails(),
-            _buildFamilyDetails(),
-            _buildHoroscopeDetails(),
-            _buildPhotosDetails(),
-          ],
-        ),
+      body: Obx(
+        () => controller.isLoading.isTrue
+            ? AppLoader.circular(color: AppColors.lightPrimary)
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(16.w),
+                child: Obx(
+                  () => Column(
+                    spacing: 12.h,
+                    children: [
+                      _buildProfileImage(theme),
+                      _buildBasicDetails(theme),
+                      _buildAboutMe(theme),
+                      _buildProfessionalDetails(theme),
+                      _buildReligionDetails(theme),
+                      _buildLocationDetails(theme),
+                      _buildFamilyDetails(theme),
+                      _buildHoroscopeDetails(theme),
+                      _buildPhotosDetails(theme),
+                      SafeArea(
+                        child: AppButton(
+                          text: 'Delete Account',
+                          backgroundColor: AppColors.lightPrimary,
+                          onTap: () => Get.toNamed(Routes.deleteScreen),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
       ),
     );
   }
 
-  CustomAppbar _buildAppBar(theme) {
+  CustomAppbar _buildAppBar(ThemeData theme) {
     return CustomAppbar(
       title: 'Edit Profile',
       backgroundColor: theme.brightness == Brightness.light
           ? AppColors.bgColor
           : theme.scaffoldBackgroundColor,
     );
-
-    // AppBar(
-    //   surfaceTintColor: Colors.white,
-    //   foregroundColor: Colors.black,
-    //   backgroundColor: theme.brightness == Brightness.light
-    //       ? AppColors.bgColor
-    //       : theme.scaffoldBackgroundColor,
-    //   centerTitle: false,
-    //   titleSpacing: 0,
-    //   title: AppText(
-    //     text: 'Edit Profile',
-    //     fontSize: 22.sp,
-    //     color: AppColors.lightTextMidColor,
-    //     fontWeight: FontWeight.bold,
-    //   ),
-    // );
   }
 
-  Widget _buildProfileImage() {
-    final image =
-        'https://s3.ap-south-1.amazonaws.com/awsimages.imagesbazaar.com/1200x1800-old/19805/SM964729.jpg?date=Mon%20Mar%2023%202026%2017:48:41%20GMT+0530%20(India%20Standard%20Time)';
+  Widget _buildProfileImage(ThemeData theme) {
+    final image = controller.profileDetails['profile_image'] ?? '';
     return Center(
       child: Stack(
         clipBehavior: Clip.none,
@@ -110,44 +106,53 @@ class EditProfile extends StatelessWidget {
               },
               child: CircleAvatar(
                 radius: 14.r,
-                backgroundColor: Colors.white,
+                backgroundColor: theme.dividerTheme.color,
                 child: Icon(
                   Icons.edit,
                   size: 16.sp,
-                  color: AppColors.lightPrimary,
+                  color: theme.brightness == Brightness.light
+                      ? AppColors.lightPrimary
+                      : Colors.white,
                 ),
               ),
             ),
           ),
         ],
       ),
-
-      // CircleAvatar(
-      //   radius: 45.r,
-      //   backgroundColor: AppColors.grey200,
-      //   child: Icon(CupertinoIcons.person_fill, size: 40.r),
-      // ),
     );
   }
 
-  Widget _buildBasicDetails() {
+  Widget _buildBasicDetails(ThemeData theme) {
+    final details = controller.profileDetails;
     return buildSection(
       Column(
         children: [
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Name', value: 'Rohan', isFill: false),
-              buildDetailItem(label: 'Gender', value: 'Male', isFill: false),
+              buildDetailItem(
+                label: 'Name',
+                value: details['name'] ?? '',
+                isFill: false,
+              ),
+              buildDetailItem(
+                label: 'Gender',
+                value: details['gender'].toString() == '0' ? "Male" : 'Female',
+                isFill: false,
+              ),
             ],
           ),
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Age', value: '29', isFill: false),
+              buildDetailItem(
+                label: 'Age',
+                value: details['age'] ?? '',
+                isFill: false,
+              ),
               buildDetailItem(
                 label: 'Marital Status',
-                value: 'Never Married',
+                value: details['marital_status'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -157,12 +162,12 @@ class EditProfile extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Height',
-                value: '5ft 10in - 177 cms',
+                value: details['height'] ?? '-',
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Profile Created For',
-                value: '-',
+                value: details['profile_created_for'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -172,7 +177,7 @@ class EditProfile extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Mobile Number',
-                value: '+91 777 XXX XX03',
+                value: details['mobile_no'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -182,12 +187,14 @@ class EditProfile extends StatelessWidget {
       'Basic Details',
       HugeIcons.strokeRoundedUserAccount,
       () => Get.toNamed(Routes.basicDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildAboutMe() {
+  Widget _buildAboutMe(ThemeData theme) {
     return buildSection(
       Container(
+        width: double.infinity,
         padding: EdgeInsets.all(8.r),
         margin: EdgeInsets.symmetric(vertical: 8.r),
         decoration: BoxDecoration(
@@ -196,19 +203,20 @@ class EditProfile extends StatelessWidget {
         ),
         child: AppText(
           maxLines: 20,
-          text:
-              "Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
+          text: controller.profileDetails['about'] ?? '-',
           fontSize: 14.sp,
+          style: theme.textTheme.bodyMedium,
           color: AppColors.lightTextMidColor,
         ),
       ),
       'About Me',
       HugeIcons.strokeRoundedProfile,
       () => Get.toNamed(Routes.aboutMeEdit),
+      theme,
     );
   }
 
-  Widget _buildProfessionalDetails() {
+  Widget _buildProfessionalDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
@@ -217,12 +225,12 @@ class EditProfile extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Education Category',
-                value: '-',
+                value: controller.profileDetails['education_category'] ?? '-',
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Education Detail',
-                value: '-',
+                value: controller.profileDetails['education_details'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -230,8 +238,16 @@ class EditProfile extends StatelessWidget {
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Job Category', value: '-', isFill: false),
-              buildDetailItem(label: 'Job Detail', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'Job Category',
+                value: controller.profileDetails['job_category'] ?? '-',
+                isFill: false,
+              ),
+              buildDetailItem(
+                label: 'Job Details',
+                value: controller.profileDetails['job_details'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
           Row(
@@ -239,7 +255,7 @@ class EditProfile extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Annual Income',
-                value: '-',
+                value: controller.profileDetails['annual_income'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -249,20 +265,25 @@ class EditProfile extends StatelessWidget {
       'Professional Info',
       HugeIcons.strokeRoundedProfile02,
       () => Get.toNamed(Routes.professionalDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildReligionDetails() {
+  Widget _buildReligionDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Religion', value: 'Hindu', isFill: false),
+              buildDetailItem(
+                label: 'Religion',
+                value: controller.profileDetails['religion'] ?? '-',
+                isFill: false,
+              ),
               buildDetailItem(
                 label: 'Caste / Community',
-                value: 'other',
+                value: controller.profileDetails['caste'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -270,7 +291,11 @@ class EditProfile extends StatelessWidget {
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Sub Caste', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'Sub Caste',
+                value: controller.profileDetails['subCaste'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
         ],
@@ -278,20 +303,25 @@ class EditProfile extends StatelessWidget {
       'Religion Info',
       HugeIcons.strokeRoundedWavingHand01,
       () => Get.toNamed(Routes.religionDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildLocationDetails() {
+  Widget _buildLocationDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Country', value: 'India', isFill: false),
+              buildDetailItem(
+                label: 'Country',
+                value: controller.profileDetails['country'] ?? '-',
+                isFill: false,
+              ),
               buildDetailItem(
                 label: 'State',
-                value: 'Maharashtra',
+                value: controller.profileDetails['state'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -299,7 +329,11 @@ class EditProfile extends StatelessWidget {
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'City', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'City',
+                value: controller.profileDetails['city'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
         ],
@@ -307,10 +341,11 @@ class EditProfile extends StatelessWidget {
       'Location',
       HugeIcons.strokeRoundedLocation05,
       () => Get.toNamed(Routes.locationDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildFamilyDetails() {
+  Widget _buildFamilyDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
@@ -319,10 +354,14 @@ class EditProfile extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: "Father's Name",
-                value: '-',
+                value: controller.profileDetails['father_name'] ?? '-',
                 isFill: false,
               ),
-              buildDetailItem(label: "Father's Job", value: '-', isFill: false),
+              buildDetailItem(
+                label: "Father's Job",
+                value: controller.profileDetails['father_job'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
           Row(
@@ -330,10 +369,14 @@ class EditProfile extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: "Mother's Name",
-                value: '-',
+                value: controller.profileDetails['mothers_name'] ?? '-',
                 isFill: false,
               ),
-              buildDetailItem(label: "Mother's Job", value: '-', isFill: false),
+              buildDetailItem(
+                label: "Mother's Job",
+                value: controller.profileDetails['mothers_job'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
           Row(
@@ -341,7 +384,7 @@ class EditProfile extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Siblings Details',
-                value: '-',
+                value: controller.profileDetails['siblling_details'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -351,24 +394,39 @@ class EditProfile extends StatelessWidget {
       'Family Details',
       HugeIcons.strokeRoundedUserMultiple02,
       () => Get.toNamed(Routes.familyDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildHoroscopeDetails() {
+  Widget _buildHoroscopeDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Birth Time', value: '-', isFill: false),
-              buildDetailItem(label: 'Birth Date', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'Birth Time',
+                value: controller.profileDetails['birthtime'] ?? '-',
+                isFill: false,
+              ),
+              buildDetailItem(
+                label: 'Birth Date',
+                value: formatDate(
+                  controller.profileDetails['birth_date'] ?? '-',
+                ),
+                isFill: false,
+              ),
             ],
           ),
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Star/rasi', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'Star/rasi',
+                value: controller.profileDetails['rasi'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
         ],
@@ -376,26 +434,28 @@ class EditProfile extends StatelessWidget {
       'Horoscope Details',
       HugeIcons.strokeRoundedStar,
       () => Get.toNamed(Routes.horoscopeDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildPhotosDetails() {
+  Widget _buildPhotosDetails(ThemeData theme) {
+    final photos = controller.profileDetails['photos'] ?? [];
+    if (photos.length == 0) return SizedBox();
+
     return buildSection(
       showEdit: false,
       Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: AttachmentPreviewList(
-          attachments: [
-            'https://images.pexels.com/photos/1456669/pexels-photo-1456669.jpeg',
-            'https://images.pexels.com/photos/5043313/pexels-photo-5043313.jpeg',
-          ],
-          isDownload: false,
+          attachments: List<String>.from(photos),
+          config: AttachmentPreviewConfig(showDownload: false),
           onDownload: (v) {},
         ),
       ),
       'Images',
       HugeIcons.strokeRoundedAlbum02,
       () {},
+      theme,
     );
   }
 }

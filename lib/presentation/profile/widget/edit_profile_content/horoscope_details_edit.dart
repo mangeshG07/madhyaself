@@ -1,37 +1,54 @@
-import 'package:hugeicons/styles/stroke_rounded.dart';
 import 'package:madhya/core/exporters/app_export.dart';
 
-class HoroscopeDetailsEdit extends StatelessWidget {
-  HoroscopeDetailsEdit({super.key});
-
-  final controller = getIt<ProfileController>();
+class HoroscopeDetailsEdit extends GetView<ProfileController> {
+  const HoroscopeDetailsEdit({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: CustomAppbar(title: 'Horoscope details Edit'),
+      appBar: CustomAppbar(
+        title: 'Horoscope details Edit',
+        backgroundColor: theme.scaffoldBackgroundColor,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            Row(
-              spacing: 16.w,
-              children: [
-                Expanded(child: _buildBirthTime(theme)),
-                Expanded(child: _buildBirthDate(theme)),
-              ],
-            ),
-            _buildRashiDropdown(),
-            _buildUploadDocuments(),
-            SizedBox(height: 16.h),
-            AppButton(
-              text: 'Submit',
-              onTap: () {},
-              backgroundColor: AppColors.lightPrimary,
-            ),
-          ],
+        child: Form(
+          key: controller.horoscopeDetailsFormKey,
+          child: Column(
+            spacing: 12.h,
+            children: [
+              Row(
+                spacing: 16.w,
+                children: [
+                  Expanded(child: _buildBirthTime(theme)),
+                  Expanded(child: _buildBirthDate(theme)),
+                ],
+              ),
+              _buildRashiDropdown(),
+              _buildUploadDocuments(theme),
+              SizedBox(height: 16.h),
+              SizedBox(height: 12),
+              Obx(
+                () => controller.isUpdateLoading.isTrue
+                    ? AppLoader.circular(
+                        color: AppColors.lightPrimary,
+                        strokeWidth: 2.5,
+                        size: 22.r,
+                      )
+                    : AppButton(
+                        text: 'Submit',
+                        onTap: () async {
+                          if (controller.horoscopeDetailsFormKey.currentState!
+                              .validate()) {
+                            await controller.updateHoroscopeDetails();
+                          }
+                        },
+                        backgroundColor: AppColors.lightPrimary,
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -46,13 +63,44 @@ class HoroscopeDetailsEdit extends StatelessWidget {
       minLines: 1,
       maxLines: 10,
       hint: "---:--- ---",
+      onTap: () async {
+        TimeOfDay? pickedTime = await showTimePicker(
+          context: Get.context!,
+          initialTime: TimeOfDay.now(),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: const ColorScheme.light(
+                  primary: AppColors.lightPrimary, // header bg color
+                  onPrimary: Colors.white, // header text color
+                  onSurface: Colors.black, // body text color
+                ),
+                dialogTheme: DialogThemeData(backgroundColor: Colors.black),
+              ),
+              child: child!,
+            );
+          },
+        );
+
+        if (pickedTime != null) {
+          final hour = pickedTime.hourOfPeriod == 0
+              ? 12
+              : pickedTime.hourOfPeriod;
+
+          final period = pickedTime.period == DayPeriod.am ? "AM" : "PM";
+
+          controller.birthTimeController.text =
+              "${hour.toString().padLeft(2, '0')}:"
+              "${pickedTime.minute.toString().padLeft(2, '0')} $period";
+        }
+      },
       contentPadding: const EdgeInsets.all(15),
       focusedBorder: theme.inputDecorationTheme.focusedBorder,
       enabledBorder: theme.inputDecorationTheme.enabledBorder,
       textStyle: TextStyle(color: theme.colorScheme.onSurface),
       validator: AppValidators.required,
       labelStyle: theme.textTheme.labelMedium,
-      controller: TextEditingController(),
+      controller: controller.birthTimeController,
       fillColor: theme.cardColor,
       keyboardType: TextInputType.text,
     );
@@ -66,11 +114,40 @@ class HoroscopeDetailsEdit extends StatelessWidget {
       isRequired: true,
       minLines: 1,
       maxLines: 10,
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: Get.context!,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1950),
+          lastDate: DateTime.now(),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: const ColorScheme.light(
+                  primary: AppColors.lightPrimary, // header bg color
+                  onPrimary: Colors.white, // header text color
+                  onSurface: Colors.black, // body text color
+                ),
+                dialogTheme: DialogThemeData(backgroundColor: Colors.black),
+              ),
+              child: child!,
+            );
+          },
+        );
+
+        if (pickedDate != null) {
+          controller.birthDateController.text =
+              "${pickedDate.day.toString().padLeft(2, '0')}/"
+              "${pickedDate.month.toString().padLeft(2, '0')}/"
+              "${pickedDate.year}";
+        }
+      },
       hint: "12/03/2001",
       suffixIcon: Padding(
         padding: const EdgeInsets.all(8.0),
         child: HugeIcon(
           icon: HugeIconsStrokeRounded.calendar02,
+          size: 20.r,
           color: theme.colorScheme.onSurface,
           strokeWidth: 1,
         ),
@@ -78,34 +155,32 @@ class HoroscopeDetailsEdit extends StatelessWidget {
       contentPadding: const EdgeInsets.all(15),
       focusedBorder: theme.inputDecorationTheme.focusedBorder,
       enabledBorder: theme.inputDecorationTheme.enabledBorder,
-      textStyle: TextStyle(color: theme.colorScheme.onSurface),
+      textStyle: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14.sp),
       validator: AppValidators.required,
       labelStyle: theme.textTheme.labelMedium,
-      controller: TextEditingController(),
+      controller: controller.birthDateController,
       fillColor: theme.cardColor,
       keyboardType: TextInputType.text,
     );
   }
 
   Widget _buildRashiDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Star/rasi",
+    return AppDropdownField(
       isRequired: true,
-      value: controller.selectedAge.value,
-      items: controller.ageList,
-      hintText: "Star/rasi",
-      showSearchBox: false,
-      searchHintText: "Search Star/rasi",
-      onChanged: (val) => controller.selectedAge.value = val,
+      title: "Select Star/rashi",
+      value: controller.selectedRashi.value,
+      items: controller.rashiList.map((e) => e['name']).toList(),
+      hintText: 'Select Star/rashi',
       validator: AppValidators.required,
+      onChanged: (val) => controller.selectedRashi.value = val,
     );
   }
 
-  Widget _buildUploadDocuments() {
+  Widget _buildUploadDocuments(ThemeData theme) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
+        color: theme.scaffoldBackgroundColor,
       ),
       child: GestureDetector(
         onTap: () {

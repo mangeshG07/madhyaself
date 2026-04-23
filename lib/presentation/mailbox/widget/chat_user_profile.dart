@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:madhya/core/exporters/app_export.dart';
 
 class ChatUserProfile extends StatelessWidget {
@@ -6,9 +6,11 @@ class ChatUserProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userData = Get.arguments['userData'] ?? {};
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CustomAppbar(title: 'Details'),
+
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
@@ -16,40 +18,34 @@ class ChatUserProfile extends StatelessWidget {
           spacing: 12,
           children: [
             CircleAvatar(
-              radius: 80,
+              radius: 80.r,
               backgroundColor: AppColors.grey200,
               child: ClipOval(
-                child: Icon(CupertinoIcons.profile_circled, size: 100.r),
+                child: FadeInImage(
+                  placeholder: const AssetImage(AppAssets.appLogo),
+                  image: NetworkImage(userData['profile_image'] ?? ''),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  imageErrorBuilder: (context, error, stackTrace) {
+                    return Icon(Icons.person_2_rounded, size: 100.r);
+                  },
+                ),
               ),
             ),
-            AppText(text: 'Pooja Kulkarni', fontSize: 16.sp),
+            AppText(
+              text: capitalizeFirst(userData['name'] ?? ''),
+              fontSize: 16.sp,
+            ),
             Divider(),
-            Container(
-              alignment: Alignment.centerLeft,
-              height: Get.height * 0.09,
-              child: buildDetailItem(label: 'Phone', value: '+91 12XXX XXX90'),
+            Row(
+              children: [
+                buildDetailItem(label: 'Phone', value: '+91 12XXX XXX90'),
+              ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      surfaceTintColor: Colors.white,
-      foregroundColor: Colors.black,
-      backgroundColor: Colors.white,
-      centerTitle: true,
-      leading: IconButton(
-        onPressed: () =>Get.back(),
-        icon: Icon(Icons.arrow_back, color: Colors.black),
-      ),
-      title: AppText(
-        text: 'Details',
-        fontSize: 20.sp,
-        color: AppColors.lightTextMidColor,
-        fontWeight: FontWeight.bold,
       ),
     );
   }

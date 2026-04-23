@@ -16,9 +16,12 @@ class Routes {
   static const String viewed = "/viewed";
   static const String interest = "/interest";
   static const String editProfile = "/editProfile";
+  static const String profileScreen = "/profileScreen";
   static const String managePhotos = "/managePhotos";
   static const String basicDetailsEdit = "/basicDetailsEdit";
   static const String aboutMeEdit = "/aboutMeEdit";
+  static const String deleteScreen = "/deleteScreen";
+  static const String helpAndSupport = "/helpAndSupport";
   static const String professionalDetailsEdit = "/professionalDetailsEdit";
   static const String religionDetailsEdit = "/religionDetailsEdit";
   static const String locationDetailsEdit = "/locationDetailsEdit";

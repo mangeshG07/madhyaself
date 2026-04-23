@@ -12,7 +12,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.titleSpacing = 0,
     this.title = '',
-    this.backgroundColor = Colors.white,
+    this.backgroundColor,
   });
 
   @override
@@ -29,9 +29,12 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
       title: AppText(
         text: title,
         fontSize: 22.sp,
-        color: AppColors.lightTextMidColor,
+        style: Theme.of(
+          context,
+        ).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
         fontWeight: FontWeight.bold,
       ),
+      leading: BackButton(color: Theme.of(context).colorScheme.onSurface),
       actions: actions,
       elevation: 0,
     );

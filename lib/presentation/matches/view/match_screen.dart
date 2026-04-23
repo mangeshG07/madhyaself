@@ -8,22 +8,54 @@ class MatchScreen extends StatefulWidget {
 }
 
 class _MatchScreenState extends State<MatchScreen> {
-  final controller = getIt<MatchController>();
+  final controller = Get.find<MatchController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getMatchList(isRefresh: true);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          spacing: 16.h,
-          children: [_buildTopCategory(), _buildTopMatchList()],
-        ),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: _buildAppBar(theme),
+      body: Column(
+        spacing: 16.h,
+        children: [
+          _buildTopCategory(theme),
+          Expanded(child: _buildTopMatchList()),
+        ],
       ),
     );
   }
 
-  Widget _buildTopCategory() {
+  AppBar _buildAppBar(ThemeData theme) {
+    return AppBar(
+      surfaceTintColor: theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      centerTitle: false,
+      title: AppText(
+        text: 'Matches',
+        fontSize: 22.sp,
+        style: theme.textTheme.titleLarge!.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      actions: [
+        AppIconButton(
+          onPressed: () => _matchFilter(theme),
+          icon: HugeIcons.strokeRoundedFilter,
+          iconColor: Colors.grey,
+          backgroundColor: theme.inputDecorationTheme.fillColor,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTopCategory(ThemeData theme) {
     return SizedBox(
       height: Get.height * 0.05,
       child: ListView.builder(
@@ -34,50 +66,20 @@ class _MatchScreenState extends State<MatchScreen> {
             index: index,
             name: controller.category[index]['name']?.toString() ?? '',
             icon: controller.category[index]['icon'],
+            theme: theme,
           );
         },
       ),
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      iconTheme: const IconThemeData(color: Colors.white),
-      surfaceTintColor: Colors.white,
-      foregroundColor: Colors.black,
-      backgroundColor: Colors.white,
-      centerTitle: false,
-      title: AppText(
-        text: 'Matches',
-        fontSize: 22.sp,
-        fontWeight: FontWeight.bold,
-      ),
-      actions: [
-        GestureDetector(
-          onTap: _matchFilter,
-          child: Container(
-            padding: EdgeInsets.all(8.w),
-            margin: EdgeInsets.all(8.w).copyWith(right: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              shape: BoxShape.circle,
-            ),
-            child: HugeIcon(
-              icon: HugeIcons.strokeRoundedFilter,
-              color: Colors.grey,
-              size: 20.sp,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<dynamic> _matchFilter() {
+  Future<dynamic> _matchFilter(ThemeData theme) {
     return AppBottomSheet.show(
       context: context,
       showCloseButton: true,
       title: 'Filter',
+      textStyle: theme.textTheme.titleLarge,
+      backgroundColor: theme.scaffoldBackgroundColor,
       height: Get.height * 0.38.h,
       child: Column(
         spacing: 12.h,
@@ -87,6 +89,7 @@ class _MatchScreenState extends State<MatchScreen> {
             type: AppButtonType.outline,
             backgroundColor: Colors.white,
             onTap: () {},
+            textStyle: theme.textTheme.titleSmall,
             textColor: AppColors.lightTextMidColor,
             borderColor: AppColors.grey200,
           ),
@@ -95,6 +98,7 @@ class _MatchScreenState extends State<MatchScreen> {
             onTap: () {},
             type: AppButtonType.outline,
             backgroundColor: Colors.white,
+            textStyle: theme.textTheme.titleSmall,
             textColor: AppColors.lightTextMidColor,
             borderColor: AppColors.grey200,
           ),
@@ -112,37 +116,99 @@ class _MatchScreenState extends State<MatchScreen> {
   }
 
   Widget _buildTopMatchList() {
-    return Column(
-      spacing: 12.h,
-      children: [
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.topMatchList.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 4,
-            childAspectRatio: 0.58,
-          ),
-          itemBuilder: (context, index) {
-            final match = controller.topMatchList[index];
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return Center(child: AppLoader.circular(color: AppColors.lightPrimary));
+      }
 
-            return CompactCard(
-              details: {
-                'name': match['name'] ?? '',
-                'id': match['id'] ?? '',
-                'age': match['age'] ?? '',
-                'address': match['address'] ?? '',
-                'image': match['image']?.toString() ?? '',
-                'isVerified': match['isVerified'] ?? false,
-                'isPremium': match['isPremium'] ?? false,
-              },
-              onTap: () => Get.toNamed(Routes.othersProfile),
-            );
-          },
+      if (controller.items.isEmpty) {
+        return _emptyState();
+      }
+
+      return NotificationListener<ScrollNotification>(
+        onNotification: (scroll) {
+          if (scroll is ScrollEndNotification &&
+              scroll.metrics.pixels >= scroll.metrics.maxScrollExtent - 50 &&
+              controller.hasMore &&
+              !controller.isLoadMore.value &&
+              !controller.isLoading.value) {
+            controller.getMatchList(showLoading: false);
+          }
+          return false;
+        },
+        child: Column(
+          children: [
+            Expanded(
+              child: GridView.builder(
+                // shrinkWrap: true,
+                // physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                itemCount: controller.items.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 4,
+                  childAspectRatio: 0.58,
+                ),
+                itemBuilder: (context, index) {
+                  final match = controller.items[index];
+
+                  return CompactCard(
+                    details: {
+                      'name': match['name'] ?? '',
+                      'id': match['id'] ?? '',
+                      'age': getAgeJob(match),
+                      'address': getAddress(match),
+                      'image': match['profile_image']?.toString() ?? '',
+                      'isVerified': match['isVerified'] ?? false,
+                      'isPremium': match['isPremium'] ?? false,
+                    },
+                    onTap: () => Get.toNamed(
+                      Routes.othersProfile,
+                      arguments: {'id': match['id']?.toString() ?? ''},
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            Obx(() {
+              if (controller.isLoadMore.value) {
+                // Still loading next page
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  child: AppLoader.circular(color: AppColors.lightPrimary),
+                );
+              } else {
+                return const SizedBox();
+              }
+            }),
+          ],
         ),
-      ],
+      );
+    });
+  }
+
+  Widget _emptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.favorite_border, size: 50.r, color: Colors.grey),
+          SizedBox(height: 10.h),
+          AppText(
+            text: 'No Matches yet',
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+          ),
+          SizedBox(height: 4.h),
+          AppText(
+            text: 'Start exploring and Matches profiles',
+            fontSize: 12.sp,
+            color: Colors.grey,
+          ),
+        ],
+      ),
     );
   }
 
@@ -150,10 +216,12 @@ class _MatchScreenState extends State<MatchScreen> {
     required String name,
     required int index,
     required dynamic icon,
+    required ThemeData theme,
   }) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         controller.selectedCategory.value = index.toString();
+        await controller.getMatchList(isRefresh: true);
       },
       child: Obx(
         () => Container(
@@ -162,7 +230,7 @@ class _MatchScreenState extends State<MatchScreen> {
           decoration: BoxDecoration(
             color: controller.selectedCategory.value == index.toString()
                 ? AppColors.lightSecondary
-                : AppColors.catBgColor,
+                : theme.inputDecorationTheme.fillColor,
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: Center(
@@ -171,7 +239,7 @@ class _MatchScreenState extends State<MatchScreen> {
               children: [
                 HugeIcon(
                   icon: icon,
-                  size: 16.r,
+                  size: 14.r,
                   color: controller.selectedCategory.value == index.toString()
                       ? Colors.white
                       : AppColors.lightTextLowColor,
@@ -180,12 +248,10 @@ class _MatchScreenState extends State<MatchScreen> {
                   text: name,
                   textAlign: TextAlign.center,
                   fontSize: 12.sp,
-                  style: TextStyle(
-                    fontSize: 12.sp,
+                  style: theme.textTheme.labelMedium!.copyWith(
                     color: controller.selectedCategory.value == index.toString()
                         ? Colors.white
                         : AppColors.lightTextLowColor,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],

@@ -2,12 +2,22 @@ import '../../../core/exporters/app_export.dart';
 
 class ContactBottomsheet extends StatelessWidget {
   final bool isUnlocked;
+  final String contactNumber;
+  final String whatsappNumber;
 
-  const ContactBottomsheet({super.key, this.isUnlocked = false});
+  const ContactBottomsheet({
+    super.key,
+    this.isUnlocked = false,
+    required this.contactNumber,
+    required this.whatsappNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AppBottomSheetLayout(child: isUnlocked ? _details() : _locked());
+    return Container(
+      padding: EdgeInsets.all(12.w),
+      child: isUnlocked ? _details() : _locked(),
+    );
   }
 
   Widget _locked() {
@@ -39,15 +49,17 @@ class ContactBottomsheet extends StatelessWidget {
       children: [
         _title(),
         SizedBox(height: 12.h),
-        _contactCard(
-          'Mobile: +91 98XXXXXX45',
-          HugeIcons.strokeRoundedSmartPhone01,
-        ),
+        if (contactNumber.isNotEmpty)
+          _contactCard(
+            'Mobile: +91 $contactNumber',
+            HugeIcons.strokeRoundedSmartPhone01,
+          ),
         SizedBox(height: 10.h),
-        _contactCard(
-          'WhatsApp: +91 98XXXXXX45',
-          HugeIcons.strokeRoundedWhatsapp,
-        ),
+        if (whatsappNumber.isNotEmpty)
+          _contactCard(
+            'WhatsApp: +91 $whatsappNumber',
+            HugeIcons.strokeRoundedWhatsapp,
+          ),
         SizedBox(height: 20.h),
         AppButton(
           text: 'Got It',
@@ -77,11 +89,12 @@ class ContactBottomsheet extends StatelessWidget {
   }
 
   Widget _contactCard(String title, dynamic icon) {
+    final theme = Theme.of(Get.context!);
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.grey200),
+        border: Border.all(color: theme.dividerTheme.color!),
       ),
       child: Row(
         children: [
@@ -91,7 +104,11 @@ class ContactBottomsheet extends StatelessWidget {
             child: AppText(
               text: title,
               fontSize: 14.sp,
-              color: AppColors.lightTextMidColor,
+              style: theme.textTheme.titleSmall!.copyWith(
+                color: theme.brightness == Brightness.light
+                    ? AppColors.lightTextMidColor
+                    : AppColors.grey500,
+              ),
             ),
           ),
         ],

@@ -36,8 +36,38 @@ class ApiConstants {
   static const String login = '/login';
   static const String verifyOTP = '/verify-otp';
   static const String getCommonData = '/get-common-data';
+  static const String getLocationData = '/get-location-data';
   static const String getCasteByReligion = '/get-caste-by-religion';
   static const String getSubCasteByCaste = '/get-sub-caste-by-caste';
   static const String register = '/register';
   static const String home = '/home';
+  static const String userProfile = '/get-user-profile';
+  static const String updateUserProfile = '/update-profile';
+  static const String getOtherProfile = '/profile-details';
+  static const String getChatList = '/chat-list';
+  static const String createChat = '/create-chat';
+  static const String getChatDetails = '/chat-history';
+  static const String sendMsg = '/send-message';
+  static const String msgDelivered = '/message-delivered';
+  static const String msgRead = '/message-read';
+  static const String typing = '/typing';
+  static const String getView = '/get-view-profile';
+  static const String getShortlist = '/get-shortlist';
+  static const String shortlistProfile = '/shortlist-profile';
+  static const String getInterest = '/get-interest';
+  static const String sendInterest = '/send-interest';
+  static const String updateInterest = '/update-interest-status';
+  static const String deleteInterest = '/delete-interest';
+  static const String getMatches = '/get-matches';
+  static const String getPartnerPreference = '/get-patner-preferance';
+  static const String updatePartnerPreference = '/update-patner-preferance';
+
+  /////////////////////Pending////////////////////////
+  static const String getPages = '/get-page-list';
+  static const String getPageDetails = '/get-page-details';
+  static const String globalSearch = '/search';
+  static const String blockUser = '/block-user';
+  static const String blockUserList = '/block-user-list';
+  static const String reportProfile = '/report-profile';
+  static const String reportProfileList = '/report-profile-list';
 }

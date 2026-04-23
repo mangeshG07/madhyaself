@@ -1,10 +1,20 @@
-import 'package:flutter/cupertino.dart';
 import 'package:madhya/core/exporters/app_export.dart';
 
-class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
-  final controller = getIt<ProfileController>();
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final controller = Get.find<ProfileController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,49 +25,75 @@ class ProfileScreen extends StatelessWidget {
           ? AppColors.bgColor
           : theme.scaffoldBackgroundColor,
       appBar: _buildAppBar(theme),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            _buildProfileHeader(),
-            _buildCompletionCard(),
-            _buildSectionCard(controller.menuList),
-            _buildSectionCard(controller.otherMenu),
-          ],
-        ),
+      body: Obx(
+        () => controller.isLoading.isTrue
+            ? AppLoader.circular(color: AppColors.lightPrimary)
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  spacing: 12.h,
+                  children: [
+                    _buildProfileHeader(theme),
+                    _buildCompletionCard(theme),
+                    _buildSectionCard(controller.menuList, theme),
+                  ],
+                ),
+              ),
       ),
     );
   }
 
-  AppBar _buildAppBar(theme) {
+  AppBar _buildAppBar(ThemeData theme) {
     return AppBar(
       elevation: 0,
-      surfaceTintColor: Colors.white,
-      foregroundColor: Colors.black,
+      surfaceTintColor: theme.scaffoldBackgroundColor,
       backgroundColor: theme.brightness == Brightness.light
           ? AppColors.bgColor
           : theme.scaffoldBackgroundColor,
       centerTitle: false,
-      title: Image.asset(AppAssets.appLogoHorizontal, height: 28.h),
+      title: Image.asset(AppAssets.appLogoEnglish, height: 28.h),
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(ThemeData theme) {
     return Container(
       padding: EdgeInsets.all(16.w),
       child: Column(
         children: [
           CircleAvatar(
-            radius: 45.r,
-            backgroundColor: AppColors.grey200,
-            child: Icon(CupertinoIcons.person_fill, size: 40.r),
+            radius: 51.r,
+            backgroundColor: Colors.grey.shade200,
+            child: CircleAvatar(
+              radius: 50.r,
+              backgroundColor: AppColors.grey100,
+              child: ClipOval(
+                child: FadeInImage(
+                  placeholder: const AssetImage(AppAssets.appLogo),
+                  image: NetworkImage(
+                    controller.profileDetails['profile_image'] ?? '',
+                  ),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  imageErrorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      AppAssets.appLogo,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
           SizedBox(height: 10.h),
           AppText(
-            text: 'Pooja Kulkarni',
+            text: capitalizeFirst(controller.profileDetails['name'] ?? ''),
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
+            style: theme.textTheme.titleLarge,
           ),
           SizedBox(height: 4.h),
           AppText(
@@ -70,13 +106,21 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCompletionCard() {
+  Widget _buildCompletionCard(ThemeData theme) {
+    final percent =
+        (controller.profileDetails['profile_completion'] ?? 0) / 100;
+
+    if (controller.profileDetails['profile_completion'].toString() == '100') {
+      return SizedBox();
+    }
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.lightPrimary.withValues(alpha: 0.1),
+            theme.brightness == Brightness.light
+                ? AppColors.lightPrimary.withValues(alpha: 0.1)
+                : AppColors.lightMidPrimary.withValues(alpha: 0.5),
             Colors.white24,
           ],
         ),
@@ -91,8 +135,12 @@ class ProfileScreen extends StatelessWidget {
               AppText(
                 text: "Complete Your Profile",
                 fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.lightPrimary,
+                style: theme.textTheme.bodyLarge!.copyWith(
+                  color: theme.brightness == Brightness.light
+                      ? AppColors.lightPrimary
+                      : Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               AppText(
                 text:
@@ -100,7 +148,9 @@ class ProfileScreen extends StatelessWidget {
                 fontSize: 12.sp,
                 maxLines: 3,
                 textAlign: TextAlign.center,
-                color: AppColors.lightTextMidColor,
+                style: theme.textTheme.labelMedium!.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ],
           ),
@@ -108,20 +158,22 @@ class ProfileScreen extends StatelessWidget {
             spacing: 10.w,
             children: [
               AppText(
-                text: '65%',
+                text: '${(percent * 100).toInt()}% ',
                 fontSize: 12.sp,
-                color: AppColors.lightTextMidColor,
+                style: theme.textTheme.labelMedium!.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
               Expanded(
                 child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: 0.65),
+                  tween: Tween(begin: 0, end: percent),
                   duration: const Duration(milliseconds: 800),
                   builder: (_, value, __) {
                     return LinearProgressIndicator(
                       borderRadius: BorderRadius.circular(10.r),
                       value: value,
                       minHeight: 6.h,
-                      backgroundColor: Colors.grey.shade200,
+                      backgroundColor: theme.dividerTheme.color,
                       valueColor: const AlwaysStoppedAnimation(
                         AppColors.lightSecondary,
                       ),
@@ -132,7 +184,9 @@ class ProfileScreen extends StatelessWidget {
               AppText(
                 text: 'Profile Completed',
                 fontSize: 12.sp,
-                color: AppColors.lightTextMidColor,
+                style: theme.textTheme.labelMedium!.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ],
           ),
@@ -141,7 +195,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _menuItem(dynamic menu) {
+  Widget _menuItem(dynamic menu, ThemeData theme) {
     return InkWell(
       borderRadius: BorderRadius.circular(12.r),
       onTap: menu['onTap'],
@@ -152,12 +206,16 @@ class ProfileScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: AppColors.lightPrimary.withValues(alpha: 0.05),
+                color: theme.brightness == Brightness.light
+                    ? AppColors.lightPrimary.withValues(alpha: 0.05)
+                    : AppColors.lightPink.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: HugeIcon(
                 icon: menu['icon'],
-                color: AppColors.lightPrimary,
+                color: theme.brightness == Brightness.light
+                    ? AppColors.lightPrimary
+                    : Colors.white,
                 size: 20.r,
               ),
             ),
@@ -166,7 +224,9 @@ class ProfileScreen extends StatelessWidget {
               child: AppText(
                 text: menu['title'] ?? '',
                 fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             HugeIcon(
@@ -180,10 +240,10 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionCard(List<dynamic> list) {
+  Widget _buildSectionCard(List<dynamic> list, ThemeData theme) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
@@ -198,14 +258,14 @@ class ProfileScreen extends StatelessWidget {
           final menu = list[index];
           return Column(
             children: [
-              _menuItem(menu),
+              _menuItem(menu, theme),
               if (index != list.length - 1)
                 Divider(
                   height: 0,
                   thickness: 0.6,
                   indent: 50.w,
                   endIndent: 12.w,
-                  color: Colors.grey.shade300,
+                  color: theme.dividerTheme.color,
                 ),
             ],
           );

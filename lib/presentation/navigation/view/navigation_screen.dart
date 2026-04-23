@@ -12,21 +12,21 @@ class NavigationScreen extends StatelessWidget {
         value: SystemUiOverlayStyle(
           systemNavigationBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarIconBrightness: theme.brightness,
         ),
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: theme.scaffoldBackgroundColor,
           body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (child, animation) {
               return FadeTransition(opacity: animation, child: child);
             },
-            child:
-                NavigationController.widgetOptions[controller.currentIndex.value],
+            child: NavigationController
+                .widgetOptions[controller.currentIndex.value],
           ),
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.scaffoldBackgroundColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.r),
                 topRight: Radius.circular(16.r),
@@ -49,7 +49,7 @@ class NavigationScreen extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
               child: BottomNavigationBar(
-                backgroundColor: Colors.white,
+                backgroundColor: theme.scaffoldBackgroundColor,
                 selectedItemColor: AppColors.lightPrimary,
                 unselectedItemColor: Colors.grey.shade400,
                 showUnselectedLabels: true,
@@ -66,18 +66,21 @@ class NavigationScreen extends StatelessWidget {
                     'Home',
                     0,
                     controller.currentIndex.value == 0,
+                    theme,
                   ),
                   _buildNavItem(
                     HugeIcons.strokeRoundedFavouriteSquare,
                     'Matches',
                     1,
                     controller.currentIndex.value == 1,
+                    theme,
                   ),
                   _buildNavItem(
                     HugeIcons.strokeRoundedMailbox01,
                     'Mailbox',
                     2,
                     controller.currentIndex.value == 2,
+                    theme,
                     iconSize: Get.width * 0.05,
                   ),
                   _buildNavItem(
@@ -85,6 +88,7 @@ class NavigationScreen extends StatelessWidget {
                     'Profile',
                     3,
                     controller.currentIndex.value == 3,
+                    theme,
                     iconSize: Get.width * 0.05,
                   ),
                 ],
@@ -100,11 +104,12 @@ class NavigationScreen extends StatelessWidget {
     dynamic icon,
     String label,
     int index,
-    bool isSelected, {
+    bool isSelected,
+    ThemeData theme, {
     double? iconSize,
   }) {
     return BottomNavigationBarItem(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.inputDecorationTheme.fillColor,
       icon: Padding(
         padding: const EdgeInsets.only(bottom: 4.0),
         child: index == 0

@@ -1,56 +1,69 @@
 import '../../../../core/exporters/app_export.dart';
 
-class LocationDetailsEdit extends StatelessWidget {
-  LocationDetailsEdit({super.key});
-
-  final controller = getIt<ProfileController>();
+class LocationDetailsEdit extends GetView<ProfileController> {
+  const LocationDetailsEdit({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: CustomAppbar(title: 'Location Details Edit'),
+      appBar: CustomAppbar(
+        title: 'Location Details Edit',
+        backgroundColor: theme.scaffoldBackgroundColor,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            Row(
-              spacing: 16.w,
-              children: [
-                Expanded(child: _buildCountryDropdown()),
-                Expanded(child: _buildStateDropdown()),
-              ],
-            ),
-            Row(
-              spacing: 16.w,
-              children: [
-                Expanded(child: _buildDistrictDropdown()),
-                Expanded(child: _buildCityDropdown()),
-              ],
-            ),
-            SizedBox(height: 16.h),
-            AppButton(
-              text: 'Submit',
-              onTap: () {},
-              backgroundColor: AppColors.lightPrimary,
-            ),
-          ],
+        child: Form(
+          key: controller.locationDetailsFormKey,
+          child: Column(
+            spacing: 12.h,
+            children: [
+              Row(
+                spacing: 16.w,
+                children: [
+                  Expanded(child: _buildCountryDropdown()),
+                  Expanded(child: _buildStateDropdown()),
+                ],
+              ),
+              Row(
+                spacing: 16.w,
+                children: [Expanded(child: _buildCityDropdown())],
+              ),
+              SizedBox(height: 16.h),
+              Obx(
+                () => controller.isUpdateLoading.isTrue
+                    ? AppLoader.circular(
+                        color: AppColors.lightPrimary,
+                        strokeWidth: 2.5,
+                        size: 22.r,
+                      )
+                    : AppButton(
+                        text: 'Submit',
+                        onTap: () async {
+                          if (controller.locationDetailsFormKey.currentState!
+                              .validate()) {
+                            await controller.updateLocationDetails();
+                          }
+                        },
+                        backgroundColor: AppColors.lightPrimary,
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCountryDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Select Country",
+    return AppDropdownField(
       isRequired: true,
-      value: controller.selectedAge.value,
-      items: controller.ageList,
-      hintText: "Country",
-      showSearchBox: false,
-      searchHintText: "Search Country",
-      onChanged: (val) => controller.selectedAge.value = val,
+      title: "Select Your Country",
+      value: controller.selectedCountry.value,
+      items: controller.countryList,
+      hintText: 'Country',
       validator: AppValidators.required,
+      onChanged: (val) => controller.selectedCountry.value = val,
     );
   }
 
@@ -58,26 +71,12 @@ class LocationDetailsEdit extends StatelessWidget {
     return AppDropdownSearch<String>(
       title: "Select State",
       isRequired: true,
-      value: controller.selectedMStatus.value,
-      items: controller.mStatusList,
+      value: controller.selectedState.value,
+      items: controller.stateList.map<String>((e) => e['name']).toList(),
       hintText: "State",
       showSearchBox: true,
       searchHintText: "",
-      onChanged: (val) => controller.selectedMStatus.value = val,
-      validator: AppValidators.required,
-    );
-  }
-
-  Widget _buildDistrictDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Select District",
-      isRequired: true,
-      value: controller.selectedHeight.value,
-      items: controller.heightList,
-      hintText: "District",
-      showSearchBox: false,
-      searchHintText: "",
-      onChanged: (val) => controller.selectedHeight.value = val,
+      onChanged: (val) => controller.selectedState.value = val,
       validator: AppValidators.required,
     );
   }
@@ -86,12 +85,12 @@ class LocationDetailsEdit extends StatelessWidget {
     return AppDropdownSearch<String>(
       title: "Select City",
       isRequired: true,
-      value: controller.selectedCreatedFor.value,
-      items: controller.createdForList,
+      value: controller.selectedCity.value,
+      items: controller.cityList.map<String>((e) => e['name']).toList(),
       hintText: "City",
-      showSearchBox: false,
+      showSearchBox: true,
       searchHintText: "",
-      onChanged: (val) => controller.selectedCreatedFor.value = val,
+      onChanged: (val) => controller.selectedCity.value = val,
       validator: AppValidators.required,
     );
   }

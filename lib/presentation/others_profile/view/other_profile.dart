@@ -1,4 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
+import 'package:madhya/presentation/others_profile/widget/report_profile_btmsheet.dart';
 
 class OtherProfile extends StatefulWidget {
   const OtherProfile({super.key});
@@ -8,48 +9,63 @@ class OtherProfile extends StatefulWidget {
 }
 
 class _OtherProfileState extends State<OtherProfile> {
-  final controller = getIt<OtherProfileController>();
+  final controller = Get.find<OtherProfileController>();
+  final interestController = Get.find<InterestController>();
+  final shortListController = Get.find<ShortlistController>();
+  String get userId => Get.arguments?['id']?.toString() ?? '';
+
+  @override
+  void initState() {
+    super.initState();
+    controller.otherProfileDetails(userId);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                /// 🔥 TOP IMAGE SECTION
-                _buildTopImageList(),
-                SizedBox(height: 50.h),
+      body: Obx(
+        () => controller.isLoading.isTrue
+            ? AppLoader.circular(color: AppColors.lightPrimary)
+            : Stack(
+                children: [
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        /// 🔥 TOP IMAGE SECTION
+                        _buildTopImageList(theme),
+                        SizedBox(height: 50.h),
 
-                /// 🔹 DATA CHIPS
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    spacing: 12.h,
-                    children: [
-                      _buildDataChips(),
-                      _buildDivider(),
-                      _buildAboutMe(),
-                      _buildBasicDetails(),
-                      _buildProfessionalDetails(),
-                      _buildReligionDetails(),
-                      _buildLocationDetails(),
-                      _buildFamilyDetails(),
-                    ],
+                        /// 🔹 DATA CHIPS
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            spacing: 12.h,
+                            children: [
+                              _buildDataChips(theme),
+                              _buildDivider(),
+                              _buildAboutMe(theme),
+                              _buildBasicDetails(),
+                              _buildProfessionalDetails(),
+                              _buildReligionDetails(),
+                              _buildLocationDetails(),
+                              _buildFamilyDetails(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          _buildAppbar(),
-        ],
+                  _buildAppbar(theme),
+                ],
+              ),
       ),
     );
   }
 
-  Widget _buildAppbar() {
+  Widget _buildAppbar(ThemeData theme) {
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Positioned(
@@ -67,8 +83,10 @@ class _OtherProfileState extends State<OtherProfile> {
               child: AppIconButton(
                 onPressed: () => Get.back(),
                 icon: HugeIcons.strokeRoundedArrowLeft01,
-                iconColor: Colors.white,
-                backgroundColor: AppColors.grey900.withValues(alpha: 0.2),
+                iconColor: theme.scaffoldBackgroundColor,
+                backgroundColor: theme.colorScheme.onSurface.withValues(
+                  alpha: 0.5,
+                ),
               ),
             ),
 
@@ -80,18 +98,63 @@ class _OtherProfileState extends State<OtherProfile> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                onSelected: (value) {},
+                onSelected: (value) {
+                  if (value == 'block') {
+                    AllDialogs().showConfirmationDialog(
+                      'Are you sure?',
+                      'Are you sure you want to block this profile?',
+                      onConfirm: () async {
+                        await controller.blockProfile(
+                          controller.profileDetails['id']?.toString() ?? '',
+                        );
+                      },
+                    );
+                  } else if (value == 'report') {
+                    AppBottomSheet.show(
+                      context: context,
+                      showCloseButton: false,
+                      // height: Get.height * 0.4.h,
+                      backgroundColor: theme.scaffoldBackgroundColor,
+                      child: ReportProfileList(
+                        onSubmit: () async {
+                          final selectedItem = controller.interestOptions
+                              .firstWhere(
+                                (e) => e.id == controller.selectedId.value,
+                              );
+
+                          final msg = selectedItem.text;
+                          await controller
+                              .reportProfile(
+                                controller.profileDetails['id'].toString(),
+                                msg,
+                              )
+                              .then((v) async {
+                                await controller.otherProfileDetails(
+                                  controller.profileDetails['id'].toString(),
+                                );
+                              });
+                        },
+                        controller: controller,
+                        items: controller.reasonsOptions,
+                        selectedValue: controller.selectedReason.value,
+                        onChanged: (val) {
+                          controller.selectedId.value = val;
+                        },
+                      ),
+                    );
+                  }
+                },
                 icon: Container(
                   padding: EdgeInsets.all(8.w),
                   margin: EdgeInsets.only(right: 12.w),
                   decoration: BoxDecoration(
-                    color: AppColors.grey900.withValues(alpha: 0.2),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: HugeIcon(
                     icon: HugeIcons.strokeRoundedMoreVerticalSquare01,
                     size: 16.r,
-                    color: Colors.white,
+                    color: theme.scaffoldBackgroundColor,
                   ),
                 ),
                 itemBuilder: (context) => [
@@ -137,7 +200,8 @@ class _OtherProfileState extends State<OtherProfile> {
     );
   }
 
-  Widget _buildTopImageList() {
+  Widget _buildTopImageList(ThemeData theme) {
+    final images = controller.profileDetails['photos'] ?? [];
     return SizedBox(
       height: Get.height * 0.55.h,
       child: Stack(
@@ -145,38 +209,50 @@ class _OtherProfileState extends State<OtherProfile> {
         children: [
           PageView.builder(
             controller: controller.pageController,
-            itemCount: controller.images.length,
+            itemCount: images.length,
             onPageChanged: (index) {
               controller.currentIndex.value = index;
             },
             itemBuilder: (_, index) {
-              return MatchCardOverlay(
-                isDetails: true,
-                details: {
-                  'image': controller.images[index],
-                  'details': {
-                    'name': 'Sneha Patil',
-                    'id': 'MDYST0123M',
-                    'age': '25',
-                    'address': 'Pune, Maharashtra',
-                    'isVerified': true,
-                  },
-                },
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: FadeInImage(
+                      placeholderFit: BoxFit.contain,
+                      placeholder: AssetImage(AppAssets.appLogo),
+                      image: NetworkImage(images[index] ?? ''),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                      imageErrorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey.shade100,
+                          child: Center(
+                            child: Image.asset(AppAssets.appLogo, height: 40.h),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  buildGradientOverlay(),
+                ],
               );
             },
           ),
-          _buildIndicators(),
+          _buildIndicators(images, theme),
+          buildContentOverlay(controller.profileDetails, true),
 
           /// 🔥 APP BAR
           // _buildAppbar(),
-          _buildBottomMenu(),
+          _buildBottomMenu(theme),
         ],
       ),
     );
   }
 
   /// 🔹 INDICATORS
-  Widget _buildIndicators() {
+  Widget _buildIndicators(List images, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.all(
         8.0,
@@ -186,7 +262,7 @@ class _OtherProfileState extends State<OtherProfile> {
         builder: (_, index, __) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (i) {
+            children: List.generate(images.length, (i) {
               final isActive = index == i;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
@@ -195,7 +271,7 @@ class _OtherProfileState extends State<OtherProfile> {
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4.r),
-                  color: isActive ? Colors.white : Colors.grey,
+                  color: isActive ? theme.scaffoldBackgroundColor : Colors.grey,
                 ),
               );
             }),
@@ -206,7 +282,7 @@ class _OtherProfileState extends State<OtherProfile> {
   }
 
   /// 🔥 BOTTOM MENU
-  Widget _buildBottomMenu() {
+  Widget _buildBottomMenu(ThemeData theme) {
     return Positioned(
       bottom: -35,
       left: 16,
@@ -218,41 +294,98 @@ class _OtherProfileState extends State<OtherProfile> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildMenuCard(
-              'Send\nInterest',
+              controller.profileDetails['is_interest_sent'] == true
+                  ? 'Interest\nSent ✔'
+                  : 'Send\nInterest',
               HugeIcons.strokeRoundedFavouriteCircle,
+
               () {
+                controller.selectedId.value = null;
+                interestController.isSuccess.value = false;
                 AppBottomSheet.show(
                   context: context,
+                  backgroundColor: theme.scaffoldBackgroundColor,
                   showCloseButton: false,
                   height: Get.height * 0.6.h,
-                  child: Obx(
-                    () => InterestOptionsList(
+                  child: Obx(() {
+                    return InterestOptionsList(
+                      onSubmit: () async {
+                        final selectedItem = controller.interestOptions
+                            .firstWhere(
+                              (e) => e.id == controller.selectedId.value,
+                            );
+
+                        final msg = selectedItem.text;
+                        await interestController
+                            .sendInterest(
+                              controller.profileDetails['id'].toString(),
+                              msg,
+                            )
+                            .then((v) async {
+                              await controller.otherProfileDetails(
+                                controller.profileDetails['id'].toString(),
+                              );
+                            });
+                      },
+                      controller: interestController,
                       items: controller.interestOptions,
                       selectedValue: controller.selectedId.value,
                       onChanged: (val) {
                         controller.selectedId.value = val;
                       },
-                    ),
-                  ),
+                    );
+                  }),
                 );
               },
+              theme,
             ),
-            _buildMenuCard('Shortlist', HugeIcons.strokeRoundedStar, () {
-              AppBottomSheet.show(
-                context: context,
-                showCloseButton: false,
-                height: Get.height * 0.4.h,
-                child: ShortlistBottomsheet(isUnlocked: true),
-              );
-            }),
+            Obx(
+              () => _buildMenuCard(
+                isLoading: shortListController.isShortListing.value,
+                controller.profileDetails['is_shortlisted'] == true
+                    ? 'Shortlisted'
+                    : 'Shortlist',
+                HugeIcons.strokeRoundedStar,
+                () async {
+                  if (controller.profileDetails['is_shortlisted'] == true) {
+                    return;
+                  }
+                  await shortListController
+                      .shortListPeople(
+                        controller.profileDetails['id'].toString(),
+                      )
+                      .then((v) async {
+                        await controller.otherProfileDetails(
+                          controller.profileDetails['id'].toString(),
+                        );
+                      });
+                  // AppBottomSheet.show(
+                  //   context: context,
+                  //   showCloseButton: false,
+                  //   height: Get.height * 0.4.h,
+                  //   child: ShortlistBottomsheet(
+                  //     isUnlocked: shortListController.isSuccess.value,
+                  //   ),
+                  // );
+                },
+                theme,
+              ),
+            ),
             _buildMenuCard('Contact', HugeIcons.strokeRoundedCall02, () {
               AppBottomSheet.show(
                 context: context,
                 showCloseButton: false,
                 height: Get.height * 0.4.h,
-                child: ContactBottomsheet(isUnlocked: true),
+                backgroundColor: theme.scaffoldBackgroundColor,
+                child: ContactBottomsheet(
+                  isUnlocked: true,
+                  contactNumber:
+                      controller.profileDetails['mobile_no']?.toString() ?? '',
+                  whatsappNumber:
+                      controller.profileDetails['wp_no']?.toString() ?? '',
+                ),
               );
-            }),
+            }, theme),
           ],
         ),
       ),
@@ -260,77 +393,98 @@ class _OtherProfileState extends State<OtherProfile> {
   }
 
   /// 🔹 MENU CARD
-  Widget _buildMenuCard(String title, dynamic icon, dynamic onTap) {
+  Widget _buildMenuCard(
+    String title,
+    dynamic icon,
+    dynamic onTap,
+    ThemeData theme, {
+    bool isLoading = false,
+  }) {
+    final isLight = theme.brightness == Brightness.light;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: Get.height * 0.1.h,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.scaffoldBackgroundColor,
+          border: Border.all(
+            color: !isLight ? theme.dividerTheme.color! : Colors.transparent,
+            width: 0.5.w,
+          ),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
+            isLight
+                ? BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  )
+                : BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
           ],
           borderRadius: BorderRadius.circular(16.r),
         ),
-        child: Column(
-          spacing: 6.h,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            HugeIcon(icon: icon, color: AppColors.lightPrimary, size: 24.r),
-            SizedBox(
-              height: 30.h, // same for all cards
-              child: Center(
-                child: AppText(
-                  text: title,
-                  fontSize: 13.sp,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  fontWeight: FontWeight.w600,
-                ),
+        child: isLoading
+            ? AppLoader.circular(size: 20.r, color: AppColors.lightPrimary)
+            : Column(
+                spacing: 6.h,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  HugeIcon(
+                    icon: icon,
+                    color: AppColors.lightPrimary,
+                    size: 24.r,
+                  ),
+                  SizedBox(
+                    height: 30.h, // same for all cards
+                    child: Center(
+                      child: AppText(
+                        text: title,
+                        fontSize: 13.sp,
+                        maxLines: 2,
+                        style: theme.textTheme.labelMedium,
+                        textAlign: TextAlign.center,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
   /// 🔹 DATA CHIPS
-  Widget _buildDataChips() {
+  Widget _buildDataChips(ThemeData theme) {
+    final isLight = theme.brightness == Brightness.light;
     return Align(
       alignment: Alignment.centerLeft,
       child: Wrap(
         spacing: 10.w,
         runSpacing: 10.h,
-        alignment: WrapAlignment.start,
-        runAlignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: controller.menuList.map<Widget>((i) {
+        children: controller.chipsData.map<Widget>((i) {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: AppColors.catBgColor,
+              color: isLight ? AppColors.catBgColor : AppColors.grey700,
               borderRadius: BorderRadius.circular(30.r),
+              border: Border.all(
+                color: AppColors.lightTextLowColor.withValues(alpha: 0.2),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 /// 🔹 FIXED ICON SIZE
-                SizedBox(
-                  width: 20.w,
-                  height: 20.h,
-                  child: Center(
-                    child: HugeIcon(
-                      icon: i['icon'] as List<List<dynamic>>,
-                      size: 18.r,
-                      color: AppColors.lightTextLowColor,
-                    ),
-                  ),
+                HugeIcon(
+                  icon: i['icon'] as List<List<dynamic>>,
+                  size: 18.r,
+                  color: isLight
+                      ? AppColors.lightTextLowColor
+                      : AppColors.grey400,
                 ),
 
                 SizedBox(width: 6.w),
@@ -339,7 +493,9 @@ class _OtherProfileState extends State<OtherProfile> {
                 AppText(
                   text: i['title']?.toString() ?? '',
                   fontSize: 14.sp,
-                  color: AppColors.lightTextMidColor,
+                  style: theme.textTheme.labelLarge!.copyWith(
+                    color: isLight ? AppColors.lightTextMidColor : Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -351,24 +507,30 @@ class _OtherProfileState extends State<OtherProfile> {
 
   /// 🔹 DIVIDER
   Widget _buildDivider() {
-    return Divider(height: 1, color: AppColors.lightPink);
+    final theme = Theme.of(context);
+    return Divider(
+      height: 1,
+      color: theme.brightness == Brightness.light
+          ? AppColors.lightPink
+          : theme.dividerTheme.color!,
+    );
   }
 
   /// 🔹 ABOUT ME
-  Widget _buildAboutMe() {
+  Widget _buildAboutMe(ThemeData theme) {
     return Column(
       spacing: 8.h,
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        headlineWithIcon('About Me', HugeIcons.strokeRoundedUser03),
+        buildSectionHeader('About Me', HugeIcons.strokeRoundedUser03),
 
         AppText(
-          text:
-              'Sneha Patil is a caring and dedicated doctor based in Pune, Maharashtra, with strong family values. She believes in building a relationship based on trust, respect, and understanding.',
+          text: controller.profileDetails['about'] ?? '-',
           fontSize: 14.sp,
           maxLines: 100,
           textAlign: TextAlign.start,
+          style: theme.textTheme.bodyMedium,
           color: AppColors.lightTextLowColor,
         ),
         _buildDivider(),
@@ -382,20 +544,34 @@ class _OtherProfileState extends State<OtherProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        headlineWithIcon('Basic Details', HugeIcons.strokeRoundedProfile),
+        buildSectionHeader('Basic Details', HugeIcons.strokeRoundedProfile),
 
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: 'Gender', value: 'Female'),
-            buildDetailItem(label: 'Marital Status', value: 'Never Married'),
+            buildDetailItem(
+              label: 'Gender',
+              value: controller.profileDetails['gender'] == '0'
+                  ? 'Male'
+                  : 'Female',
+            ),
+            buildDetailItem(
+              label: 'Marital Status',
+              value: controller.profileDetails['marital_status'] ?? '',
+            ),
           ],
         ),
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: 'Height', value: '5 ft 0 in – 152 cms'),
-            buildDetailItem(label: 'Profile Created For', value: 'Self'),
+            buildDetailItem(
+              label: 'Height',
+              value: '${controller.profileDetails['height_in_ft'] ?? '-'}',
+            ),
+            buildDetailItem(
+              label: 'Profile Created For',
+              value: controller.profileDetails['profile_created_for'] ?? '-',
+            ),
           ],
         ),
         _buildDivider(),
@@ -404,12 +580,13 @@ class _OtherProfileState extends State<OtherProfile> {
   }
 
   /// 🔹 PROFESSIONAL DETAILS
+
   Widget _buildProfessionalDetails() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        headlineWithIcon(
+        buildSectionHeader(
           'Professional Info',
           HugeIcons.strokeRoundedAssignments,
         ),
@@ -417,20 +594,37 @@ class _OtherProfileState extends State<OtherProfile> {
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: 'Education Category', value: 'Doctor'),
-            buildDetailItem(label: 'Education Detail', value: 'MBBS'),
+            buildDetailItem(
+              label: 'Education Category',
+              value: controller.profileDetails['education_category'] ?? '-',
+            ),
+            buildDetailItem(
+              label: 'Education Detail',
+              value: controller.profileDetails['education_details'] ?? '-',
+            ),
           ],
         ),
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: 'Job Category', value: 'Doctor'),
-            buildDetailItem(label: 'Job Detail', value: 'Job Detail'),
+            buildDetailItem(
+              label: 'Job Category',
+              value: controller.profileDetails['job_category'] ?? '-',
+            ),
+            buildDetailItem(
+              label: 'Job Detail',
+              value: controller.profileDetails['job_details'] ?? '-',
+            ),
           ],
         ),
         Row(
           spacing: 16.w,
-          children: [buildDetailItem(label: 'Annual Income', value: '')],
+          children: [
+            buildDetailItem(
+              label: 'Annual Income',
+              value: controller.profileDetails['annual_income'] ?? '-',
+            ),
+          ],
         ),
         _buildDivider(),
       ],
@@ -443,18 +637,32 @@ class _OtherProfileState extends State<OtherProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        headlineWithIcon('Religion Info', HugeIcons.strokeRoundedWavingHand01),
+        buildSectionHeader(
+          'Religion Info',
+          HugeIcons.strokeRoundedWavingHand01,
+        ),
 
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: 'Religion', value: 'Hindu'),
-            buildDetailItem(label: 'Caste / Community', value: 'Maratha'),
+            buildDetailItem(
+              label: 'Religion',
+              value: controller.profileDetails['religion'] ?? '-',
+            ),
+            buildDetailItem(
+              label: 'Caste / Community',
+              value: controller.profileDetails['caste'] ?? '-',
+            ),
           ],
         ),
         Row(
           spacing: 16.w,
-          children: [buildDetailItem(label: 'Sub Caste', value: '')],
+          children: [
+            buildDetailItem(
+              label: 'Sub Caste',
+              value: controller.profileDetails['subCaste'] ?? '-',
+            ),
+          ],
         ),
         _buildDivider(),
       ],
@@ -467,20 +675,32 @@ class _OtherProfileState extends State<OtherProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        headlineWithIcon('Location', HugeIcons.strokeRoundedLocation05),
+        buildSectionHeader('Location', HugeIcons.strokeRoundedLocation05),
 
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: 'Country', value: 'India'),
-            buildDetailItem(label: 'State', value: 'Maharashtra'),
+            buildDetailItem(
+              label: 'Country',
+              value: controller.profileDetails['country'] ?? '-',
+            ),
+            buildDetailItem(
+              label: 'State',
+              value: controller.profileDetails['state'] ?? '-',
+            ),
           ],
         ),
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: 'District', value: 'Pune'),
-            buildDetailItem(label: 'City', value: 'Pune'),
+            buildDetailItem(
+              label: 'City',
+              value: controller.profileDetails['city'] ?? '-',
+            ),
+            buildDetailItem(
+              label: 'Address',
+              value: controller.profileDetails['address'] ?? '-',
+            ),
           ],
         ),
         _buildDivider(),
@@ -494,20 +714,35 @@ class _OtherProfileState extends State<OtherProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        headlineWithIcon('Family Details', HugeIcons.strokeRoundedUserGroup02),
+        buildSectionHeader(
+          'Family Details',
+          HugeIcons.strokeRoundedUserGroup02,
+        ),
 
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: "Father's Name", value: 'Sunil Patil'),
-            buildDetailItem(label: "Father's Job", value: 'Business Owner'),
+            buildDetailItem(
+              label: "Father's Name",
+              value: controller.profileDetails['father_name'] ?? '-',
+            ),
+            buildDetailItem(
+              label: "Father's Job",
+              value: controller.profileDetails['father_job'] ?? '-',
+            ),
           ],
         ),
         Row(
           spacing: 16.w,
           children: [
-            buildDetailItem(label: "Mother's Name", value: 'Meena Patil'),
-            buildDetailItem(label: "Mother's Job", value: 'Homemaker'),
+            buildDetailItem(
+              label: "Mother's Name",
+              value: controller.profileDetails['mothers_name'] ?? '-',
+            ),
+            buildDetailItem(
+              label: "Mother's Job",
+              value: controller.profileDetails['mothers_job'] ?? '-',
+            ),
           ],
         ),
         Row(
@@ -515,7 +750,7 @@ class _OtherProfileState extends State<OtherProfile> {
           children: [
             buildDetailItem(
               label: "Siblings Details",
-              value: '1 Brother – Software Engineer',
+              value: controller.profileDetails['siblling_details'] ?? '-',
             ),
           ],
         ),

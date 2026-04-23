@@ -9,21 +9,30 @@ class CompactCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isVerified = details['isVerified'] == true;
     final isPremium = details['isPremium'] == true;
-
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 0.5.sw - 16.w,
         margin: EdgeInsets.symmetric(horizontal: 4.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: !isLight ? theme.dividerTheme.color! : Colors.transparent,width:  0.5),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 4.r,
-              offset: const Offset(0, 1),
-            ),
+            if (isLight)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 4.r,
+                offset: const Offset(0, 1),
+              )
+            else
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.06),
+                blurRadius: 4.r,
+                offset: const Offset(0, 1),
+              ),
           ],
         ),
         child: Column(
@@ -50,15 +59,13 @@ class CompactCard extends StatelessWidget {
           AspectRatio(
             aspectRatio: 0.9,
             child: FadeInImage(
-              placeholder: AssetImage(AppAssets.appLogo),
+              placeholder: const AssetImage(AppAssets.appLogo),
               image: NetworkImage(details['image'] ?? ''),
               fit: BoxFit.cover,
               imageErrorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.grey.shade100,
-                  child: Center(
-                    child: Image.asset(AppAssets.appLogo, height: 40.h),
-                  ),
+                  child: Center(child: Icon(Icons.person, size: 40.sp)),
                 );
               },
             ),
@@ -115,7 +122,7 @@ class CompactCard extends StatelessWidget {
 
           /// ID SECTION
           AppText(
-            text: details['id'] ?? '',
+            text: "ID: ${details['id'] ?? ''}",
             fontSize: 11.sp,
             maxLines: 2,
             textAlign: TextAlign.start,
@@ -125,7 +132,6 @@ class CompactCard extends StatelessWidget {
             AppText(
               text: details['age'] ?? '',
               fontSize: 11.sp,
-              maxLines: 2,
               textAlign: TextAlign.start,
               color: AppColors.lightTextLowColor,
             ),
@@ -141,7 +147,4 @@ class CompactCard extends StatelessWidget {
       ),
     );
   }
-
-  /// 🔥 Badge Widget (Reusable)
-
 }

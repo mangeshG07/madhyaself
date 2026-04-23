@@ -1,41 +1,104 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class Interest extends StatelessWidget {
-  Interest({super.key});
-  final controller = getIt<InterestController>();
+class Interest extends StatefulWidget {
+  const Interest({super.key});
+
+  @override
+  State<Interest> createState() => _InterestState();
+}
+
+class _InterestState extends State<Interest> {
+  final controller = Get.find<InterestController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getInterestList(isRefresh: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: Column(children: [CustomToggle(), _buildInterestList()]),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      surfaceTintColor: Colors.white,
-      foregroundColor: Colors.black,
-      backgroundColor: Colors.white,
-      centerTitle: false,
-      titleSpacing: 0,
-      title: AppText(
-        text: 'Interests',
-        fontSize: 22.sp,
-        color: AppColors.lightTextMidColor,
-        fontWeight: FontWeight.bold,
+      appBar: CustomAppbar(title: 'Interests'),
+      body: Column(
+        children: [
+          CustomToggle(controller: controller),
+          Expanded(child: _buildInterestList()),
+        ],
       ),
     );
   }
 
   Widget _buildInterestList() {
-    return Expanded(
-      child: ListView.builder(
-        padding: EdgeInsets.all(12.r),
-        itemCount: controller.interestList.length,
-        itemBuilder: (context, index) {
-          final interest = controller.interestList[index];
-          return InterestCard(interest: interest);
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return Center(child: AppLoader.circular(color: AppColors.lightPrimary));
+      }
+
+      if (controller.items.isEmpty) {
+        return _emptyState();
+      }
+
+      return NotificationListener<ScrollNotification>(
+        onNotification: (scroll) {
+          if (scroll is ScrollEndNotification &&
+              scroll.metrics.pixels >= scroll.metrics.maxScrollExtent - 50 &&
+              controller.hasMore &&
+              !controller.isLoadMore.value &&
+              !controller.isLoading.value) {
+            controller.getInterestList(showLoading: false);
+          }
+          return false;
         },
+        child: Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              itemCount: controller.items.length,
+              itemBuilder: (context, index) {
+                final interest = controller.items[index];
+
+                return InterestCard(interest: interest, controller: controller);
+              },
+            ),
+
+            Obx(() {
+              if (controller.isLoadMore.value) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  child: AppLoader.circular(color: AppColors.lightPrimary),
+                );
+              } else {
+                return const SizedBox();
+              }
+            }),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _emptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.favorite_border, size: 50.r, color: Colors.grey),
+          SizedBox(height: 10.h),
+          AppText(
+            text: 'No Interest yet',
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+          ),
+          SizedBox(height: 4.h),
+          AppText(
+            text: 'Start exploring and interest profiles',
+            fontSize: 12.sp,
+            color: Colors.grey,
+          ),
+        ],
       ),
     );
   }

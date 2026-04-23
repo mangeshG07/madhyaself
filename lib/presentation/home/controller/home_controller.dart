@@ -7,124 +7,118 @@ class HomeController extends GetxController {
   final isLoading = false.obs;
 
   final sliderList = [].obs;
+  final statsData = [].obs;
+  final discStatData = [].obs;
+  final todayMatchList = [].obs;
+  final topMatchList = [].obs;
+  final homeData = {}.obs;
+  final profileCompletion = 0.obs;
+  final chatController = Get.find<ChatController>();
 
   @override
   void onInit() {
     super.onInit();
+    connectSocket();
     _getHome();
+  }
+
+  Future<void> connectSocket() async {
+    final userid = await SecureStorageService.read('user_id') ?? '';
+    chatController.connectSocket(userid, isGlobal: true);
   }
 
   Future<void> _getHome() async {
     try {
-      final userid = await SecureStorageService.read('userId') ?? '';
+      final userid = await SecureStorageService.read('user_id') ?? '';
       isLoading(true);
       final res = await homeUsecase.call(UserRequest(userid));
 
       if (res['common']['status'] == true) {
         final data = res['data'];
-        sliderList.value = data['slider'];
+        topMatchList.value = data['top_matches'] ?? [];
+        todayMatchList.value = data['today_matches'] ?? [];
+        profileCompletion.value = data['profile_completion'] ?? 0;
+        setStatsData(data);
+        sliderList.assignAll(
+          data['slider']
+              .map((e) => e['image'] ?? '')
+              .where((url) => url.toString().isNotEmpty)
+              .map((e) => e.toString())
+              .toList(),
+        );
       }
     } finally {
       isLoading(false);
     }
   }
 
-  final statsData = [
-    {"title": "Viewed\nYou", "value": "20", "icon": HugeIcons.strokeRoundedEye},
-    {
-      "title": "Interest Received",
-      "value": "5",
-      "icon": HugeIcons.strokeRoundedDownload05,
-    },
-    {
-      "title": "Interest Accepted",
-      "value": "3",
-      "icon": HugeIcons.strokeRoundedThumbsUp,
-    },
-    {
-      "title": "Address\nViewed",
-      "value": "1",
-      "icon": HugeIcons.strokeRoundedLocation01,
-    },
-  ].obs;
-
-  final todayMatchList = [
-    {
-      'image':
-          'https://images.pexels.com/photos/36114638/pexels-photo-36114638.jpeg',
-      'details': {
-        'name': 'Sneha Patil',
-        'id': 'MDYST0123M',
-        'age': '27 yrs ,Doctor',
-        'address': 'Pune, Maharashtra',
+  void setStatsData(dynamic data) {
+    statsData.value = [
+      {
+        "title": "Viewed\nYou",
+        "value": data['viewed_you']?.toString() ?? '0',
+        "icon": HugeIcons.strokeRoundedEye,
+        'onTap': () => Get.toNamed(Routes.viewed),
       },
-    },
-    {
-      'image':
-          'https://images.pexels.com/photos/36226641/pexels-photo-36226641.jpeg',
-      'details': {
-        'name': 'Anjali Deshpande',
-        'id': 'MDYST0123M',
-        'age': '28 yrs ,Software Developer...',
-        'address': 'Mumbai, Maharashtra',
+      {
+        "title": "Interest Received",
+        "value": data['interests_received']?.toString() ?? '0',
+        "icon": HugeIcons.strokeRoundedDownload05,
+        'onTap': () {
+          Get.find<InterestController>().selectedType.value = 1;
+          Get.toNamed(Routes.interest);
+        },
       },
-    },
-  ].obs;
-
-  final topMatchList = [
-    {
-      'details': {
-        'image':
-            'https://s3.ap-south-1.amazonaws.com/awsimages.imagesbazaar.com/1200x1800-old/19805/SM964729.jpg?date=Mon%20Mar%2023%202026%2017:48:41%20GMT+0530%20(India%20Standard%20Time)',
-        'name': 'Sneha Patil',
-        'id': 'MDYST0123M',
-        // 'age': '27 yrs ,Doctor',
-        'address': 'Pune, Maharashtra',
-        'isVerified': false,
-        'isPremium': false,
+      {
+        "title": "Interest Accepted",
+        "value": data['interests_accepted']?.toString() ?? '0',
+        "icon": HugeIcons.strokeRoundedThumbsUp,
+        'onTap': () {
+          Get.find<InterestController>().selectedType.value = 3;
+          Get.toNamed(Routes.interest);
+        },
       },
-    },
-    {
-      'details': {
-        'image':
-            'https://s3.ap-south-1.amazonaws.com/awsimages.imagesbazaar.com/1200x1800-old/18763/SM859820.jpg?date=Mon%20Mar%2023%202026%2017:46:49%20GMT+0530%20(India%20Standard%20Time)',
-        'name': 'Kavya Joshi',
-        'id': 'MDYST0123M',
-        // 'age': '26 yrs ,Software Developer...',
-        'address': 'Mumbai, Maharashtra',
-        'isVerified': false,
-        'isPremium': false,
+      {
+        "title": "Shortlist\nProfile",
+        "value": data['shortlist_profile']?.toString() ?? '0',
+        "icon": HugeIcons.strokeRoundedBookmark01,
+        'onTap': () => Get.toNamed(Routes.shortList),
       },
-    },
-    // https://s3.ap-south-1.amazonaws.com/awsimages.imagesbazaar.com/1200x1800-old/19805/SM964729.jpg?date=Mon%20Mar%2023%202026%2017:48:41%20GMT+0530%20(India%20Standard%20Time)
-    // https://s3.ap-south-1.amazonaws.com/awsimages.imagesbazaar.com/1200x1800-old/19804/SM964550.jpg?date=Mon%20Mar%2023%202026%2017:49:06%20GMT+0530%20(India%20Standard%20Time)
-  ].obs;
-
-  final discStatData = [
-    {
-      "title": "39246\nMatches",
-      "value": "Profession",
-      "icon": HugeIcons.strokeRoundedBriefcase01,
-    },
-    {
-      "title": "39246\nMatches",
-      "value": "Education",
-      "icon": HugeIcons.strokeRoundedMortarboard02,
-    },
-    {
-      "title": "39246\nMatches",
-      "value": "User Star",
-      "icon": HugeIcons.strokeRoundedStar,
-    },
-    {
-      "title": "39246\nMatches",
-      "value": "City",
-      "icon": HugeIcons.strokeRoundedLocation04,
-    },
-    {
-      "title": "39246\nMatches",
-      "value": "Religion",
-      "icon": HugeIcons.strokeRoundedRotateLeft04,
-    },
-  ].obs;
+    ];
+    discStatData.value = [
+      {
+        "title":
+            '${data['user_profession_matches']?.toString() ?? '0'}\nMatches',
+        "value": "Profession",
+        "icon": HugeIcons.strokeRoundedBriefcase01,
+      },
+      {
+        "title":
+            '${data['user_education_matches']?.toString() ?? '0'}\nMatches',
+        "value": "Education",
+        "icon": HugeIcons.strokeRoundedMortarboard02,
+      },
+      {
+        "title": '${data['user_caste_matches']?.toString() ?? '0'}\nMatches',
+        "value": "Caste",
+        "icon": HugeIcons.strokeRoundedStar,
+      },
+      {
+        "title":
+            '${data['user_sub_caste_matches']?.toString() ?? '0'}\nMatches',
+        "value": "Subcaste",
+        "icon": HugeIcons.strokeRoundedStar,
+      },
+      {
+        "title": '${data['user_city_matches']?.toString() ?? '0'}\nMatches',
+        "value": "City",
+        "icon": HugeIcons.strokeRoundedLocation04,
+      },
+      {
+        "title": '${data['user_religion_matches']?.toString() ?? '0'}\nMatches',
+        "value": "Religion",
+        "icon": HugeIcons.strokeRoundedRotateLeft04,
+      },
+    ].obs;
+  }
 }

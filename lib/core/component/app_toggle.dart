@@ -1,54 +1,53 @@
 import '../exporters/app_export.dart';
 
 class CustomToggle extends StatelessWidget {
-  CustomToggle({super.key});
+  final InterestController controller;
 
-  final RxInt selectedIndex = 0.obs;
-
-  final List<String> labels = [
-    'All',
-    'Received',
-    'Sent',
-    'Accepted',
-    'Declined',
-  ];
+  const CustomToggle({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
     return Obx(() {
       return Container(
         alignment: Alignment.center,
         padding: const EdgeInsets.all(4),
         margin: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: AppColors.catBgColor, // 🔥 full grey background
+          color: isLight ? AppColors.catBgColor : AppColors.grey700,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: List.generate(labels.length, (index) {
-            final isSelected = selectedIndex.value == index;
+          children: List.generate(controller.labels.length, (index) {
+            final isSelected = controller.selectedType.value == index;
 
             return GestureDetector(
-              onTap: () => selectedIndex.value = index,
+              onTap: () async {
+                controller.selectedType.value = index;
+                await controller.getInterestList(isRefresh: true);
+              },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
-                ), // 🔥 compact spacing
+                ),
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.catBgColor, // same bg (flat look)
+                  color: isLight ? AppColors.catBgColor : AppColors.darkSurface,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  labels[index],
+                  controller.labels[index],
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: isSelected
-                        ? AppColors.lightPrimary
+                        ? isLight
+                              ? AppColors.lightPrimary
+                              : Colors.white
                         : AppColors.lightTextLowColor,
                     fontWeight: isSelected
                         ? FontWeight.w600

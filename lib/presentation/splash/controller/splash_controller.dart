@@ -11,13 +11,12 @@ class SplashController extends GetxController {
   void checkLogin() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    final isOnboarded =
-        await SecureStorageService.read('isOnboarded') ?? 'false';
+    final isOnboarded = await LocalStorage.getBool('isOnboarded') ?? false;
 
     final token = await SecureStorageService.read('token') ?? '';
 
     /// ✅ 1. First check onboarding
-    if (isOnboarded != 'true') {
+    if (isOnboarded != true) {
       Get.offAllNamed(Routes.onboarding);
       return;
     }

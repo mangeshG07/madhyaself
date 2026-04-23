@@ -2,46 +2,122 @@ import 'package:madhya/core/exporters/app_export.dart';
 
 @lazySingleton
 class OtherProfileController extends GetxController {
-  final menuList = [
-    {'title': '27 yrs', 'icon': HugeIcons.strokeRoundedParty},
-    {'title': 'Hindu', 'icon': HugeIcons.strokeRoundedHandPrayer},
-    {'title': 'Maratha', 'icon': HugeIcons.strokeRoundedStar},
-    {'title': '5 ft 0 in – 152 cms', 'icon': HugeIcons.strokeRoundedRuler},
-    {'title': 'Doctor', 'icon': HugeIcons.strokeRoundedBook01},
-  ].obs;
-
-  final List images = [
-    'https://images.pexels.com/photos/36114638/pexels-photo-36114638.jpeg',
-    'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
-    'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
-  ];
+  final OtherProfileUsecase usecase;
+  final BlockUserUsecase _blockUserUsecase;
+  final ReportProfileUsecase _reportProfileUsecase;
+  OtherProfileController(
+    this.usecase,
+    this._blockUserUsecase,
+    this._reportProfileUsecase,
+  );
 
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
   final PageController pageController = PageController();
 
-  final interestOptions = [
-    InterestOptionModel(
-      id: 1,
-      text:
-          'We are interested in your profile, accept our proposal if you are interested',
-    ),
-    InterestOptionModel(
-      id: 2,
-      text: 'My family like your profile, please check and respond',
-    ),
-    InterestOptionModel(
-      id: 3,
-      text:
-          'I noticed my profile matches yours, please respond to this interest',
-    ),
-    InterestOptionModel(
-      id: 4,
-      text:
-          "Our children's profile match, accept our message if you want us to contact you.",
-    ),
-  ];
+  final interestOptions = <InterestOptionModel>[].obs;
+
+  final reasonsOptions = <InterestOptionModel>[].obs;
 
   RxnInt selectedId = RxnInt();
+  RxnInt selectedReason = RxnInt();
+
+  ///==============================Other Profile Details======================
+  final isLoading = false.obs;
+  final isReportLoading = false.obs;
+  final profileDetails = {}.obs;
+  final chipsData = [].obs;
+
+  Future<void> otherProfileDetails(String profileId) async {
+    try {
+      final userid = await SecureStorageService.read('user_id') ?? '';
+
+      isLoading(true);
+
+      final res = await usecase.call(OtherUserRequest(userid, profileId));
+
+      if (res['common']['status'] == true) {
+        final data = res['data'] ?? {};
+        profileDetails.value = data['user_data'][0] ?? {};
+        final interestList = data['interest_messages'] ?? [];
+
+        interestOptions.value = interestList
+            .map<InterestOptionModel>((e) => InterestOptionModel.fromJson(e))
+            .toList();
+
+        setChipsData(profileDetails);
+      }
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  void setChipsData(dynamic data) {
+    chipsData.value = [
+      {
+        'title': data['age'] != null ? '${data['age']} yrs' : '',
+        'icon': HugeIcons.strokeRoundedParty,
+      },
+      {
+        'title': data['religion'] ?? '',
+        'icon': HugeIcons.strokeRoundedHandPrayer,
+      },
+      {'title': data['caste'] ?? '', 'icon': HugeIcons.strokeRoundedStar},
+      {
+        'title': data['height_in_ft'] ?? '',
+        'icon': HugeIcons.strokeRoundedRuler,
+      },
+      {
+        'title': data['job_details'] ?? '',
+        'icon': HugeIcons.strokeRoundedBook01,
+      },
+    ].where((e) => e['title'].toString().trim().isNotEmpty).toList();
+  }
+
+  /// ================= REPORT PROFILE =================
+  Future<void> reportProfile(String otherUserId, String msg) async {
+    try {
+      isReportLoading(true);
+      final userid = await SecureStorageService.read('user_id') ?? '';
+      final res = await _reportProfileUsecase.call(
+        OtherUserRequest(userid, otherUserId, reason: msg),
+      );
+
+      if (res['common']['status'] == true) {
+        Get.back();
+        Get.snackbar('Success', res['common']['message']);
+
+        Get.offAllNamed(Routes.mainScreen);
+      } else {
+        Get.snackbar('error', res['common']['message']);
+      }
+    } catch (_) {
+    } finally {
+      isReportLoading(false);
+    }
+  }
+
+  /// ================= BLOCK PROFILE =================
+  Future<void> blockProfile(String otherUserId) async {
+    try {
+      isReportLoading(true);
+      final userid = await SecureStorageService.read('user_id') ?? '';
+      final res = await _blockUserUsecase.call(
+        OtherUserRequest(userid, otherUserId),
+      );
+
+      if (res['common']['status'] == true) {
+        Get.back();
+        Get.snackbar('Success', res['common']['message']);
+
+        Get.offAllNamed(Routes.mainScreen);
+      } else {
+        Get.snackbar('error', res['common']['message']);
+      }
+    } catch (_) {
+    } finally {
+      isReportLoading(false);
+    }
+  }
 }
 
 class InterestOptionModel {
@@ -49,4 +125,14 @@ class InterestOptionModel {
   final String text;
 
   InterestOptionModel({required this.id, required this.text});
+
+  factory InterestOptionModel.fromJson(Map<String, dynamic> json) {
+    return InterestOptionModel(
+      id: json['id'],
+      text: (json['message'] ?? '').replaceAll(
+        '\r\n',
+        ' ',
+      ), // clean line breaks
+    );
+  }
 }

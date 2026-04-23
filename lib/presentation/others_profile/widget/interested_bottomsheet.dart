@@ -4,41 +4,59 @@ class InterestOptionsList extends StatelessWidget {
   final int? selectedValue;
   final ValueChanged<int?> onChanged;
   final List items;
+  final InterestController controller;
+  final dynamic onSubmit;
+
   const InterestOptionsList({
     super.key,
     required this.selectedValue,
     required this.onChanged,
     required this.items,
+    required this.controller,
+    required this.onSubmit,
   });
 
   @override
   Widget build(BuildContext context) {
-    return RadioGroup<int>(
-      groupValue: selectedValue,
-      onChanged: onChanged,
-      child: _buildBefore(),
-      // child: _buildSuccess(),
+    final theme = Theme.of(context);
+    return Obx(
+      () => RadioGroup<int>(
+        groupValue: selectedValue,
+        onChanged: onChanged,
+
+        child: controller.isSuccess.value
+            ? _buildSuccess() // ✅ after success
+            : _buildBefore(theme),
+      ),
     );
   }
 
   ///=======================OPTIONS===========================///
-  Widget _buildBefore() {
+  Widget _buildBefore(ThemeData theme) {
     return Column(
       children: [
-        _buildTitle(),
-        _buildOptions(),
-        AppButton(
-          text: 'Submit',
-          onTap: selectedValue == null ? null : () => Get.back(),
-          backgroundColor: selectedValue == null
-              ? AppColors.grey300
-              : AppColors.lightPrimary,
+        _buildTitle(theme),
+        _buildOptions(theme),
+        Obx(
+          () => controller.isSending.isTrue
+              ? AppLoader.circular(
+                  color: AppColors.lightPrimary,
+                  strokeWidth: 2.5,
+                  size: 22.r,
+                )
+              : AppButton(
+                  text: 'Submit',
+                  onTap: selectedValue == null ? null : onSubmit,
+                  backgroundColor: selectedValue == null
+                      ? AppColors.grey300
+                      : AppColors.lightPrimary,
+                ),
         ),
       ],
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(ThemeData theme) {
     return Padding(
       padding: EdgeInsets.only(bottom: AppSpacing.md),
       child: Row(
@@ -49,20 +67,27 @@ class InterestOptionsList extends StatelessWidget {
               children: [
                 AppText(
                   text: 'Send Interest',
-                  color: Colors.black,
                   fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
+                  style: theme.textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 AppText(
                   text: 'Choose a message',
                   fontSize: 14.sp,
-                  color: AppColors.lightTextLowColor,
+                  style: theme.textTheme.titleSmall!.copyWith(
+                    color: AppColors.lightTextLowColor,
+                  ),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: Icon(Icons.close, size: 20.sp, color: AppColors.grey600),
+            icon: Icon(
+              Icons.close,
+              size: 20.sp,
+              color: theme.dividerTheme.color,
+            ),
             onPressed: () => Get.back(),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -72,7 +97,7 @@ class InterestOptionsList extends StatelessWidget {
     );
   }
 
-  Widget _buildOptions() {
+  Widget _buildOptions(ThemeData theme) {
     return Column(
       children: items.map((item) {
         final isSelected = item.id == selectedValue;
@@ -93,7 +118,7 @@ class InterestOptionsList extends StatelessWidget {
                 ),
                 color: isSelected
                     ? AppColors.lightPrimary.withValues(alpha: 0.05)
-                    : Colors.white,
+                    : theme.colorScheme.surface,
               ),
               child: Row(
                 children: [
@@ -101,6 +126,7 @@ class InterestOptionsList extends StatelessWidget {
                   Radio<int>(
                     value: item.id,
                     side: BorderSide(color: AppColors.grey400),
+                    activeColor: AppColors.lightPrimary,
                   ),
 
                   SizedBox(width: 8.w),
@@ -113,6 +139,7 @@ class InterestOptionsList extends StatelessWidget {
                       maxLines: 5,
                       textAlign: TextAlign.start,
                       color: AppColors.lightTextMidColor,
+                      style: theme.textTheme.titleSmall,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w400,

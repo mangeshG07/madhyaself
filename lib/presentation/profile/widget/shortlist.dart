@@ -1,58 +1,68 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class Shortlist extends StatelessWidget {
-  Shortlist({super.key});
+class Shortlist extends StatefulWidget {
+  const Shortlist({super.key});
 
-  final controller = getIt<ShortlistController>();
+  @override
+  State<Shortlist> createState() => _ShortlistState();
+}
+
+class _ShortlistState extends State<Shortlist> {
+  final controller = Get.find<ShortlistController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getShortList(isRefresh: true);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CustomAppbar(title: 'Shortlist'),
       body: SafeArea(
-        child: Column(children: [_buildToggle(), _buildShortList()]),
+        child: Column(
+          children: [
+            _buildToggle(isLight),
+            Expanded(child: _buildShortList()),
+          ],
+        ),
       ),
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      surfaceTintColor: Colors.white,
-      foregroundColor: Colors.black,
-      backgroundColor: Colors.white,
-      centerTitle: false,
-      titleSpacing: 0,
-      title: AppText(
-        text: 'Shortlist',
-        fontSize: 22.sp,
-        color: AppColors.lightTextMidColor,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _buildToggle() {
+  Widget _buildToggle(bool isLight) {
     return Obx(
       () => Container(
         padding: const EdgeInsets.all(6.0),
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
-          color: AppColors.grey100,
+          color: isLight ? AppColors.grey100 : AppColors.grey800,
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _toggleItem(
+            toggleItem(
               title: 'Who shortlisted me',
               isSelected: controller.selectedType.value == 0,
-              onTap: () => controller.selectedType.value = 0,
+              onTap: () async {
+                controller.selectedType.value = 0;
+                await controller.getShortList(isRefresh: true);
+              },
+              isLight: false,
             ),
             SizedBox(width: 8.w),
-            _toggleItem(
+            toggleItem(
               title: 'Shortlisted by me',
               isSelected: controller.selectedType.value == 1,
-              onTap: () => controller.selectedType.value = 1,
+              onTap: () async {
+                controller.selectedType.value = 1;
+                await controller.getShortList(isRefresh: true);
+              },
+              isLight: false,
             ),
           ],
         ),
@@ -60,86 +70,114 @@ class Shortlist extends StatelessWidget {
     );
   }
 
-  Widget _toggleItem({
-    required String title,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          padding: EdgeInsets.symmetric(vertical: 10.h),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : AppColors.grey100,
-            borderRadius: BorderRadius.circular(10.r),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 250),
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? AppColors.lightPrimary : Colors.grey,
-              ),
-              child: Text(title, textAlign: TextAlign.center),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   // ---------------- GRID ----------------
-
   Widget _buildShortList() {
     return Obx(() {
-      final list = controller.shortListData;
-      if (list.isEmpty) {
+      if (controller.isLoading.value) {
+        // return const LoadingWidget();
+        return Center(child: AppLoader.circular(color: AppColors.lightPrimary));
+      }
+
+      if (controller.items.isEmpty) {
         return _emptyState();
       }
 
-      return Expanded(
-        child: GridView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-          itemCount: list.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 12.h,
-            crossAxisSpacing: 6.w,
-            childAspectRatio: 0.59.h,
-          ),
-          itemBuilder: (context, index) {
-            final match = list[index];
+      return NotificationListener<ScrollNotification>(
+        onNotification: (scroll) {
+          if (scroll is ScrollEndNotification &&
+              scroll.metrics.pixels >= scroll.metrics.maxScrollExtent - 50 &&
+              controller.hasMore &&
+              !controller.isLoadMore.value &&
+              !controller.isLoading.value) {
+            controller.getShortList(showLoading: false);
+          }
+          return false;
+        },
+        child: Column(
+          children: [
+            GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              itemCount: controller.items.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 12.h,
+                crossAxisSpacing: 6.w,
+                childAspectRatio: 0.59.h,
+              ),
+              itemBuilder: (context, index) {
+                final match = controller.items[index];
 
-            return CompactCard(
-              details: {
-                'name': match['name'] ?? '',
-                'id': match['id'] ?? '',
-                'age': match['age'] ?? '',
-                'address': match['address'] ?? '',
-                'image': match['image']?.toString() ?? '',
-                'isVerified': match['isVerified'] ?? false,
-                'isPremium': match['isPremium'] ?? false,
+                return CompactCard(
+                  details: {
+                    'name': match['name'] ?? '',
+                    'id': match['viewer_id']?.toString() ?? '',
+                    'age': getAgeJob(match),
+                    'address': getAddress(match),
+                    'image': match['profile_image']?.toString() ?? '',
+                    'isVerified': match['isVerified'] ?? false,
+                    'isPremium': match['isPremium'] ?? false,
+                  },
+                  onTap: () => Get.toNamed(
+                    Routes.othersProfile,
+                    arguments: {
+                      'id': controller.selectedType.value == 1
+                          ? match['shortlisted_user_id']?.toString() ?? ''
+                          : match['user_id']?.toString() ?? '',
+                    },
+                  ),
+                );
               },
-              onTap: () => Get.toNamed(Routes.othersProfile),
-            );
-          },
+            ),
+
+            Obx(() {
+              if (controller.isLoadMore.value) {
+                // Still loading next page
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  child: AppLoader.circular(color: AppColors.lightPrimary),
+                );
+              } else {
+                return const SizedBox();
+              }
+            }),
+          ],
         ),
       );
+
+      // Expanded(
+      //   child: GridView.builder(
+      //     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      //     itemCount: list.length,
+      //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //       crossAxisCount: 2,
+      //       mainAxisSpacing: 12.h,
+      //       crossAxisSpacing: 6.w,
+      //       childAspectRatio: 0.59.h,
+      //     ),
+      //     itemBuilder: (context, index) {
+      //       final match = list[index];
+      //
+      //       return CompactCard(
+      //         details: {
+      //           'name': match['name'] ?? '',
+      //           'id': match['id'] ?? '',
+      //           'age': match['age'] ?? '',
+      //           'address': match['address'] ?? '',
+      //           'image': match['image']?.toString() ?? '',
+      //           'isVerified': match['isVerified'] ?? false,
+      //           'isPremium': match['isPremium'] ?? false,
+      //         },
+      //         onTap: () => Get.toNamed(Routes.othersProfile),
+      //       );
+      //     },
+      //   ),
+      // );
     });
   }
 
+  //
   Widget _emptyState() {
     return Center(
       child: Column(

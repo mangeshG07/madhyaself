@@ -1,48 +1,64 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class ProfessionalDetailsEdit extends StatelessWidget {
-  ProfessionalDetailsEdit({super.key});
-
-  final controller = getIt<ProfileController>();
+class ProfessionalDetailsEdit extends GetView<ProfileController> {
+  const ProfessionalDetailsEdit({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: CustomAppbar(title: 'Professional Info Edit'),
+      appBar: CustomAppbar(title: 'Professional Info Edit', backgroundColor: theme.scaffoldBackgroundColor,),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            _buildEduCategoryDropdown(),
-            _buildEducationDetail(theme),
-            _buildJobCatDropdown(),
-            _buildJobDetail(theme),
-            _buildAnnualIncomeDropdown(),
+        child: Form(
+          key: controller.professionalDetailsFormKey,
+          child: Column(
+            spacing: 12.h,
+            children: [
+              _buildEduCategoryDropdown(),
+              _buildEducationDetail(theme),
+              _buildJobCatDropdown(),
+              _buildJobDetail(theme),
+              _buildAnnualIncomeDropdown(),
 
-            AppButton(
-              text: 'Submit',
-              onTap: () {},
-              backgroundColor: AppColors.lightPrimary,
-            ),
-          ],
+              SizedBox(height: 12.h),
+              Obx(
+                    () => controller.isUpdateLoading.isTrue
+                    ? AppLoader.circular(
+                  color: AppColors.lightPrimary,
+                  strokeWidth: 2.5,
+                  size: 22.r,
+                )
+                    : AppButton(
+                  text: 'Submit',
+                  onTap: () async {
+                    if (controller
+                        .professionalDetailsFormKey
+                        .currentState!
+                        .validate()) {
+                      await controller.updateProfessionalDetails();
+                    }
+                  },
+                  backgroundColor: AppColors.lightPrimary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildEduCategoryDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Education Category",
+    return AppDropdownField(
       isRequired: true,
-      value: controller.selectedAge.value,
-      items: controller.ageList,
-      hintText: "Choose category",
-      showSearchBox: false,
-      searchHintText: "Search category",
-      onChanged: (val) => controller.selectedAge.value = val,
+      isDynamic: true,
+      title: "Education Category",
+      value: controller.selectedEducationCategory.value,
+      items: controller.educationCategoryList,
+      hintText: 'Select Category',
       validator: AppValidators.required,
+      onChanged: (val) => controller.selectedEducationCategory.value = val,
     );
   }
 
@@ -61,23 +77,22 @@ class ProfessionalDetailsEdit extends StatelessWidget {
       textStyle: TextStyle(color: theme.colorScheme.onSurface),
       validator: AppValidators.required,
       labelStyle: theme.textTheme.labelMedium,
-      controller: TextEditingController(),
+      controller: controller.educationDetailsController,
       fillColor: theme.cardColor,
       keyboardType: TextInputType.text,
     );
   }
 
   Widget _buildJobCatDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Job Category",
+    return AppDropdownField(
       isRequired: true,
-      value: controller.selectedMStatus.value,
-      items: controller.mStatusList,
-      hintText: "Job Category",
-      showSearchBox: false,
-      searchHintText: "",
-      onChanged: (val) => controller.selectedMStatus.value = val,
+      isDynamic: true,
+      title: "Job Category",
+      value: controller.selectedJobCategory.value,
+      items: controller.jobCategoryList,
+      hintText: 'Select Category',
       validator: AppValidators.required,
+      onChanged: (val) => controller.selectedJobCategory.value = val,
     );
   }
 
@@ -96,23 +111,22 @@ class ProfessionalDetailsEdit extends StatelessWidget {
       textStyle: TextStyle(color: theme.colorScheme.onSurface),
       validator: AppValidators.required,
       labelStyle: theme.textTheme.labelMedium,
-      controller: TextEditingController(),
+      controller: controller.jobDetailsController,
       fillColor: theme.cardColor,
       keyboardType: TextInputType.text,
     );
   }
 
   Widget _buildAnnualIncomeDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Annual Income",
+    return AppDropdownField(
       isRequired: true,
-      value: controller.selectedHeight.value,
-      items: controller.heightList,
-      hintText: "Annual Income",
-      showSearchBox: false,
-      searchHintText: "",
-      onChanged: (val) => controller.selectedHeight.value = val,
+      // isDynamic: true,
+      title: "Annual Income",
+      value: controller.selectedAnnualIncome.value,
+      items: controller.annualIncomeList.map((e) => e['name']).toList(),
+      hintText: 'Annual Income',
       validator: AppValidators.required,
+      onChanged: (val) => controller.selectedAnnualIncome.value = val,
     );
   }
 }

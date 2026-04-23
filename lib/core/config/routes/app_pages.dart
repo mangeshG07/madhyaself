@@ -1,8 +1,15 @@
 import 'package:madhya/presentation/auth/binding/login_bindings.dart';
 import 'package:madhya/presentation/auth/binding/otp_binding.dart';
 import 'package:madhya/presentation/auth/binding/register_bindings.dart';
+import 'package:madhya/presentation/global_search/bindings/global_search_bindings.dart';
 import 'package:madhya/presentation/global_search/view/global_search.dart';
 import 'package:madhya/presentation/home/bindings/home_bindings.dart';
+import 'package:madhya/presentation/mailbox/bindings/chat_binding.dart';
+import 'package:madhya/presentation/matches/bindings/match_binding.dart';
+import 'package:madhya/presentation/others_profile/binding/other_profile_binding.dart';
+import 'package:madhya/presentation/profile/binding/partner_prefs_bindings.dart';
+import 'package:madhya/presentation/profile/binding/profile_bindings.dart';
+import 'package:madhya/presentation/profile/view/profile_screen.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/about_me_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/basic_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/family_details_edit.dart';
@@ -10,11 +17,13 @@ import 'package:madhya/presentation/profile/widget/edit_profile_content/horoscop
 import 'package:madhya/presentation/profile/widget/edit_profile_content/location_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/professional_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/religion_details_edit.dart';
+import 'package:madhya/presentation/profile/widget/help_and_support.dart';
 import 'package:madhya/presentation/profile/widget/manage_photos.dart';
+import 'package:madhya/presentation/profile/widget/partner_basic_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference.dart';
-import 'package:madhya/presentation/profile/widget/partner_preference/partner_basic_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_professional_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_religion_details_edit.dart';
+import 'package:madhya/presentation/profile/widget/delete_screen.dart';
 import '../../../presentation/profile/widget/partner_preference/partner_location_details_edit.dart';
 import '../../exporters/app_export.dart';
 
@@ -32,20 +41,59 @@ class AppPages {
       page: () => VerifyOTPScreen(),
       binding: OtpBinding(),
     ),
-    GetPage(name: Routes.registerScreen, page: () => RegisterScreen(),binding: RegisterBindings()),
+    GetPage(
+      name: Routes.registerScreen,
+      page: () => RegisterScreen(),
+      binding: RegisterBindings(),
+    ),
     GetPage(name: Routes.addProfile, page: () => ProfileAdd()),
-    GetPage(name: Routes.mainScreen, page: () => NavigationScreen(),binding: HomeBindings()),
-    GetPage(name: Routes.searchScreen, page: () => GlobalSearch()),
-    GetPage(name: Routes.othersProfile, page: () => OtherProfile()),
+    GetPage(
+      name: Routes.mainScreen,
+      page: () => NavigationScreen(),
+      bindings: [
+        HomeBindings(),
+        ProfileBindings(),
+        ChatBinding(),
+        MatchBinding(),
+      ],
+    ),
+    GetPage(
+      name: Routes.profileScreen,
+      page: () => ProfileScreen(),
+      bindings: [ProfileBindings()],
+    ),
+    GetPage(name: Routes.searchScreen, page: () => GlobalSearch(),binding: GlobalSearchBindings()),
+    GetPage(
+      name: Routes.othersProfile,
+      page: () => OtherProfile(),
+      bindings: [OtherProfileBinding(), ProfileBindings()],
+    ),
     GetPage(name: Routes.chatDetails, page: () => ChatDetails()),
     GetPage(name: Routes.chatProfileDetails, page: () => ChatUserProfile()),
-    GetPage(name: Routes.shortList, page: () => Shortlist()),
-    GetPage(name: Routes.viewed, page: () => Viewed()),
-    GetPage(name: Routes.interest, page: () => Interest()),
-    GetPage(name: Routes.editProfile, page: () => EditProfile()),
+    GetPage(
+      name: Routes.shortList,
+      page: () => Shortlist(),
+      binding: ProfileBindings(),
+    ),
+    GetPage(
+      name: Routes.viewed,
+      page: () => Viewed(),
+      bindings: [ProfileBindings()],
+    ),
+    GetPage(
+      name: Routes.interest,
+      page: () => Interest(),
+      binding: ProfileBindings(),
+    ),
+    GetPage(
+      name: Routes.editProfile,
+      page: () => EditProfile(),
+      binding: ProfileBindings(),
+    ),
     GetPage(name: Routes.managePhotos, page: () => ManagePhotos()),
     GetPage(name: Routes.basicDetailsEdit, page: () => BasicDetailsEdit()),
     GetPage(name: Routes.aboutMeEdit, page: () => AboutMeEdit()),
+    GetPage(name: Routes.deleteScreen, page: () => DeleteScreen()),
 
     GetPage(
       name: Routes.professionalDetailsEdit,
@@ -60,14 +108,19 @@ class AppPages {
       page: () => LocationDetailsEdit(),
     ),
     GetPage(name: Routes.familyDetailsEdit, page: () => FamilyDetailsEdit()),
+    GetPage(name: Routes.helpAndSupport, page: () => HelpAndSupport()),
     GetPage(
       name: Routes.horoscopeDetailsEdit,
       page: () => HoroscopeDetailsEdit(),
     ),
-    GetPage(name: Routes.partnerPreference, page: () => PartnerPreference()),
+    GetPage(
+      name: Routes.partnerPreference,
+      page: () => PartnerPreference(),
+      binding: PartnerPrefsBindings(),
+    ),
     GetPage(
       name: Routes.partnerBasicDetailsEdit,
-      page: () => PartnerBasicDetailsEdit(),
+      page: () => PartnerBasicDetailsEdit2(),
     ),
     GetPage(
       name: Routes.partnerProfessionalDetailsEdit,

@@ -1,62 +1,107 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class ReligionDetailsEdit extends StatelessWidget {
-  ReligionDetailsEdit({super.key});
-  final controller = getIt<ProfileController>();
+class ReligionDetailsEdit extends GetView<ProfileController> {
+  const ReligionDetailsEdit({super.key});
+
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context);
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: CustomAppbar(title: 'Religion Info Edit'),
+      appBar: CustomAppbar(
+        title: 'Religion Info Edit',
+        backgroundColor: theme.scaffoldBackgroundColor,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            Row(
-              spacing: 16.w,
-              children: [
-                buildDetailItem(label: 'Religion', value: 'Hindu'),
-                Expanded(child: _buildCasteDropdown()),
-              ],
-            ),
-            _buildSubCasteDropdown(),
-            AppButton(
-              text: 'Submit',
-              onTap: () {},
-              backgroundColor: AppColors.lightPrimary,
-            ),
-          ],
+        child: Form(
+          key: controller.religionDetailsFormKey,
+          child: Column(
+            spacing: 12.h,
+            children: [
+              Row(
+                spacing: 16.w,
+                children: [
+                  buildDetailItem(
+                    label: 'Religion',
+                    value:
+                        controller.profileDetails['religion']?.toString() ?? '',
+                  ),
+                  Expanded(child: _buildCasteDropdown()),
+                ],
+              ),
+              _buildSubCasteDropdown(),
+              Obx(
+                () => controller.isUpdateLoading.isTrue
+                    ? AppLoader.circular(
+                        color: AppColors.lightPrimary,
+                        strokeWidth: 2.5,
+                        size: 22.r,
+                      )
+                    : AppButton(
+                        text: 'Submit',
+                        onTap: () async {
+                          if (controller.religionDetailsFormKey.currentState!
+                              .validate()) {
+                            await controller.updateReligionDetails();
+                          }
+                        },
+                        backgroundColor: AppColors.lightPrimary,
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCasteDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Caste / Community",
+    return AppDropdownField(
       isRequired: true,
-      value: controller.selectedAge.value,
-      items: controller.ageList,
-      hintText: "Select",
-      showSearchBox: false,
-      searchHintText: "Search Caste / Community",
-      onChanged: (val) => controller.selectedAge.value = val,
+      isDynamic: true,
+      title: "Caste / Community",
+      value: controller.selectedCaste.value,
+      items: controller.casteList,
+      hintText: 'Select',
       validator: AppValidators.required,
+      onChanged: (val) => controller.selectedCaste.value = val,
     );
+
+    //   AppDropdownSearch<String>(
+    //   title: "Caste / Community",
+    //   isRequired: true,
+    //   value: controller.selectedAge.value,
+    //   items: controller.ageList,
+    //   hintText: "Select",
+    //   showSearchBox: false,
+    //   searchHintText: "Search Caste / Community",
+    //   onChanged: (val) => controller.selectedAge.value = val,
+    //   validator: AppValidators.required,
+    // );
   }
 
   Widget _buildSubCasteDropdown() {
-    return AppDropdownSearch<String>(
-      title: "Sub Caste",
+    return AppDropdownField(
       isRequired: true,
-      value: controller.selectedAge.value,
-      items: controller.ageList,
-      hintText: "Select",
-      showSearchBox: false,
-      searchHintText: "Search Sub Caste",
-      onChanged: (val) => controller.selectedAge.value = val,
+      isDynamic: true,
+      title: "Sub Caste",
+      value: controller.selectedSubCaste.value,
+      items: controller.subCasteList,
+      hintText: 'Sub Caste',
       validator: AppValidators.required,
+      onChanged: (val) => controller.selectedSubCaste.value = val,
     );
+
+    //   AppDropdownSearch<String>(
+    //   title: "Sub Caste",
+    //   isRequired: true,
+    //   value: controller.selectedAge.value,
+    //   items: controller.ageList,
+    //   hintText: "Select",
+    //   showSearchBox: false,
+    //   searchHintText: "Search Sub Caste",
+    //   onChanged: (val) => controller.selectedAge.value = val,
+    //   validator: AppValidators.required,
+    // );
   }
 }

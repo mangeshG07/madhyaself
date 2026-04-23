@@ -1,7 +1,20 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class PartnerPreference extends StatelessWidget {
+class PartnerPreference extends StatefulWidget {
   const PartnerPreference({super.key});
+
+  @override
+  State<PartnerPreference> createState() => _PartnerPreferenceState();
+}
+
+class _PartnerPreferenceState extends State<PartnerPreference> {
+  final PreferenceController controller = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getPreference();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,32 +24,36 @@ class PartnerPreference extends StatelessWidget {
           ? AppColors.bgColor
           : theme.scaffoldBackgroundColor,
       appBar: _buildAppBar(theme),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          spacing: 12.h,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: AppText(
-                text:
-                    'At times, we may recommend matches that go slightly beyond your preferences based on Acceptable matches criteria.',
-                fontSize: 14.sp,
-                maxLines: 5,
-                color: AppColors.lightTextLowColor,
+      body: Obx(
+        () => controller.isLoading.isTrue
+            ? AppLoader.circular(color: AppColors.lightPrimary)
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  spacing: 12.h,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: AppText(
+                        text:
+                            'At times, we may recommend matches that go slightly beyond your preferences based on Acceptable matches criteria.',
+                        fontSize: 14.sp,
+                        maxLines: 5,
+                        color: AppColors.lightTextLowColor,
+                      ),
+                    ),
+                    _buildBasicDetails(theme),
+                    _buildProfessionalDetails(theme),
+                    _buildReligionDetails(theme),
+                    _buildLocationDetails(theme),
+                  ],
+                ),
               ),
-            ),
-            _buildBasicDetails(),
-            _buildProfessionalDetails(),
-            _buildReligionDetails(),
-            _buildLocationDetails(),
-          ],
-        ),
       ),
     );
   }
 
-  CustomAppbar _buildAppBar(theme) {
+  CustomAppbar _buildAppBar(ThemeData theme) {
     return CustomAppbar(
       title: 'Partner Preference',
       backgroundColor: theme.brightness == Brightness.light
@@ -45,7 +62,7 @@ class PartnerPreference extends StatelessWidget {
     );
   }
 
-  Widget _buildBasicDetails() {
+  Widget _buildBasicDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
@@ -54,7 +71,7 @@ class PartnerPreference extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Marital Status',
-                value: 'Never Married',
+                value: controller.preferenceDetails['marital_status'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -64,12 +81,12 @@ class PartnerPreference extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Partner Age From',
-                value: '-',
+                value: controller.preferenceDetails['patner_age_from'] ?? '-',
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Partner Age To',
-                value: '-',
+                value: controller.preferenceDetails['patner_age_to'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -80,12 +97,13 @@ class PartnerPreference extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Partner Height From',
-                value: '-',
+                value:
+                    controller.preferenceDetails['patner_height_from'] ?? '-',
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Partner Height To',
-                value: '-',
+                value: controller.preferenceDetails['patner_height_to'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -95,10 +113,11 @@ class PartnerPreference extends StatelessWidget {
       'Basic Details',
       HugeIcons.strokeRoundedUserAccount,
       () => Get.toNamed(Routes.partnerBasicDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildProfessionalDetails() {
+  Widget _buildProfessionalDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
@@ -107,12 +126,14 @@ class PartnerPreference extends StatelessWidget {
             children: [
               buildDetailItem(
                 label: 'Education Category',
-                value: '-',
+                value:
+                    controller.preferenceDetails['education_category_name'] ??
+                    '-',
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Education Detail',
-                value: '-',
+                value: controller.preferenceDetails['education_detail'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -120,8 +141,16 @@ class PartnerPreference extends StatelessWidget {
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Job Category', value: '-', isFill: false),
-              buildDetailItem(label: 'Job Detail', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'Job Category',
+                value: controller.preferenceDetails['job_category_name'] ?? '-',
+                isFill: false,
+              ),
+              buildDetailItem(
+                label: 'Job Detail',
+                value: controller.preferenceDetails['job_detail'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
         ],
@@ -129,20 +158,25 @@ class PartnerPreference extends StatelessWidget {
       'Professional Info',
       HugeIcons.strokeRoundedProfile02,
       () => Get.toNamed(Routes.partnerProfessionalDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildReligionDetails() {
+  Widget _buildReligionDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Religion', value: 'Hindu', isFill: false),
+              buildDetailItem(
+                label: 'Religion',
+                value: controller.preferenceDetails['religion'] ?? '-',
+                isFill: false,
+              ),
               buildDetailItem(
                 label: 'Caste / Community',
-                value: 'other',
+                value: controller.preferenceDetails['caste'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -150,7 +184,11 @@ class PartnerPreference extends StatelessWidget {
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Sub Caste', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'Sub Caste',
+                value: controller.preferenceDetails['sub_caste'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
         ],
@@ -158,20 +196,25 @@ class PartnerPreference extends StatelessWidget {
       'Religion Info',
       HugeIcons.strokeRoundedWavingHand01,
       () => Get.toNamed(Routes.partnerReligionDetailsEdit),
+      theme,
     );
   }
 
-  Widget _buildLocationDetails() {
+  Widget _buildLocationDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'Country', value: 'India', isFill: false),
+              buildDetailItem(
+                label: 'Country',
+                value: controller.preferenceDetails['country'] ?? '-',
+                isFill: false,
+              ),
               buildDetailItem(
                 label: 'State',
-                value: 'Maharashtra',
+                value: controller.preferenceDetails['state'] ?? '-',
                 isFill: false,
               ),
             ],
@@ -179,7 +222,11 @@ class PartnerPreference extends StatelessWidget {
           Row(
             spacing: 16.w,
             children: [
-              buildDetailItem(label: 'City', value: '-', isFill: false),
+              buildDetailItem(
+                label: 'City',
+                value: controller.preferenceDetails['city'] ?? '-',
+                isFill: false,
+              ),
             ],
           ),
         ],
@@ -187,6 +234,7 @@ class PartnerPreference extends StatelessWidget {
       'Location',
       HugeIcons.strokeRoundedLocation05,
       () => Get.toNamed(Routes.partnerLocationDetailsEdit),
+      theme,
     );
   }
 }
