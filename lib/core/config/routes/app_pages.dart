@@ -3,6 +3,7 @@ import 'package:madhya/presentation/auth/binding/otp_binding.dart';
 import 'package:madhya/presentation/auth/binding/register_bindings.dart';
 import 'package:madhya/presentation/global_search/bindings/global_search_bindings.dart';
 import 'package:madhya/presentation/global_search/view/global_search.dart';
+import 'package:madhya/presentation/global_search/widget/search_result.dart';
 import 'package:madhya/presentation/home/bindings/home_bindings.dart';
 import 'package:madhya/presentation/mailbox/bindings/chat_binding.dart';
 import 'package:madhya/presentation/matches/bindings/match_binding.dart';
@@ -10,6 +11,7 @@ import 'package:madhya/presentation/others_profile/binding/other_profile_binding
 import 'package:madhya/presentation/profile/binding/partner_prefs_bindings.dart';
 import 'package:madhya/presentation/profile/binding/profile_bindings.dart';
 import 'package:madhya/presentation/profile/view/profile_screen.dart';
+import 'package:madhya/presentation/profile/widget/block_list.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/about_me_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/basic_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/family_details_edit.dart';
@@ -24,6 +26,7 @@ import 'package:madhya/presentation/profile/widget/partner_preference.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_professional_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_religion_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/delete_screen.dart';
+import 'package:madhya/presentation/profile/widget/reported_list.dart';
 import '../../../presentation/profile/widget/partner_preference/partner_location_details_edit.dart';
 import '../../exporters/app_export.dart';
 
@@ -62,7 +65,11 @@ class AppPages {
       page: () => ProfileScreen(),
       bindings: [ProfileBindings()],
     ),
-    GetPage(name: Routes.searchScreen, page: () => GlobalSearch(),binding: GlobalSearchBindings()),
+    GetPage(
+      name: Routes.searchScreen,
+      page: () => GlobalSearch(),
+      binding: GlobalSearchBindings(),
+    ),
     GetPage(
       name: Routes.othersProfile,
       page: () => OtherProfile(),
@@ -109,6 +116,16 @@ class AppPages {
     ),
     GetPage(name: Routes.familyDetailsEdit, page: () => FamilyDetailsEdit()),
     GetPage(name: Routes.helpAndSupport, page: () => HelpAndSupport()),
+    GetPage(
+      name: Routes.blockedUserList,
+      page: () => BlockUserList(),
+      bindings: [
+        ProfileBindings(),
+        OtherProfileBinding(), // ✅ ADD THIS
+      ],
+    ),
+    GetPage(name: Routes.reportedUserList, page: () => ReportedList()),
+    GetPage(name: Routes.searchResult, page: () => SearchResult(), binding: GlobalSearchBindings(),),
     GetPage(
       name: Routes.horoscopeDetailsEdit,
       page: () => HoroscopeDetailsEdit(),

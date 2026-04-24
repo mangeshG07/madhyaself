@@ -165,4 +165,14 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
     return await _apiService.updateUserProfile(formData);
   }
+
+  @override
+  Future<dynamic> getBlockUserList(UserRequest request) async {
+    return await _apiService.blockProfileList(request.userId);
+  }
+
+  @override
+  Future<dynamic> getReportedUserList(UserRequest request) async {
+    return await _apiService.reportProfileList(request.userId);
+  }
 }

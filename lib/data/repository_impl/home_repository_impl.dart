@@ -9,4 +9,9 @@ class HomeRepositoryImpl extends HomeRepository {
   Future<dynamic> getHome(UserRequest request) async {
     return await apiService.getHome(request.userId);
   }
+
+  @override
+  Future<dynamic> globalSearch(SearchRequest request) async {
+    return await apiService.globalSearch(request.toJson());
+  }
 }

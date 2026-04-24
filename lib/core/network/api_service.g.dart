@@ -819,7 +819,7 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<dynamic> blockUserList(String userId) async {
+  Future<dynamic> blockProfileList(String userId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -880,6 +880,28 @@ class _ApiService implements ApiService {
           .compose(
             _dio.options,
             '/report-profile-list',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
+  @override
+  Future<dynamic> globalSearch(Map<String, dynamic> formData) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(formData);
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/search',
             queryParameters: queryParameters,
             data: _data,
           )

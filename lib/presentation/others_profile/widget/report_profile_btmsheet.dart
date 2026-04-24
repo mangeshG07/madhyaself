@@ -31,26 +31,28 @@ class ReportProfileList extends StatelessWidget {
 
   ///=======================OPTIONS===========================///
   Widget _buildBefore(ThemeData theme) {
-    return Column(
-      children: [
-        _buildTitle(theme),
-        _buildOptions(theme),
-        Obx(
-          () => controller.isReportLoading.isTrue
-              ? AppLoader.circular(
-                  color: AppColors.lightPrimary,
-                  strokeWidth: 2.5,
-                  size: 22.r,
-                )
-              : AppButton(
-                  text: 'Submit',
-                  onTap: selectedValue == null ? null : onSubmit,
-                  backgroundColor: selectedValue == null
-                      ? AppColors.grey300
-                      : AppColors.lightPrimary,
-                ),
-        ),
-      ],
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildTitle(theme),
+          _buildOptions(theme),
+          Obx(
+            () => controller.isReportLoading.isTrue
+                ? AppLoader.circular(
+                    color: AppColors.lightPrimary,
+                    strokeWidth: 2.5,
+                    size: 22.r,
+                  )
+                : AppButton(
+                    text: 'Submit',
+                    onTap: selectedValue == null ? null : onSubmit,
+                    backgroundColor: selectedValue == null
+                        ? AppColors.grey300
+                        : AppColors.lightPrimary,
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -73,7 +75,8 @@ class ReportProfileList extends StatelessWidget {
                 AppText(
                   text:
                       "Your report remains anonymous & we'll take necessary actions if it goes against our guidelines",
-                  fontSize: 14.sp,
+                  fontSize: 13.sp,
+                  maxLines: 3,
                   style: theme.textTheme.titleSmall!.copyWith(
                     color: AppColors.lightTextLowColor,
                   ),
@@ -106,7 +109,6 @@ class ReportProfileList extends StatelessWidget {
           child: GestureDetector(
             onTap: () => onChanged(item.id),
             child: Container(
-              padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
@@ -128,7 +130,7 @@ class ReportProfileList extends StatelessWidget {
                     activeColor: AppColors.lightPrimary,
                   ),
 
-                  SizedBox(width: 8.w),
+                  SizedBox(width: 6.w),
 
                   /// 📝 TEXT
                   Expanded(

@@ -4,7 +4,12 @@ import 'package:madhya/core/exporters/app_export.dart';
 class GlobalSearchController extends GetxController {
   final CommonDataUsecase _commonDataUsecase;
   final LocationDataUsecase _locationDataUsecase;
-  GlobalSearchController(this._commonDataUsecase, this._locationDataUsecase);
+  final GlobalSearchUsecase _globalSearchUsecase;
+  GlobalSearchController(
+    this._commonDataUsecase,
+    this._locationDataUsecase,
+    this._globalSearchUsecase,
+  );
 
   @override
   void onInit() {
@@ -54,7 +59,9 @@ class GlobalSearchController extends GetxController {
   }
 
   final isLoading = false.obs;
-  final selectedLookingFor = Rxn<String>();
+  final isSearching = false.obs;
+  final username = TextEditingController();
+
   final selectedReligion = Rxn<String>();
   final selectedCaste = Rxn<String>();
   final selectedHeightFrom = Rxn<String>();
@@ -68,15 +75,6 @@ class GlobalSearchController extends GetxController {
   final selectedState = Rxn<String>();
   final selectedCity = Rxn<String>();
 
-  final lookingList = [
-    'Self',
-    'Son',
-    'Daughter',
-    'Brother',
-    'Sister',
-    'Relative/Friend',
-  ].obs;
-
   final religionList = [].obs;
   final casteList = [].obs;
   final heightList = [].obs;
@@ -87,4 +85,44 @@ class GlobalSearchController extends GetxController {
   final countryList = ['India'].obs;
   final stateList = [].obs;
   final cityList = [].obs;
+
+  final searchList = [].obs;
+
+  /// ================= COMMON UPDATE HANDLER =================
+  Future<void> globalSearch() async {
+    final userId = await SecureStorageService.read('user_id') ?? '';
+    try {
+      isSearching(true);
+
+      final res = await _globalSearchUsecase.call(
+        SearchRequest(
+          userId: userId,
+          partnerAgeFrom: selectedAgeFrom.value,
+          partnerAgeTo: selectedAgeTo.value,
+          partnerHeightFrom: selectedHeightFrom.value,
+          partnerHeightTo: selectedHeightTo.value,
+          casteId: selectedCaste.value,
+          jobCategoryId: selectedJob.value,
+          annualIncome: selectedIncome.value,
+          city: selectedCity.value,
+          country: selectedCountry.value,
+          educationCategoryId: selectedEducation.value,
+          religionId: selectedReligion.value,
+          state: selectedState.value,
+          userName: username.text.trim(),
+        ),
+      );
+
+      if (res['common']['status'] == true) {
+        Get.back();
+        searchList.value = res['data']['matches'] ?? [];
+
+        Get.toNamed(Routes.searchResult);
+      } else {
+        Get.snackbar('Error', res['common']['message']);
+      }
+    } finally {
+      isSearching(false);
+    }
+  }
 }

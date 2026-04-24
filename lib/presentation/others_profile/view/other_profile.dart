@@ -1,5 +1,4 @@
 import 'package:madhya/core/exporters/app_export.dart';
-import 'package:madhya/presentation/others_profile/widget/report_profile_btmsheet.dart';
 
 class OtherProfile extends StatefulWidget {
   const OtherProfile({super.key});
@@ -110,36 +109,39 @@ class _OtherProfileState extends State<OtherProfile> {
                       },
                     );
                   } else if (value == 'report') {
+                    controller.selectedReason.value = null;
                     AppBottomSheet.show(
                       context: context,
                       showCloseButton: false,
-                      // height: Get.height * 0.4.h,
+                      height: Get.height * 0.7.h,
                       backgroundColor: theme.scaffoldBackgroundColor,
-                      child: ReportProfileList(
-                        onSubmit: () async {
-                          final selectedItem = controller.interestOptions
-                              .firstWhere(
-                                (e) => e.id == controller.selectedId.value,
-                              );
-
-                          final msg = selectedItem.text;
-                          await controller
-                              .reportProfile(
-                                controller.profileDetails['id'].toString(),
-                                msg,
-                              )
-                              .then((v) async {
-                                await controller.otherProfileDetails(
-                                  controller.profileDetails['id'].toString(),
+                      child: Obx(
+                        () => ReportProfileList(
+                          onSubmit: () async {
+                            final selectedItem = controller.reasonsOptions
+                                .firstWhere(
+                                  (e) =>
+                                      e.id == controller.selectedReason.value,
                                 );
-                              });
-                        },
-                        controller: controller,
-                        items: controller.reasonsOptions,
-                        selectedValue: controller.selectedReason.value,
-                        onChanged: (val) {
-                          controller.selectedId.value = val;
-                        },
+                            final msg = selectedItem.text;
+                            await controller
+                                .reportProfile(
+                                  controller.profileDetails['id'].toString(),
+                                  msg,
+                                )
+                                .then((v) async {
+                                  await controller.otherProfileDetails(
+                                    controller.profileDetails['id'].toString(),
+                                  );
+                                });
+                          },
+                          controller: controller,
+                          items: controller.reasonsOptions,
+                          selectedValue: controller.selectedReason.value,
+                          onChanged: (val) {
+                            controller.selectedReason.value = val;
+                          },
+                        ),
                       ),
                     );
                   }
@@ -202,6 +204,32 @@ class _OtherProfileState extends State<OtherProfile> {
 
   Widget _buildTopImageList(ThemeData theme) {
     final images = controller.profileDetails['photos'] ?? [];
+
+    // // 👉 EMPTY CASE
+    if (images.isEmpty) {
+      return SizedBox(
+        height: Get.height * 0.55.h,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.grey.shade100,
+                child: Center(
+                  child: Image.asset(AppAssets.appLogo, height: 60.h),
+                ),
+              ),
+            ),
+            buildGradientOverlay(),
+            buildContentOverlay(controller.profileDetails, true),
+            _buildBottomMenu(theme),
+          ],
+        ),
+      );
+    }
     return SizedBox(
       height: Get.height * 0.55.h,
       child: Stack(
@@ -518,6 +546,8 @@ class _OtherProfileState extends State<OtherProfile> {
 
   /// 🔹 ABOUT ME
   Widget _buildAboutMe(ThemeData theme) {
+    String aboutData = controller.profileDetails['about'] ?? '';
+    if (aboutData.isEmpty) return SizedBox();
     return Column(
       spacing: 8.h,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -526,7 +556,7 @@ class _OtherProfileState extends State<OtherProfile> {
         buildSectionHeader('About Me', HugeIcons.strokeRoundedUser03),
 
         AppText(
-          text: controller.profileDetails['about'] ?? '-',
+          text: aboutData,
           fontSize: 14.sp,
           maxLines: 100,
           textAlign: TextAlign.start,

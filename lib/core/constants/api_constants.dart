@@ -61,13 +61,13 @@ class ApiConstants {
   static const String getMatches = '/get-matches';
   static const String getPartnerPreference = '/get-patner-preferance';
   static const String updatePartnerPreference = '/update-patner-preferance';
-
-  /////////////////////Pending////////////////////////
   static const String getPages = '/get-page-list';
   static const String getPageDetails = '/get-page-details';
-  static const String globalSearch = '/search';
   static const String blockUser = '/block-user';
-  static const String blockUserList = '/block-user-list';
   static const String reportProfile = '/report-profile';
+  static const String blockUserList = '/block-user-list';
   static const String reportProfileList = '/report-profile-list';
+
+  /////////////////////Pending////////////////////////
+  static const String globalSearch = '/search';
 }

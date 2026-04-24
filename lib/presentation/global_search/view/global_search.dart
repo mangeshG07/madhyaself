@@ -5,6 +5,8 @@ class GlobalSearch extends GetView<GlobalSearchController> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: CustomAppbar(title: 'Global Search'),
       body: Obx(
@@ -15,17 +17,24 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                 child: Column(
                   spacing: 12.h,
                   children: [
-                    _dropdownField(
-                      title: "I’m looking for a",
-                      value: controller.selectedLookingFor,
-                      items: controller.lookingList,
+                    AppTextField(
+                      filled: true,
+                      label: 'Search By Username',
+                      showLabel: true,
+                      minLines: 1,
+                      hint: 'Username',
+                      contentPadding: const EdgeInsets.all(8),
+                      focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                      enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                      textStyle: TextStyle(
+                        color: theme.colorScheme.onSurface,
+                        fontSize: 14.sp,
+                      ),
+                      labelStyle: theme.textTheme.labelMedium,
+                      controller: controller.username,
+                      fillColor: theme.cardColor,
                     ),
 
-                    // _buildDropdown(
-                    //   title: "I’m looking for a",
-                    //   value: controller.lookingFor,
-                    //   items: controller.lookingList,
-                    // ),
                     _dropdownField(
                       isDynamic: true,
                       title: "Religion",
@@ -40,29 +49,17 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                       items: controller.casteList,
                     ),
 
-                    // _buildDropdown(
-                    //   title: "Caste",
-                    //   value: controller.caste,
-                    //   items: controller.casteList,
-                    // ),
-                    // _dropdownField(
-                    //   isHeight: true,
-                    //   isDynamic: true,
-                    //   title: "Height in cm",
-                    //   value: controller.selectedHeightFrom,
-                    //   items: controller.heightList,
-                    // ),
                     _buildRangeRow(
                       isDynamic: true,
                       isHeight: true,
-                      title: "Height in cm",
+                      title: "Height",
                       fromValue: controller.selectedHeightFrom,
                       toValue: controller.selectedHeightTo,
                       items: controller.heightList,
                     ),
 
                     _buildRangeRow(
-                      title: "Age Between (Years)",
+                      title: "Age",
                       fromValue: controller.selectedAgeFrom,
                       toValue: controller.selectedAgeTo,
                       items: controller.ageList
@@ -96,8 +93,8 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                       items: controller.countryList,
                     ),
                     AppDropdownSearch<String>(
-                      title: "Select State",
-                      isRequired: true,
+                      title: "State",
+                      isRequired: false,
                       value: controller.selectedState.value,
                       items: controller.stateList
                           .map<String>((e) => e['name'])
@@ -109,8 +106,8 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                       validator: AppValidators.required,
                     ),
                     AppDropdownSearch<String>(
-                      title: "Select City",
-                      isRequired: true,
+                      title: "City",
+                      isRequired: false,
                       value: controller.selectedCity.value,
                       items: controller.cityList
                           .map<String>((e) => e['name'])
@@ -130,10 +127,16 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                         color: AppColors.lightTextMidColor,
                       ),
                     ),
-                    AppButton(
-                      text: 'Search',
-                      onTap: () {},
-                      backgroundColor: AppColors.lightPrimary,
+                    Obx(
+                      () => AppButton(
+                        text: controller.isSearching.value
+                            ? 'Searching...'
+                            : 'Search',
+                        onTap: controller.isSearching.value
+                            ? null
+                            : () async => await controller.globalSearch(),
+                        backgroundColor: AppColors.lightPrimary,
+                      ),
                     ),
                   ],
                 ),
@@ -159,11 +162,11 @@ class GlobalSearch extends GetView<GlobalSearchController> {
   }) {
     return Obx(
       () => AppDropdownField(
-        isRequired: true,
+        isRequired: false,
         title: title,
         value: value.value,
         items: items,
-        hintText: "Select $title",
+        hintText: "Select",
         validator: AppValidators.required,
         isHeight: isHeight,
         isDynamic: isDynamic,
@@ -188,7 +191,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
           child: _dropdownField(
             isHeight: isHeight,
             isDynamic: isDynamic,
-            title: "From",
+            title: title,
             value: fromValue,
             items: items,
           ),
@@ -200,7 +203,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
           child: _dropdownField(
             isHeight: isHeight,
             isDynamic: isDynamic,
-            title: "To",
+            title: title,
             value: toValue,
             items: items,
           ),

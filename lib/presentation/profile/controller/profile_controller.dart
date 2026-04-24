@@ -151,8 +151,16 @@ class ProfileController extends GetxController {
       'onTap': () => Get.toNamed(Routes.shortList),
     },
     {'title': 'Packages', 'icon': HugeIcons.strokeRoundedCrown},
-    {'title': 'Blocked User', 'icon': HugeIcons.strokeRoundedUserBlock02},
-    {'title': 'Reported Profile', 'icon': HugeIcons.strokeRoundedComplaint},
+    {
+      'title': 'Blocked User',
+      'icon': HugeIcons.strokeRoundedUserBlock02,
+      'onTap': () => Get.toNamed(Routes.blockedUserList),
+    },
+    {
+      'title': 'Reported Profile',
+      'icon': HugeIcons.strokeRoundedComplaint,
+      'onTap': () => Get.toNamed(Routes.reportedUserList),
+    },
     {
       'title': 'Help and support',
       'icon': HugeIcons.strokeRoundedMailOpen,

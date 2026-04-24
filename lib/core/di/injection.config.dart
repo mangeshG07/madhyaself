@@ -15,8 +15,6 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:madhya/core/exporters/app_export.dart' as _i571;
 import 'package:madhya/core/network/api_service.dart' as _i466;
 import 'package:madhya/core/network/register_module.dart' as _i571;
-import 'package:madhya/domain/usecase/get_page_details_usecase.dart' as _i787;
-import 'package:madhya/domain/usecase/get_page_usecase.dart' as _i562;
 import 'package:madhya/presentation/auth/controller/login_controller.dart'
     as _i539;
 import 'package:madhya/presentation/auth/controller/onboarding_controller.dart'
@@ -75,10 +73,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i571.SendInterestUsecase>(),
       ),
     );
-    gh.lazySingleton<_i337.GlobalSearchController>(
-      () => _i337.GlobalSearchController(
+    gh.lazySingleton<_i951.ProfileController>(
+      () => _i951.ProfileController(
+        gh<_i571.ProfileUsecase>(),
         gh<_i571.CommonDataUsecase>(),
+        gh<_i571.UpdateProfileUsecase>(),
         gh<_i571.LocationDataUsecase>(),
+        gh<_i571.GetPageDetailsUsecase>(),
+        gh<_i571.GetPageUsecase>(),
       ),
     );
     gh.lazySingleton<_i539.LoginController>(
@@ -127,14 +129,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i571.UpdatePrefsUsecase>(),
       ),
     );
-    gh.lazySingleton<_i951.ProfileController>(
-      () => _i951.ProfileController(
-        gh<_i571.ProfileUsecase>(),
+    gh.lazySingleton<_i337.GlobalSearchController>(
+      () => _i337.GlobalSearchController(
         gh<_i571.CommonDataUsecase>(),
-        gh<_i571.UpdateProfileUsecase>(),
         gh<_i571.LocationDataUsecase>(),
-        gh<_i787.GetPageDetailsUsecase>(),
-        gh<_i562.GetPageUsecase>(),
+        gh<_i571.GlobalSearchUsecase>(),
       ),
     );
     gh.lazySingleton<_i1019.OtherProfileController>(

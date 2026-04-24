@@ -1,6 +1,3 @@
-import 'package:madhya/domain/usecase/get_page_details_usecase.dart';
-import 'package:madhya/domain/usecase/get_page_usecase.dart';
-
 import '../../../core/exporters/app_export.dart';
 
 class ProfileBindings extends Bindings {
@@ -26,6 +23,8 @@ class ProfileBindings extends Bindings {
     Get.lazyPut(() => GetPageUsecase(Get.find()));
     Get.lazyPut(() => GetPageDetailsUsecase(Get.find()));
     Get.lazyPut(() => ShortlistProfileUsecase(Get.find()));
+    Get.lazyPut(() => BlockedProfileUsecase(Get.find()));
+    Get.lazyPut(() => ReportedProfileUsecase(Get.find()));
 
     // Controllers
     Get.lazyPut(
@@ -39,6 +38,8 @@ class ProfileBindings extends Bindings {
       ),
     );
     Get.lazyPut(() => ViewedController(Get.find()));
+    Get.lazyPut(() => BlockController(Get.find()));
+    Get.lazyPut(() => ReportedController(Get.find()));
     Get.lazyPut(() => ShortlistController(Get.find(), Get.find()));
     Get.lazyPut(
       () => InterestController(Get.find(), Get.find(), Get.find(), Get.find()),

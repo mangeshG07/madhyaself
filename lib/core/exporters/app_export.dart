@@ -86,6 +86,8 @@ export 'package:madhya/presentation/profile/controller/viewed_controller.dart';
 export 'package:madhya/presentation/profile/controller/interest_controller.dart';
 export 'package:madhya/presentation/global_search/controller/global_search_controller.dart';
 export 'package:madhya/presentation/profile/controller/preference_controller.dart';
+export 'package:madhya/presentation/profile/controller/block_controller.dart';
+export 'package:madhya/presentation/profile/controller/reported_controller.dart';
 
 //Component//
 export 'package:madhya/core/component/onboarding_indicator.dart';
@@ -99,6 +101,7 @@ export 'package:madhya/core/component/bottom_header.dart';
 export 'package:madhya/presentation/others_profile/widget/contact_bottomsheet.dart';
 export 'package:madhya/presentation/others_profile/widget/interested_bottomsheet.dart';
 export 'package:madhya/presentation/others_profile/widget/shortlist_bottomsheet.dart';
+export 'package:madhya/presentation/others_profile/widget/report_profile_btmsheet.dart';
 export 'package:madhya/core/component/app_toggle.dart';
 export 'package:madhya/presentation/profile/widget/interest_card.dart';
 export 'package:madhya/core/component/custom_appbar.dart';
@@ -128,6 +131,7 @@ export 'package:madhya/domain/entity/interest_requested.dart';
 export 'package:madhya/domain/entity/create_chat_request.dart';
 export 'package:madhya/domain/entity/update_user_profile_request.dart';
 export 'package:madhya/domain/entity/update_prefs_request.dart';
+export 'package:madhya/domain/entity/search_request.dart';
 
 //Repository Implementation//
 export 'package:madhya/data/repository_impl/auth_repository_impl.dart';
@@ -168,3 +172,8 @@ export '../../../domain/usecase/get_matches_usecase.dart';
 export 'package:madhya/domain/usecase/shortlist_profile_usecase.dart';
 export 'package:madhya/domain/usecase/block_user_usecase.dart';
 export 'package:madhya/domain/usecase/report_profile_usecase.dart';
+export 'package:madhya/domain/usecase/blocked_profile_usecase.dart';
+export 'package:madhya/domain/usecase/reported_profile_usecase.dart';
+export 'package:madhya/domain/usecase/get_page_details_usecase.dart';
+export 'package:madhya/domain/usecase/get_page_usecase.dart';
+export 'package:madhya/domain/usecase/global_search_usecase.dart';

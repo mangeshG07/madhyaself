@@ -8,7 +8,9 @@ class GlobalSearchBindings extends Bindings {
 
     Get.lazyPut(() => LocationDataUsecase(Get.find()));
     Get.lazyPut(() => CommonDataUsecase(Get.find()));
-
-    Get.lazyPut(() => GlobalSearchController(Get.find(), Get.find()));
+    Get.lazyPut(() => GlobalSearchUsecase(Get.find()));
+    Get.lazyPut(
+      () => GlobalSearchController(Get.find(), Get.find(), Get.find()),
+    );
   }
 }

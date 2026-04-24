@@ -20,6 +20,8 @@ class Routes {
   static const String managePhotos = "/managePhotos";
   static const String basicDetailsEdit = "/basicDetailsEdit";
   static const String aboutMeEdit = "/aboutMeEdit";
+  static const String blockedUserList = "/blockedUserList";
+  static const String reportedUserList = "/reportedUserList";
   static const String deleteScreen = "/deleteScreen";
   static const String helpAndSupport = "/helpAndSupport";
   static const String professionalDetailsEdit = "/professionalDetailsEdit";
@@ -29,6 +31,7 @@ class Routes {
   static const String horoscopeDetailsEdit = "/horoscopeDetailsEdit";
   static const String partnerPreference = "/partnerPreference";
   static const String partnerBasicDetailsEdit = "/partnerBasicDetailsEdit";
+  static const String searchResult = "/searchResult";
   static const String partnerProfessionalDetailsEdit =
       "/partnerProfessionalDetailsEdit";
   static const String partnerReligionDetailsEdit =

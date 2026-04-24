@@ -24,4 +24,9 @@ abstract class ProfileRepository {
   Future<dynamic> deleteInterest(InterestRequested request);
 
   Future<dynamic> updateProfile(UpdateUserProfileRequest request);
+
+
+  Future<dynamic> getBlockUserList(UserRequest request);
+
+  Future<dynamic> getReportedUserList(UserRequest request);
 }

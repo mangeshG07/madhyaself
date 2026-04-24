@@ -189,7 +189,7 @@ abstract class ApiService {
   );
 
   @POST(ApiConstants.blockUserList)
-  Future<dynamic> blockUserList(@Part(name: "user_id") String userId);
+  Future<dynamic> blockProfileList(@Part(name: "user_id") String userId);
 
   @POST(ApiConstants.reportProfile)
   Future<dynamic> reportProfile(
@@ -200,4 +200,7 @@ abstract class ApiService {
 
   @POST(ApiConstants.reportProfileList)
   Future<dynamic> reportProfileList(@Part(name: "user_id") String userId);
+
+  @POST(ApiConstants.globalSearch)
+  Future<dynamic> globalSearch(@Body() Map<String, dynamic> formData);
 }
