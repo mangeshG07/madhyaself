@@ -30,8 +30,6 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
   @override
   Future<dynamic> getProfile(UserRequest request) async {
-    print('request.userId');
-    print(request.userId);
     return await _apiService.getProfile(request.userId);
   }
 
@@ -174,5 +172,15 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<dynamic> getReportedUserList(UserRequest request) async {
     return await _apiService.reportProfileList(request.userId);
+  }
+
+  @override
+  Future<dynamic> getPlans(UserRequest request) async {
+    return await _apiService.getPlans(request.userId);
+  }
+
+  @override
+  Future<dynamic> getPlanDetails(UserRequest request) async {
+    return await _apiService.getPlanDetails(request.userId, request.type);
   }
 }

@@ -173,6 +173,7 @@ abstract class ApiService {
     @Part(name: "user_id") String userId,
     @Part(name: "type") String type,
     @Part(name: "page_no") String pageNo,
+    @Part(name: "view") String view,
   );
 
   @POST(ApiConstants.getPages)
@@ -203,4 +204,13 @@ abstract class ApiService {
 
   @POST(ApiConstants.globalSearch)
   Future<dynamic> globalSearch(@Body() Map<String, dynamic> formData);
+
+  @POST(ApiConstants.getPlans)
+  Future<dynamic> getPlans(@Part(name: "user_id") String userId);
+
+  @POST(ApiConstants.getPlanDetails)
+  Future<dynamic> getPlanDetails(
+    @Part(name: "user_id") String userId,
+    @Part(name: "plan_id") String planId,
+  );
 }

@@ -8,7 +8,7 @@ class PartnerPreference extends StatefulWidget {
 }
 
 class _PartnerPreferenceState extends State<PartnerPreference> {
-  final PreferenceController controller = Get.find();
+  final controller = Get.find<PreferenceController>();
 
   @override
   void initState() {
@@ -19,6 +19,7 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.light
           ? AppColors.bgColor
@@ -32,16 +33,7 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
                 child: Column(
                   spacing: 12.h,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: AppText(
-                        text:
-                            'At times, we may recommend matches that go slightly beyond your preferences based on Acceptable matches criteria.',
-                        fontSize: 14.sp,
-                        maxLines: 5,
-                        color: AppColors.lightTextLowColor,
-                      ),
-                    ),
+                    _buildInfoBanner(theme),
                     _buildBasicDetails(theme),
                     _buildProfessionalDetails(theme),
                     _buildReligionDetails(theme),
@@ -62,16 +54,45 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
     );
   }
 
+  // 🔹 INFO BANNER
+  Widget _buildInfoBanner(ThemeData theme) {
+    return Container(
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: AppColors.lightPrimary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14.r),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, size: 18, color: AppColors.lightPrimary),
+          SizedBox(width: 8.w),
+          Expanded(
+            child: AppText(
+              text:
+                  'At times, we may recommend matches that go slightly beyond your preferences based on Acceptable matches criteria.',
+              fontSize: 13.sp,
+              maxLines: 5,
+              color: AppColors.lightTextLowColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _val(dynamic v) =>
+      (v == null || v.toString().isEmpty) ? '-' : v.toString();
+
+  // 🔹 SAFE VALUE
   Widget _buildBasicDetails(ThemeData theme) {
     return buildSection(
       Column(
         children: [
           Row(
-            spacing: 16.w,
             children: [
               buildDetailItem(
                 label: 'Marital Status',
-                value: controller.preferenceDetails['marital_status'] ?? '-',
+                value: _val(controller.preferenceDetails['marital_status']),
                 isFill: false,
               ),
             ],
@@ -81,12 +102,12 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Partner Age From',
-                value: controller.preferenceDetails['patner_age_from'] ?? '-',
+                value: _val(controller.preferenceDetails['patner_age_from']),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Partner Age To',
-                value: controller.preferenceDetails['patner_age_to'] ?? '-',
+                value: _val(controller.preferenceDetails['patner_age_to']),
                 isFill: false,
               ),
             ],
@@ -97,13 +118,12 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Partner Height From',
-                value:
-                    controller.preferenceDetails['patner_height_from'] ?? '-',
+                value: _val(controller.preferenceDetails['patner_height_from']),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Partner Height To',
-                value: controller.preferenceDetails['patner_height_to'] ?? '-',
+                value: _val(controller.preferenceDetails['patner_height_to']),
                 isFill: false,
               ),
             ],
@@ -126,14 +146,14 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Education Category',
-                value:
-                    controller.preferenceDetails['education_category_name'] ??
-                    '-',
+                value: _val(
+                  controller.preferenceDetails['education_category_name'],
+                ),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Education Detail',
-                value: controller.preferenceDetails['education_detail'] ?? '-',
+                value: _val(controller.preferenceDetails['education_detail']),
                 isFill: false,
               ),
             ],
@@ -143,12 +163,12 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Job Category',
-                value: controller.preferenceDetails['job_category_name'] ?? '-',
+                value: _val(controller.preferenceDetails['job_category_name']),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Job Detail',
-                value: controller.preferenceDetails['job_detail'] ?? '-',
+                value: _val(controller.preferenceDetails['job_detail']),
                 isFill: false,
               ),
             ],
@@ -171,12 +191,12 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Religion',
-                value: controller.preferenceDetails['religion'] ?? '-',
+                value: _val(controller.preferenceDetails['religion']),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Caste / Community',
-                value: controller.preferenceDetails['caste'] ?? '-',
+                value: _val(controller.preferenceDetails['caste']),
                 isFill: false,
               ),
             ],
@@ -186,7 +206,7 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Sub Caste',
-                value: controller.preferenceDetails['sub_caste'] ?? '-',
+                value: _val(controller.preferenceDetails['sub_caste']),
                 isFill: false,
               ),
             ],
@@ -209,12 +229,12 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Country',
-                value: controller.preferenceDetails['country'] ?? '-',
+                value: _val(controller.preferenceDetails['country']),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'State',
-                value: controller.preferenceDetails['state'] ?? '-',
+                value: _val(controller.preferenceDetails['state']),
                 isFill: false,
               ),
             ],
@@ -224,7 +244,7 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'City',
-                value: controller.preferenceDetails['city'] ?? '-',
+                value: _val(controller.preferenceDetails['city']),
                 isFill: false,
               ),
             ],

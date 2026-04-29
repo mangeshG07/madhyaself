@@ -219,7 +219,7 @@ class _OtherProfileState extends State<OtherProfile> {
                 height: double.infinity,
                 color: Colors.grey.shade100,
                 child: Center(
-                  child: Image.asset(AppAssets.appLogo, height: 60.h),
+                  child: Image.asset(AppAssets.defaultImage, height: 60.h),
                 ),
               ),
             ),
@@ -247,8 +247,8 @@ class _OtherProfileState extends State<OtherProfile> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
                     child: FadeInImage(
-                      placeholderFit: BoxFit.contain,
-                      placeholder: AssetImage(AppAssets.appLogo),
+                      placeholderFit: BoxFit.cover,
+                      placeholder: AssetImage(AppAssets.defaultImage),
                       image: NetworkImage(images[index] ?? ''),
                       fit: BoxFit.cover,
                       width: double.infinity,
@@ -257,7 +257,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         return Container(
                           color: Colors.grey.shade100,
                           child: Center(
-                            child: Image.asset(AppAssets.appLogo, height: 40.h),
+                            child: Image.asset(AppAssets.defaultImage),
                           ),
                         );
                       },
@@ -375,9 +375,9 @@ class _OtherProfileState extends State<OtherProfile> {
                     : 'Shortlist',
                 HugeIcons.strokeRoundedStar,
                 () async {
-                  if (controller.profileDetails['is_shortlisted'] == true) {
-                    return;
-                  }
+                  // if (controller.profileDetails['is_shortlisted'] == true) {
+                  //   return;
+                  // }
                   await shortListController
                       .shortListPeople(
                         controller.profileDetails['id'].toString(),
@@ -385,6 +385,7 @@ class _OtherProfileState extends State<OtherProfile> {
                       .then((v) async {
                         await controller.otherProfileDetails(
                           controller.profileDetails['id'].toString(),
+                          showLoading: false,
                         );
                       });
                   // AppBottomSheet.show(
@@ -467,7 +468,7 @@ class _OtherProfileState extends State<OtherProfile> {
                     size: 24.r,
                   ),
                   SizedBox(
-                    height: 30.h, // same for all cards
+                    height: 30.h,
                     child: Center(
                       child: AppText(
                         text: title,

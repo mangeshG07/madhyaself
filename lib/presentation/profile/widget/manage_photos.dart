@@ -186,21 +186,36 @@ class ManagePhotos extends GetView<ProfileController> {
           if (index < images.length) {
             return Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: images[index] is String
-                      ? Image.network(
-                          images[index],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        )
-                      : Image.file(
-                          images[index],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: theme.dividerColor, width: 0.2),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: images[index] is String
+                        ? FadeInImage(
+                            placeholder: const AssetImage(
+                              AppAssets.defaultImage,
+                            ),
+                            image: NetworkImage(images[index] ?? ''),
+                            fit: BoxFit.cover,
+                            imageErrorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                AppAssets.defaultImage,
+                                fit: BoxFit.contain,
+                                width: double.infinity,
+                                height: double.infinity,
+                              );
+                            },
+                          )
+                        : Image.file(
+                            images[index],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                  ),
                 ),
                 Positioned(
                   top: 4,

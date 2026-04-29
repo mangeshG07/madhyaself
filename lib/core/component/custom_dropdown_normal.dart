@@ -53,7 +53,8 @@ class AppDropdownField extends StatelessWidget {
           materialTapTargetSize: MaterialTapTargetSize.padded,
           child: DropdownButtonFormField(
             borderRadius: BorderRadius.circular(12.r),
-            initialValue: value,
+            // initialValue: value,
+            initialValue: _getSafeValue(),
             icon: const Icon(
               Icons.keyboard_arrow_down,
               color: Colors.grey,
@@ -80,7 +81,9 @@ class AppDropdownField extends StatelessWidget {
               errorMaxLines: 1,
             ),
             validator: validator,
-            dropdownColor:Get.isDarkMode ? AppColors.grey800 : AppColors.grey300,
+            dropdownColor: Get.isDarkMode
+                ? AppColors.grey800
+                : AppColors.grey300,
             hint: Text(
               hintText,
               style: TextStyle(fontSize: 13.sp, color: Colors.grey),
@@ -140,6 +143,25 @@ class AppDropdownField extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// ================= SAFE VALUE =================
+  String? _getSafeValue() {
+    if (value == null || value!.isEmpty) return null;
+
+    try {
+      final allValues = isDynamic == true
+          ? items.map<String>((e) {
+              return isHeight == true
+                  ? e['height_in_cm']?.toString() ?? ''
+                  : e['id']?.toString() ?? '';
+            }).toList()
+          : items.map<String>((e) => e.toString()).toList();
+
+      return allValues.contains(value) ? value : null;
+    } catch (e) {
+      return null;
+    }
   }
 }
 

@@ -25,8 +25,11 @@ abstract class ProfileRepository {
 
   Future<dynamic> updateProfile(UpdateUserProfileRequest request);
 
-
   Future<dynamic> getBlockUserList(UserRequest request);
 
   Future<dynamic> getReportedUserList(UserRequest request);
+
+  Future<dynamic> getPlans(UserRequest request);
+
+  Future<dynamic> getPlanDetails(UserRequest request);
 }

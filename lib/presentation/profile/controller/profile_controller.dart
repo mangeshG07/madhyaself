@@ -118,6 +118,7 @@ class ProfileController extends GetxController {
   final horoscopeDetailsFormKey = GlobalKey<FormState>();
 
   final profileImage = Rx<File?>(null);
+  final horoscopeFile = Rx<File?>(null);
 
   final menuList = [
     {
@@ -150,7 +151,11 @@ class ProfileController extends GetxController {
       'icon': HugeIcons.strokeRoundedStar,
       'onTap': () => Get.toNamed(Routes.shortList),
     },
-    {'title': 'Packages', 'icon': HugeIcons.strokeRoundedCrown},
+    {
+      'title': 'Packages',
+      'icon': HugeIcons.strokeRoundedCrown,
+      'onTap': () => Get.toNamed(Routes.packageScreen),
+    },
     {
       'title': 'Blocked User',
       'icon': HugeIcons.strokeRoundedUserBlock02,
@@ -458,6 +463,12 @@ class ProfileController extends GetxController {
     try {
       isUpdateLoading(true);
       final userid = await SecureStorageService.read('user_id') ?? '';
+      print('selectedRashi.value===>${selectedRashi.value}');
+      print('birthDateController.value===>${birthDateController.text.trim()}');
+      print(
+        'birthTimeController.text.trim()===>${birthTimeController.text.trim()}',
+      );
+
       final res = await _updateProfileUsecase.call(
         UpdateUserProfileRequest(
           userId: userid,

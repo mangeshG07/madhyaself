@@ -67,7 +67,9 @@ class ApiConstants {
   static const String reportProfile = '/report-profile';
   static const String blockUserList = '/block-user-list';
   static const String reportProfileList = '/report-profile-list';
+  static const String globalSearch = '/search';
 
   /////////////////////Pending////////////////////////
-  static const String globalSearch = '/search';
+  static const String getPlans = '/get-plans';
+  static const String getPlanDetails = '/plans-details';
 }

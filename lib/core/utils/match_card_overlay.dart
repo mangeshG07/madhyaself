@@ -23,7 +23,7 @@ class MatchCardOverlay extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12.r),
               child: FadeInImage(
-                placeholder: AssetImage(AppAssets.appLogo),
+                placeholder: AssetImage(AppAssets.defaultImage),
                 image: NetworkImage(details['profile_image'] ?? ''),
                 fit: BoxFit.cover,
                 width: double.infinity,
@@ -32,7 +32,7 @@ class MatchCardOverlay extends StatelessWidget {
                   return Container(
                     color: Colors.grey.shade100,
                     child: Center(
-                      child: Image.asset(AppAssets.appLogo, height: 40.h),
+                      child: Image.asset(AppAssets.defaultImage, height: 40.h),
                     ),
                   );
                 },

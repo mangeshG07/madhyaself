@@ -8,7 +8,6 @@ class ProfileBindings extends Bindings {
     // Profile repository
     Get.lazyPut<ProfileRepository>(() => ProfileRepositoryImpl(Get.find()));
 
-    // Usecases
     Get.lazyPut(() => ProfileUsecase(Get.find()));
     Get.lazyPut(() => CommonDataUsecase(Get.find()));
     Get.lazyPut(() => GetViewUsecase(Get.find()));
@@ -25,6 +24,9 @@ class ProfileBindings extends Bindings {
     Get.lazyPut(() => ShortlistProfileUsecase(Get.find()));
     Get.lazyPut(() => BlockedProfileUsecase(Get.find()));
     Get.lazyPut(() => ReportedProfileUsecase(Get.find()));
+    Get.lazyPut(() => ReportedProfileUsecase(Get.find()));
+    Get.lazyPut(() => GetPlanDetailsUsecase(Get.find()));
+    Get.lazyPut(() => GetPlanUsecase(Get.find()));
 
     // Controllers
     Get.lazyPut(
@@ -41,6 +43,7 @@ class ProfileBindings extends Bindings {
     Get.lazyPut(() => BlockController(Get.find()));
     Get.lazyPut(() => ReportedController(Get.find()));
     Get.lazyPut(() => ShortlistController(Get.find(), Get.find()));
+    Get.lazyPut(() => PlanController(Get.find(), Get.find()));
     Get.lazyPut(
       () => InterestController(Get.find(), Get.find(), Get.find(), Get.find()),
     );

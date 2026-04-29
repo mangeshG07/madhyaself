@@ -76,8 +76,8 @@ class PreferenceController extends GetxController {
   /// ================= SET INITIAL VALUES =================
   ///
   void _setInitialValues(Map data) {
-    educationCtrl.text = data['education_details'] ?? '';
-    jobCtrl.text = data['job_details'] ?? '';
+    educationCtrl.text = data['education_detail'] ?? '';
+    jobCtrl.text = data['job_detail'] ?? '';
 
     selectedAgeFrom.value = _val(data['patner_age_from']);
     selectedAgeTo.value = _val(data['patner_age_to']);

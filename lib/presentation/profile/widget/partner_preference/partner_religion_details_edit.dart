@@ -30,7 +30,7 @@ class PartnerReligionDetailsEdit extends GetView<PreferenceController> {
                         size: 22.r,
                       )
                     : AppButton(
-                        text: 'Submit',
+                        text: 'Save Changes',
                         onTap: () async {
                           if (controller.religionDetailsFormKey.currentState!
                               .validate()) {

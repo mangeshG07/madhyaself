@@ -724,7 +724,12 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<dynamic> getMatches(String userId, String type, String pageNo) async {
+  Future<dynamic> getMatches(
+    String userId,
+    String type,
+    String pageNo,
+    String view,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -732,6 +737,7 @@ class _ApiService implements ApiService {
     _data.fields.add(MapEntry('user_id', userId));
     _data.fields.add(MapEntry('type', type));
     _data.fields.add(MapEntry('page_no', pageNo));
+    _data.fields.add(MapEntry('view', view));
     final _options = _setStreamType<dynamic>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -902,6 +908,51 @@ class _ApiService implements ApiService {
           .compose(
             _dio.options,
             '/search',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
+  @override
+  Future<dynamic> getPlans(String userId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('user_id', userId));
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/get-plans',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
+  @override
+  Future<dynamic> getPlanDetails(String userId, String planId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('user_id', userId));
+    _data.fields.add(MapEntry('plan_id', planId));
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/plans-details',
             queryParameters: queryParameters,
             data: _data,
           )

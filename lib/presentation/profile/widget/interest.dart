@@ -50,31 +50,36 @@ class _InterestState extends State<Interest> {
           }
           return false;
         },
-        child: Column(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-              itemCount: controller.items.length,
-              itemBuilder: (context, index) {
-                final interest = controller.items[index];
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                itemCount: controller.items.length,
+                itemBuilder: (context, index) {
+                  final interest = controller.items[index];
 
-                return InterestCard(interest: interest, controller: controller);
-              },
-            ),
+                  return InterestCard(
+                    interest: interest,
+                    controller: controller,
+                  );
+                },
+              ),
 
-            Obx(() {
-              if (controller.isLoadMore.value) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  child: AppLoader.circular(color: AppColors.lightPrimary),
-                );
-              } else {
-                return const SizedBox();
-              }
-            }),
-          ],
+              Obx(() {
+                if (controller.isLoadMore.value) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    child: AppLoader.circular(color: AppColors.lightPrimary),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              }),
+            ],
+          ),
         ),
       );
     });

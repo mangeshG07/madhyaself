@@ -19,7 +19,10 @@ class CompactCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: !isLight ? theme.dividerTheme.color! : Colors.transparent,width:  0.5),
+          border: Border.all(
+            color: !isLight ? theme.dividerTheme.color! : Colors.transparent,
+            width: 0.5,
+          ),
           boxShadow: [
             if (isLight)
               BoxShadow(
@@ -59,14 +62,11 @@ class CompactCard extends StatelessWidget {
           AspectRatio(
             aspectRatio: 0.9,
             child: FadeInImage(
-              placeholder: const AssetImage(AppAssets.appLogo),
+              placeholder: const AssetImage(AppAssets.defaultImage),
               image: NetworkImage(details['image'] ?? ''),
               fit: BoxFit.cover,
               imageErrorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey.shade100,
-                  child: Center(child: Icon(Icons.person, size: 40.sp)),
-                );
+                return Image.asset(AppAssets.defaultImage);
               },
             ),
           ),

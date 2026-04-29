@@ -6,6 +6,7 @@ class PartnerProfessionalDetailsEdit extends GetView<PreferenceController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: CustomAppbar(title: 'Professional Info Edit'),
       body: SingleChildScrollView(
@@ -21,26 +22,7 @@ class PartnerProfessionalDetailsEdit extends GetView<PreferenceController> {
               _buildJobDetail(theme),
               _buildAnnualIncomeDropdown(),
               SizedBox(height: 12.h),
-              Obx(
-                () => controller.isUpdating.isTrue
-                    ? AppLoader.circular(
-                        color: AppColors.lightPrimary,
-                        strokeWidth: 2.5,
-                        size: 22.r,
-                      )
-                    : AppButton(
-                        text: 'Submit',
-                        onTap: () async {
-                          if (controller
-                              .professionalDetailsFormKey
-                              .currentState!
-                              .validate()) {
-                            await controller.updateProfessionalDetails();
-                          }
-                        },
-                        backgroundColor: AppColors.lightPrimary,
-                      ),
-              ),
+              _buildSubmitButton(),
             ],
           ),
         ),
@@ -117,14 +99,40 @@ class PartnerProfessionalDetailsEdit extends GetView<PreferenceController> {
   }
 
   Widget _buildAnnualIncomeDropdown() {
+    final isMatched = controller.annualIncomeList.any(
+      (e) => e['name'].toString() == controller.selectedIncome.value,
+    );
     return AppDropdownField(
       isRequired: true,
       title: "Annual Income",
-      value: controller.selectedIncome.value,
+      value: isMatched && controller.selectedIncome.value!.isNotEmpty
+          ? controller.selectedIncome.value
+          : null,
       items: controller.annualIncomeList.map((e) => e['name']).toList(),
       hintText: 'Annual Income',
       validator: AppValidators.required,
       onChanged: (val) => controller.selectedIncome.value = val,
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return Obx(
+      () => controller.isUpdating.isTrue
+          ? AppLoader.circular(
+              color: AppColors.lightPrimary,
+              strokeWidth: 2.5,
+              size: 22.r,
+            )
+          : AppButton(
+              text: 'Save Changes',
+              onTap: () async {
+                if (controller.professionalDetailsFormKey.currentState!
+                    .validate()) {
+                  await controller.updateProfessionalDetails();
+                }
+              },
+              backgroundColor: AppColors.lightPrimary,
+            ),
     );
   }
 }

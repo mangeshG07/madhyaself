@@ -11,87 +11,96 @@ class LocationDetailsEdit extends GetView<ProfileController> {
         title: 'Location Details Edit',
         backgroundColor: theme.scaffoldBackgroundColor,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Form(
-          key: controller.locationDetailsFormKey,
-          child: Column(
-            spacing: 12.h,
-            children: [
-              Row(
-                spacing: 16.w,
-                children: [
-                  Expanded(child: _buildCountryDropdown()),
-                  Expanded(child: _buildStateDropdown()),
-                ],
-              ),
-              Row(
-                spacing: 16.w,
-                children: [Expanded(child: _buildCityDropdown())],
-              ),
-              SizedBox(height: 16.h),
-              Obx(
-                () => controller.isUpdateLoading.isTrue
-                    ? AppLoader.circular(
-                        color: AppColors.lightPrimary,
-                        strokeWidth: 2.5,
-                        size: 22.r,
-                      )
-                    : AppButton(
-                        text: 'Submit',
-                        onTap: () async {
-                          if (controller.locationDetailsFormKey.currentState!
-                              .validate()) {
-                            await controller.updateLocationDetails();
-                          }
-                        },
-                        backgroundColor: AppColors.lightPrimary,
-                      ),
-              ),
-            ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.w),
+          child: Form(
+            key: controller.locationDetailsFormKey,
+            child: Column(
+              spacing: 12.h,
+              children: [
+                Row(
+                  spacing: 16.w,
+                  children: [
+                    Expanded(child: _buildCountryDropdown()),
+                    Expanded(child: _buildStateDropdown()),
+                  ],
+                ),
+                Row(
+                  spacing: 16.w,
+                  children: [Expanded(child: _buildCityDropdown())],
+                ),
+                SizedBox(height: 16.h),
+                _buildSubmitButton(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // 🌍 COUNTRY
   Widget _buildCountryDropdown() {
     return AppDropdownField(
       isRequired: true,
-      title: "Select Your Country",
+      title: "Country",
       value: controller.selectedCountry.value,
       items: controller.countryList,
-      hintText: 'Country',
+      hintText: 'Select Country',
       validator: AppValidators.required,
       onChanged: (val) => controller.selectedCountry.value = val,
     );
   }
 
+  // 🏙️ STATE
   Widget _buildStateDropdown() {
     return AppDropdownSearch<String>(
-      title: "Select State",
+      title: "State",
       isRequired: true,
       value: controller.selectedState.value,
       items: controller.stateList.map<String>((e) => e['name']).toList(),
-      hintText: "State",
+      hintText: "Select State",
       showSearchBox: true,
-      searchHintText: "",
+      searchHintText: "Search State",
       onChanged: (val) => controller.selectedState.value = val,
       validator: AppValidators.required,
     );
   }
 
+  // 🏡 CITY
   Widget _buildCityDropdown() {
     return AppDropdownSearch<String>(
-      title: "Select City",
+      title: "City",
       isRequired: true,
       value: controller.selectedCity.value,
       items: controller.cityList.map<String>((e) => e['name']).toList(),
-      hintText: "City",
+      hintText: "Select City",
       showSearchBox: true,
-      searchHintText: "",
+      searchHintText: "Search City",
       onChanged: (val) => controller.selectedCity.value = val,
       validator: AppValidators.required,
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return Obx(
+      () => controller.isUpdateLoading.isTrue
+          ? AppLoader.circular(
+              color: AppColors.lightPrimary,
+              strokeWidth: 2.5,
+              size: 22.r,
+            )
+          : AppButton(
+              text: 'Save Changes',
+              onTap: () async {
+                if (controller.locationDetailsFormKey.currentState!
+                    .validate()) {
+                  await controller.updateLocationDetails();
+                }
+              },
+              backgroundColor: AppColors.lightPrimary,
+            ),
     );
   }
 }

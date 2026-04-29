@@ -7,5 +7,8 @@ class HomeBindings extends Bindings {
     Get.lazyPut(() => HomeUsecase(Get.find()));
 
     Get.lazyPut(() => HomeController(Get.find()));
+    Get.lazyPut(
+          () => InterestController(Get.find(), Get.find(), Get.find(), Get.find()),
+    );
   }
 }

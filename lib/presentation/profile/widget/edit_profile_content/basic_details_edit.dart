@@ -12,75 +12,79 @@ class BasicDetailsEdit extends GetView<ProfileController> {
         title: 'Basic Details Edit',
         backgroundColor: theme.scaffoldBackgroundColor,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Form(
-          key: controller.basicDetailsFormKey,
-          child: Column(
-            spacing: 12.h,
-            children: [
-              _headerSection(),
-              IgnorePointer(
-                ignoring: true,
-                child: _textField(
-                  theme,
-                  label: 'Mobile Number',
-                  controller: TextEditingController(
-                    text: controller.profileDetails['mobile_no'] ?? '',
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.w),
+          child: Form(
+            key: controller.basicDetailsFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 12.h,
+              children: [
+                _headerSection(),
+                IgnorePointer(
+                  ignoring: true,
+                  child: _textField(
+                    theme,
+                    label: 'Mobile Number',
+                    controller: TextEditingController(
+                      text: controller.profileDetails['mobile_no'] ?? '',
+                    ),
                   ),
                 ),
-              ),
-              _textField(
-                theme,
-                label: 'WhatsApp Number',
-                controller: controller.whatsappNoController,
-              ),
+                _textField(
+                  theme,
+                  label: 'WhatsApp Number',
+                  controller: controller.whatsappNoController,
+                ),
 
-              _textField(
-                theme,
-                label: 'Alternative Number',
-                controller: controller.alternateNoController,
-              ),
-              Row(
-                spacing: 16.w,
-                children: [
-                  Expanded(child: _buildAgeDropdown()),
-                  Expanded(child: _buildStatusDropdown()),
-                ],
-              ),
-              Row(
-                spacing: 16.w,
-                children: [
-                  Expanded(child: _buildHeightDropdown()),
-                  Expanded(child: _buildCreatedForDropdown()),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              Obx(
-                () => controller.isUpdateLoading.isTrue
-                    ? AppLoader.circular(
-                        color: AppColors.lightPrimary,
-                        strokeWidth: 2.5,
-                        size: 22.r,
-                      )
-                    : AppButton(
-                        text: 'Submit',
-                        onTap: () async {
-                          if (controller.basicDetailsFormKey.currentState!
-                              .validate()) {
-                            await controller.updateBasicDetails();
-                          }
-                        },
-                        backgroundColor: AppColors.lightPrimary,
-                      ),
-              ),
-            ],
+                _textField(
+                  theme,
+                  label: 'Alternative Number',
+                  controller: controller.alternateNoController,
+                ),
+                Row(
+                  spacing: 16.w,
+                  children: [
+                    Expanded(child: _buildAgeDropdown()),
+                    Expanded(child: _buildStatusDropdown()),
+                  ],
+                ),
+                Row(
+                  spacing: 16.w,
+                  children: [
+                    Expanded(child: _buildHeightDropdown()),
+                    Expanded(child: _buildCreatedForDropdown()),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                Obx(
+                  () => controller.isUpdateLoading.isTrue
+                      ? AppLoader.circular(
+                          color: AppColors.lightPrimary,
+                          strokeWidth: 2.5,
+                          size: 22.r,
+                        )
+                      : AppButton(
+                          text: 'Submit',
+                          onTap: () async {
+                            if (controller.basicDetailsFormKey.currentState!
+                                .validate()) {
+                              await controller.updateBasicDetails();
+                            }
+                          },
+                          backgroundColor: AppColors.lightPrimary,
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // 🔹 HEADER
   Widget _headerSection() {
     return Row(
       spacing: 16.w,
@@ -99,14 +103,15 @@ class BasicDetailsEdit extends GetView<ProfileController> {
     );
   }
 
+  // ---------------- 🔽 DROPDOWNS COMPONENT ----------------
   Widget _buildAgeDropdown() {
     return Obx(
       () => AppDropdownField(
         isRequired: true,
-        title: "Select Your Age",
+        title: "Age",
         value: controller.selectedAge.value,
         items: controller.ageList.map((e) => e['name']).toList(),
-        hintText: 'Select your Age',
+        hintText: 'Select Age',
         validator: AppValidators.required,
         onChanged: (val) => controller.selectedAge.value = val,
       ),
@@ -120,7 +125,7 @@ class BasicDetailsEdit extends GetView<ProfileController> {
         title: "Marital Status",
         value: controller.selectedMStatus.value,
         items: controller.mStatusList,
-        hintText: 'Marital Status',
+        hintText: 'Select Status',
         validator: AppValidators.required,
         onChanged: (val) => controller.selectedMStatus.value = val,
       ),
@@ -169,7 +174,7 @@ class BasicDetailsEdit extends GetView<ProfileController> {
       showLabel: true,
       controller: controller,
       enabled: enabled,
-      validator: AppValidators.phone,
+      validator: enabled ? AppValidators.phone : null,
       hint: label,
       focusedBorder: theme.inputDecorationTheme.focusedBorder,
       enabledBorder: theme.inputDecorationTheme.enabledBorder,
@@ -193,7 +198,7 @@ class _CountryPrefix extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.w),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

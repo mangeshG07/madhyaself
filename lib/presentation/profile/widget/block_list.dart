@@ -10,6 +10,7 @@ class BlockUserList extends StatefulWidget {
 class _BlockUserListState extends State<BlockUserList> {
   final controller = Get.find<BlockController>();
   final unblockController = Get.find<OtherProfileController>();
+
   @override
   void initState() {
     super.initState();
@@ -80,6 +81,7 @@ class _BlockUserListState extends State<BlockUserList> {
   }
 
   Widget _buildBlockTile(ThemeData theme, blockUser, BuildContext context) {
+    final imageUrl = blockUser['profile_image']?.toString() ?? '';
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       padding: EdgeInsets.all(8.w),
@@ -104,19 +106,40 @@ class _BlockUserListState extends State<BlockUserList> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10.r),
-              child: Image.network(
-                blockUser['profile_image']?.toString() ?? '',
+              child: FadeInImage(
+                placeholder: const AssetImage(AppAssets.defaultImage),
+                image: (imageUrl.toString().isNotEmpty)
+                    ? NetworkImage(imageUrl)
+                    : const AssetImage(AppAssets.defaultImage) as ImageProvider,
+                fit: BoxFit.cover,
                 width: 55.w,
                 height: 55.h,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 55.w,
-                  height: 55.h,
-                  color: Colors.grey.shade200,
-                  child: Icon(Icons.person, color: Colors.grey),
-                ),
+                fadeInDuration: const Duration(milliseconds: 300),
+                imageErrorBuilder: (_, __, ___) {
+                  return Image.asset(
+                    AppAssets.defaultImage,
+                    fit: BoxFit.cover,
+                    width: 55.w,
+                    height: 55.h,
+                  );
+                },
               ),
             ),
+            // ClipRRect(
+            //   borderRadius: BorderRadius.circular(10.r),
+            //   child: Image.network(
+            //     blockUser['profile_image']?.toString() ?? '',
+            //     width: 55.w,
+            //     height: 55.h,
+            //     fit: BoxFit.cover,
+            //     errorBuilder: (_, __, ___) => Container(
+            //       width: 55.w,
+            //       height: 55.h,
+            //       color: Colors.grey.shade200,
+            //       child: Icon(Icons.person, color: Colors.grey),
+            //     ),
+            //   ),
+            // ),
             SizedBox(width: 12.w),
             Expanded(
               child: Column(

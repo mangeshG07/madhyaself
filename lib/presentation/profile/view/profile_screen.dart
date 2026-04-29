@@ -28,15 +28,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Obx(
         () => controller.isLoading.isTrue
             ? AppLoader.circular(color: AppColors.lightPrimary)
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  spacing: 12.h,
-                  children: [
-                    _buildProfileHeader(theme),
-                    _buildCompletionCard(theme),
-                    _buildSectionCard(controller.menuList, theme),
-                  ],
+            : RefreshIndicator(
+                onRefresh: () async => await controller.getProfile(),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    spacing: 12.h,
+                    children: [
+                      _buildProfileHeader(theme),
+                      _buildCompletionCard(theme),
+                      _buildSectionCard(controller.menuList, theme),
+                    ],
+                  ),
                 ),
               ),
       ),
@@ -55,35 +58,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // 🔥 PROFILE HEADER
   Widget _buildProfileHeader(ThemeData theme) {
+    final imageUrl = controller.profileDetails['profile_image'];
+
     return Container(
-      padding: EdgeInsets.all(16.w),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+        gradient: LinearGradient(
+          colors: [Colors.white, Colors.grey.shade50],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 51.r,
-            backgroundColor: Colors.grey.shade200,
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: CircleAvatar(
-              radius: 50.r,
-              backgroundColor: AppColors.grey100,
-              child: ClipOval(
-                child: FadeInImage(
-                  placeholder: const AssetImage(AppAssets.appLogo),
-                  image: NetworkImage(
-                    controller.profileDetails['profile_image'] ?? '',
+              radius: 55.r,
+              backgroundColor: Colors.white,
+              child: CircleAvatar(
+                radius: 50.r,
+                backgroundColor: AppColors.grey100,
+                child: ClipOval(
+                  child: FadeInImage(
+                    placeholder: const AssetImage(AppAssets.defaultImage),
+                    image: (imageUrl != null && imageUrl.toString().isNotEmpty)
+                        ? NetworkImage(imageUrl)
+                        : const AssetImage(AppAssets.defaultImage)
+                              as ImageProvider,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fadeInDuration: const Duration(milliseconds: 300),
+                    imageErrorBuilder: (_, __, ___) {
+                      return Image.asset(
+                        AppAssets.defaultImage,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      );
+                    },
                   ),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fadeInDuration: const Duration(milliseconds: 300),
-                  imageErrorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      AppAssets.appLogo,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    );
-                  },
                 ),
               ),
             ),
@@ -91,13 +126,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SizedBox(height: 10.h),
           AppText(
             text: capitalizeFirst(controller.profileDetails['name'] ?? ''),
-            fontSize: 18.sp,
+            fontSize: 20.sp,
             fontWeight: FontWeight.bold,
-            style: theme.textTheme.titleLarge,
+            style: theme.textTheme.titleLarge?.copyWith(letterSpacing: 0.3),
           ),
           SizedBox(height: 4.h),
           AppText(
-            text: 'MDYST0250M',
+            text: controller.profileDetails['username'] ?? '',
             fontSize: 12.sp,
             color: AppColors.lightTextLowColor,
           ),
@@ -106,23 +141,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // 🚀 COMPLETION CARD
   Widget _buildCompletionCard(ThemeData theme) {
-    final percent =
-        (controller.profileDetails['profile_completion'] ?? 0) / 100;
+    final completion = controller.profileDetails['profile_completion'] ?? 0;
+    final percent = completion / 100;
 
-    if (controller.profileDetails['profile_completion'].toString() == '100') {
-      return SizedBox();
-    }
+    if (completion.toString() == '100') return const SizedBox();
+
     return Container(
       padding: EdgeInsets.all(16.w),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             theme.brightness == Brightness.light
-                ? AppColors.lightPrimary.withValues(alpha: 0.1)
-                : AppColors.lightMidPrimary.withValues(alpha: 0.5),
-            Colors.white24,
+                ? AppColors.lightPrimary.withValues(alpha: 0.08)
+                : AppColors.lightMidPrimary.withValues(alpha: 0.4),
+            theme.cardColor.withValues(alpha: 0.2),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20.r),
       ),
@@ -195,62 +233,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // 🎯 MENU ITEM
   Widget _menuItem(dynamic menu, ThemeData theme) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12.r),
-      onTap: menu['onTap'],
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8.w),
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.light
-                    ? AppColors.lightPrimary.withValues(alpha: 0.05)
-                    : AppColors.lightPink.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: HugeIcon(
-                icon: menu['icon'],
-                color: theme.brightness == Brightness.light
-                    ? AppColors.lightPrimary
-                    : Colors.white,
-                size: 20.r,
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: AppText(
-                text: menu['title'] ?? '',
-                fontSize: 14.sp,
-                style: theme.textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.w600,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12.r),
+        onTap: menu['onTap'],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.light
+                      ? AppColors.lightPrimary.withValues(alpha: 0.08)
+                      : AppColors.lightPink.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(14.r),
+                  border: Border.all(
+                    color: theme.dividerColor.withValues(alpha: 0.1),
+                  ),
+                ),
+                child: HugeIcon(
+                  icon: menu['icon'],
+                  color: theme.brightness == Brightness.light
+                      ? AppColors.lightPrimary
+                      : Colors.white,
+                  size: 20.r,
                 ),
               ),
-            ),
-            HugeIcon(
-              icon: HugeIcons.strokeRoundedArrowRight01,
-              size: 20.r,
-              color: Colors.grey,
-            ),
-          ],
+              SizedBox(width: 12.w),
+              Expanded(
+                child: AppText(
+                  text: menu['title'] ?? '',
+                  fontSize: 14.sp,
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.all(6.w),
+                child: HugeIcon(
+                  icon: HugeIcons.strokeRoundedArrowRight01,
+                  size: 18.r,
+                  color: theme.hintColor,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  // 📦 SECTION CARD
   Widget _buildSectionCard(List<dynamic> list, ThemeData theme) {
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8),
         ],
       ),
       child: Column(

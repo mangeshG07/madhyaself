@@ -1,5 +1,8 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+// BASE_URL=http://192.168.29.112/madhyasti/api/v1/
+// https://beta.madhyasthi.com/api/v1/
+
 class DioClient {
   static Dio create() {
     final dio = Dio(

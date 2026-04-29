@@ -10,6 +10,7 @@ class MatchesRepositoryImpl extends MatchesRepository {
       request.userId,
       request.type,
       request.pageNo,
+      request.view,
     );
   }
 }

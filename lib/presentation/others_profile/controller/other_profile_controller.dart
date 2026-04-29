@@ -41,11 +41,14 @@ class OtherProfileController extends GetxController {
   final profileDetails = {}.obs;
   final chipsData = [].obs;
 
-  Future<void> otherProfileDetails(String profileId) async {
+  Future<void> otherProfileDetails(
+    String profileId, {
+    bool showLoading = true,
+  }) async {
     try {
       final userid = await SecureStorageService.read('user_id') ?? '';
 
-      isLoading(true);
+      if (showLoading) isLoading(true);
 
       final res = await usecase.call(OtherUserRequest(userid, profileId));
 
@@ -61,7 +64,7 @@ class OtherProfileController extends GetxController {
         setChipsData(profileDetails);
       }
     } finally {
-      isLoading(false);
+      if (showLoading) isLoading(false);
     }
   }
 

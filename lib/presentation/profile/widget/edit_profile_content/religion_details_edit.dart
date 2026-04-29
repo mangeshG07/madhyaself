@@ -6,55 +6,61 @@ class ReligionDetailsEdit extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: CustomAppbar(
         title: 'Religion Info Edit',
         backgroundColor: theme.scaffoldBackgroundColor,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Form(
-          key: controller.religionDetailsFormKey,
-          child: Column(
-            spacing: 12.h,
-            children: [
-              Row(
-                spacing: 16.w,
-                children: [
-                  buildDetailItem(
-                    label: 'Religion',
-                    value:
-                        controller.profileDetails['religion']?.toString() ?? '',
-                  ),
-                  Expanded(child: _buildCasteDropdown()),
-                ],
-              ),
-              _buildSubCasteDropdown(),
-              Obx(
-                () => controller.isUpdateLoading.isTrue
-                    ? AppLoader.circular(
-                        color: AppColors.lightPrimary,
-                        strokeWidth: 2.5,
-                        size: 22.r,
-                      )
-                    : AppButton(
-                        text: 'Submit',
-                        onTap: () async {
-                          if (controller.religionDetailsFormKey.currentState!
-                              .validate()) {
-                            await controller.updateReligionDetails();
-                          }
-                        },
-                        backgroundColor: AppColors.lightPrimary,
-                      ),
-              ),
-            ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.w),
+          child: Form(
+            key: controller.religionDetailsFormKey,
+            child: Column(
+              spacing: 12.h,
+              children: [
+                Row(
+                  spacing: 16.w,
+                  children: [
+                    Expanded(child: _buildReligionField(theme)),
+                    Expanded(child: _buildCasteDropdown()),
+                  ],
+                ),
+                _buildSubCasteDropdown(),
+                _buildSubmitButton(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // 🔸 READONLY RELIGION
+  Widget _buildReligionField(ThemeData theme) {
+    return IgnorePointer(
+      ignoring: true,
+      child: AppTextField(
+        fillColor: theme.scaffoldBackgroundColor,
+        enabledBorder: theme.inputDecorationTheme.enabledBorder,
+        filled: true,
+        contentPadding: const EdgeInsets.all(15),
+        label: 'Religion',
+        textStyle: TextStyle(
+          color: theme.colorScheme.onSurface,
+          fontSize: 14.sp,
+        ),
+        labelStyle: theme.textTheme.labelMedium,
+        showLabel: true,
+        controller: TextEditingController(
+          text: controller.profileDetails['religion']?.toString() ?? '',
+        ),
+      ),
+    );
+  }
+
+  // 🔽 CASTE DROPDOWN
   Widget _buildCasteDropdown() {
     return AppDropdownField(
       isRequired: true,
@@ -66,20 +72,9 @@ class ReligionDetailsEdit extends GetView<ProfileController> {
       validator: AppValidators.required,
       onChanged: (val) => controller.selectedCaste.value = val,
     );
-
-    //   AppDropdownSearch<String>(
-    //   title: "Caste / Community",
-    //   isRequired: true,
-    //   value: controller.selectedAge.value,
-    //   items: controller.ageList,
-    //   hintText: "Select",
-    //   showSearchBox: false,
-    //   searchHintText: "Search Caste / Community",
-    //   onChanged: (val) => controller.selectedAge.value = val,
-    //   validator: AppValidators.required,
-    // );
   }
 
+  // 🔽 SUB CASTE DROPDOWN
   Widget _buildSubCasteDropdown() {
     return AppDropdownField(
       isRequired: true,
@@ -91,17 +86,27 @@ class ReligionDetailsEdit extends GetView<ProfileController> {
       validator: AppValidators.required,
       onChanged: (val) => controller.selectedSubCaste.value = val,
     );
+  }
 
-    //   AppDropdownSearch<String>(
-    //   title: "Sub Caste",
-    //   isRequired: true,
-    //   value: controller.selectedAge.value,
-    //   items: controller.ageList,
-    //   hintText: "Select",
-    //   showSearchBox: false,
-    //   searchHintText: "Search Sub Caste",
-    //   onChanged: (val) => controller.selectedAge.value = val,
-    //   validator: AppValidators.required,
-    // );
+  // 🔽 SUBMIT BUTTON
+  Widget _buildSubmitButton() {
+    return Obx(
+      () => controller.isUpdateLoading.isTrue
+          ? AppLoader.circular(
+              color: AppColors.lightPrimary,
+              strokeWidth: 2.5,
+              size: 22.r,
+            )
+          : AppButton(
+              text: 'Save Changes',
+              onTap: () async {
+                if (controller.religionDetailsFormKey.currentState!
+                    .validate()) {
+                  await controller.updateReligionDetails();
+                }
+              },
+              backgroundColor: AppColors.lightPrimary,
+            ),
+    );
   }
 }

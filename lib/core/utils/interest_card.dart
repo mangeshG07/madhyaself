@@ -1,4 +1,4 @@
-import '../../../core/exporters/app_export.dart';
+import '../exporters/app_export.dart';
 
 class InterestCard extends StatelessWidget {
   final Map<String, dynamic> interest;
@@ -69,10 +69,10 @@ class _InterestImage extends StatelessWidget {
         width: 120.w,
         height: double.infinity,
         child: FadeInImage(
-          placeholder: AssetImage(AppAssets.appLogo),
+          placeholder: AssetImage(AppAssets.defaultImage),
           image: NetworkImage(image),
           fit: BoxFit.cover,
-          imageErrorBuilder: (_, __, ___) => Image.asset(AppAssets.appLogo),
+          imageErrorBuilder: (_, __, ___) => Image.asset(AppAssets.defaultImage),
         ),
       ),
     );

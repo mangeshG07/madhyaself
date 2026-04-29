@@ -21,7 +21,8 @@ import 'package:madhya/presentation/profile/widget/edit_profile_content/professi
 import 'package:madhya/presentation/profile/widget/edit_profile_content/religion_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/help_and_support.dart';
 import 'package:madhya/presentation/profile/widget/manage_photos.dart';
-import 'package:madhya/presentation/profile/widget/partner_basic_edit.dart';
+import 'package:madhya/presentation/profile/widget/package.dart';
+import 'package:madhya/presentation/profile/widget/partner_preference/partner_basic_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_professional_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_religion_details_edit.dart';
@@ -101,6 +102,11 @@ class AppPages {
     GetPage(name: Routes.basicDetailsEdit, page: () => BasicDetailsEdit()),
     GetPage(name: Routes.aboutMeEdit, page: () => AboutMeEdit()),
     GetPage(name: Routes.deleteScreen, page: () => DeleteScreen()),
+    GetPage(
+      name: Routes.packageScreen,
+      page: () => Package(),
+      binding: ProfileBindings(),
+    ),
 
     GetPage(
       name: Routes.professionalDetailsEdit,
@@ -125,7 +131,11 @@ class AppPages {
       ],
     ),
     GetPage(name: Routes.reportedUserList, page: () => ReportedList()),
-    GetPage(name: Routes.searchResult, page: () => SearchResult(), binding: GlobalSearchBindings(),),
+    GetPage(
+      name: Routes.searchResult,
+      page: () => SearchResult(),
+      binding: GlobalSearchBindings(),
+    ),
     GetPage(
       name: Routes.horoscopeDetailsEdit,
       page: () => HoroscopeDetailsEdit(),
@@ -137,7 +147,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.partnerBasicDetailsEdit,
-      page: () => PartnerBasicDetailsEdit2(),
+      page: () => PartnerBasicDetailsEdit(),
     ),
     GetPage(
       name: Routes.partnerProfessionalDetailsEdit,

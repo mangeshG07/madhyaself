@@ -52,7 +52,7 @@ class _ReportedListState extends State<ReportedList> {
                 ListView.separated(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  separatorBuilder: (_, index) => const SizedBox(height: 0),
+                  separatorBuilder: (_, index) => const SizedBox(height: 8),
                   itemCount: controller.items.length,
                   itemBuilder: (_, index) {
                     final reportedUser = controller.items[index];
@@ -80,6 +80,7 @@ class _ReportedListState extends State<ReportedList> {
   }
 
   Widget _buildReportTile(ThemeData theme, reportedUser, BuildContext context) {
+    final imageUrl = reportedUser['profile_image']?.toString() ?? '';
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       padding: EdgeInsets.all(8.w),
@@ -104,19 +105,24 @@ class _ReportedListState extends State<ReportedList> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10.r),
-              child: Image.network(
-                reportedUser['profile_image']?.toString() ?? '',
+              child: FadeInImage(
+                placeholder: const AssetImage(AppAssets.defaultImage),
+                image: (imageUrl.toString().isNotEmpty)
+                    ? NetworkImage(imageUrl)
+                    : const AssetImage(AppAssets.defaultImage) as ImageProvider,
+                fit: BoxFit.cover,
                 width: 55.w,
                 height: 55.h,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 55.w,
-                  height: 55.h,
-                  color: Colors.grey.shade200,
-                  child: Icon(Icons.person, color: Colors.grey),
-                ),
-              ),
-            ),
+                fadeInDuration: const Duration(milliseconds: 300),
+                imageErrorBuilder: (_, __, ___) {
+                  return Image.asset(
+                    AppAssets.defaultImage,
+                    fit: BoxFit.cover,
+                    width: 55.w,
+                    height: 55.h,
+                  );
+                },
+              )),
             SizedBox(width: 12.w),
             Expanded(
               child: Column(

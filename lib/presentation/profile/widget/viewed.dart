@@ -93,56 +93,58 @@ class _ViewedState extends State<Viewed> {
           }
           return false;
         },
-        child: Column(
-          children: [
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-              itemCount: controller.items.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12.h,
-                crossAxisSpacing: 6.w,
-                childAspectRatio: 0.59.h,
-              ),
-              itemBuilder: (context, index) {
-                final match = controller.items[index];
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                itemCount: controller.items.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12.h,
+                  crossAxisSpacing: 6.w,
+                  childAspectRatio: 0.59.h,
+                ),
+                itemBuilder: (context, index) {
+                  final match = controller.items[index];
 
-                return CompactCard(
-                  details: {
-                    'name': match['name'] ?? '',
-                    'id': match['viewer_id']?.toString() ?? '',
-                    'age': getAgeJob(match),
-                    'address': getAddress(match),
-                    'image': match['profile_image']?.toString() ?? '',
-                    'isVerified': match['isVerified'] ?? false,
-                    'isPremium': match['isPremium'] ?? false,
-                  },
-                  onTap: () => Get.toNamed(
-                    Routes.othersProfile,
-                    arguments: {
-                      'id': controller.selectedType.value == 1
-                          ? match['viewed_user_id']?.toString() ?? ''
-                          : match['viewer_id']?.toString() ?? '',
+                  return CompactCard(
+                    details: {
+                      'name': match['name'] ?? '',
+                      'id': match['viewer_id']?.toString() ?? '',
+                      'age': getAgeJob(match),
+                      'address': getAddress(match),
+                      'image': match['profile_image']?.toString() ?? '',
+                      'isVerified': match['isVerified'] ?? false,
+                      'isPremium': match['isPremium'] ?? false,
                     },
-                  ),
-                );
-              },
-            ),
+                    onTap: () => Get.toNamed(
+                      Routes.othersProfile,
+                      arguments: {
+                        'id': controller.selectedType.value == 1
+                            ? match['viewed_user_id']?.toString() ?? ''
+                            : match['viewer_id']?.toString() ?? '',
+                      },
+                    ),
+                  );
+                },
+              ),
 
-            Obx(() {
-              if (controller.isLoadMore.value) {
-                // Still loading next page
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  child: AppLoader.circular(color: AppColors.lightPrimary),
-                );
-              } else {
-                return const SizedBox();
-              }
-            }),
-          ],
+              Obx(() {
+                if (controller.isLoadMore.value) {
+                  // Still loading next page
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    child: AppLoader.circular(color: AppColors.lightPrimary),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              }),
+            ],
+          ),
         ),
       );
 

@@ -33,7 +33,6 @@ class InterestController extends GetxController with PaginationMixin {
     startLoading(showLoading: showLoading);
 
     final userid = await SecureStorageService.read('user_id') ?? '';
-
     try {
       final response = await _getInterestUsecase.call(
         UserRequest(

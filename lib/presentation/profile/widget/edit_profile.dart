@@ -6,37 +6,47 @@ class EditProfile extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.light
           ? AppColors.bgColor
           : theme.scaffoldBackgroundColor,
-      appBar: _buildAppBar(theme),
+      appBar: CustomAppbar(
+        title: 'Edit Profile',
+        backgroundColor: theme.brightness == Brightness.light
+            ? AppColors.bgColor
+            : theme.scaffoldBackgroundColor,
+      ),
       body: Obx(
         () => controller.isLoading.isTrue
             ? AppLoader.circular(color: AppColors.lightPrimary)
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(16.w),
-                child: Obx(
-                  () => Column(
-                    spacing: 12.h,
-                    children: [
-                      _buildProfileImage(theme),
-                      _buildBasicDetails(theme),
-                      _buildAboutMe(theme),
-                      _buildProfessionalDetails(theme),
-                      _buildReligionDetails(theme),
-                      _buildLocationDetails(theme),
-                      _buildFamilyDetails(theme),
-                      _buildHoroscopeDetails(theme),
-                      _buildPhotosDetails(theme),
-                      SafeArea(
-                        child: AppButton(
-                          text: 'Delete Account',
-                          backgroundColor: AppColors.lightPrimary,
-                          onTap: () => Get.toNamed(Routes.deleteScreen),
+            : RefreshIndicator(
+                onRefresh: () async => await controller.getProfile(),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.all(16.w),
+                  child: Obx(
+                    () => Column(
+                      spacing: 12.h,
+                      children: [
+                        _buildProfileImage(theme),
+                        _buildBasicDetails(theme),
+                        _buildAboutMe(theme),
+                        _buildProfessionalDetails(theme),
+                        _buildReligionDetails(theme),
+                        _buildLocationDetails(theme),
+                        _buildFamilyDetails(theme),
+                        _buildHoroscopeDetails(theme),
+                        _buildPhotosDetails(theme),
+                        SafeArea(
+                          child: AppButton(
+                            text: 'Delete Account',
+                            backgroundColor: AppColors.lightPrimary,
+                            onTap: () => Get.toNamed(Routes.deleteScreen),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -44,84 +54,40 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
-  CustomAppbar _buildAppBar(ThemeData theme) {
-    return CustomAppbar(
-      title: 'Edit Profile',
-      backgroundColor: theme.brightness == Brightness.light
-          ? AppColors.bgColor
-          : theme.scaffoldBackgroundColor,
-    );
-  }
-
+  // 🖼️ PROFILE IMAGE
   Widget _buildProfileImage(ThemeData theme) {
     final image = controller.profileDetails['profile_image'] ?? '';
     return Center(
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Obx(() {
-            final imageFile = controller.profileImage.value;
-
-            final ImageProvider<Object> imageProvider = imageFile != null
-                ? FileImage(imageFile)
-                : NetworkImage(image);
-
-            return CircleAvatar(
-              radius: 51.r,
-              backgroundColor: Colors.grey.shade200,
-              child: CircleAvatar(
-                radius: 50.r,
-                backgroundColor: AppColors.grey100,
-                child: ClipOval(
-                  child: FadeInImage(
-                    placeholder: const AssetImage(AppAssets.appLogo),
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fadeInDuration: const Duration(milliseconds: 300),
-                    imageErrorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        AppAssets.appLogo,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            );
-          }),
-          Positioned(
-            bottom: 8,
-            right: -5,
-            child: GestureDetector(
-              onTap: () {
-                AppFilePicker.open(
-                  onPicked: (file) {
-                    controller.profileImage.value = file;
-                  },
+      child: CircleAvatar(
+        radius: 52.r,
+        backgroundColor: Colors.grey.shade400,
+        child: CircleAvatar(
+          radius: 50.r,
+          backgroundColor: AppColors.grey100,
+          child: ClipOval(
+            child: FadeInImage(
+              placeholder: const AssetImage(AppAssets.defaultImage),
+              image: NetworkImage(image),
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              fadeInDuration: const Duration(milliseconds: 300),
+              imageErrorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  AppAssets.defaultImage,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
                 );
               },
-              child: CircleAvatar(
-                radius: 14.r,
-                backgroundColor: theme.dividerTheme.color,
-                child: Icon(
-                  Icons.edit,
-                  size: 16.sp,
-                  color: theme.brightness == Brightness.light
-                      ? AppColors.lightPrimary
-                      : Colors.white,
-                ),
-              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
+  // 🔹 BASIC DETAILS
   Widget _buildBasicDetails(ThemeData theme) {
     final details = controller.profileDetails;
     return buildSection(
@@ -191,22 +157,22 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
+  // 📝 ABOUT
   Widget _buildAboutMe(ThemeData theme) {
     return buildSection(
       Container(
         width: double.infinity,
-        padding: EdgeInsets.all(8.r),
+        padding: EdgeInsets.all(10.r),
         margin: EdgeInsets.symmetric(vertical: 8.r),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grey300, width: 0.5.w),
+          border: Border.all(color: theme.dividerColor, width: 0.2.w),
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: AppText(
           maxLines: 20,
           text: controller.profileDetails['about'] ?? '-',
-          fontSize: 14.sp,
-          style: theme.textTheme.bodyMedium,
-          color: AppColors.lightTextMidColor,
+          fontSize: 13.sp,
+          style: theme.textTheme.bodyMedium!.copyWith(fontSize: 13.sp),
         ),
       ),
       'About Me',
@@ -216,6 +182,7 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
+  // 💼 PROFESSIONAL
   Widget _buildProfessionalDetails(ThemeData theme) {
     return buildSection(
       Column(
@@ -269,6 +236,7 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
+  // 💼 RELIGION
   Widget _buildReligionDetails(ThemeData theme) {
     return buildSection(
       Column(
@@ -307,6 +275,7 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
+  // 🌍 LOCATION
   Widget _buildLocationDetails(ThemeData theme) {
     return buildSection(
       Column(
@@ -345,6 +314,7 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
+  // 👨‍👩‍👧 FAMILY
   Widget _buildFamilyDetails(ThemeData theme) {
     return buildSection(
       Column(
@@ -398,6 +368,7 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
+  // ✋ HOROSCOPE
   Widget _buildHoroscopeDetails(ThemeData theme) {
     return buildSection(
       Column(
@@ -438,9 +409,10 @@ class EditProfile extends GetView<ProfileController> {
     );
   }
 
+  // 📸 PHOTOS
   Widget _buildPhotosDetails(ThemeData theme) {
     final photos = controller.profileDetails['photos'] ?? [];
-    if (photos.length == 0) return SizedBox();
+    if (photos.isEmpty) return const SizedBox();
 
     return buildSection(
       showEdit: false,
@@ -449,7 +421,7 @@ class EditProfile extends GetView<ProfileController> {
         child: AttachmentPreviewList(
           attachments: List<String>.from(photos),
           config: AttachmentPreviewConfig(showDownload: false),
-          onDownload: (v) {},
+          onDownload: (_) {},
         ),
       ),
       'Images',

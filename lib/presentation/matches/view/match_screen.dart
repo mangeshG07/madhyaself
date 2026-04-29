@@ -74,43 +74,77 @@ class _MatchScreenState extends State<MatchScreen> {
   }
 
   Future<dynamic> _matchFilter(ThemeData theme) {
-    return AppBottomSheet.show(
-      context: context,
-      showCloseButton: true,
-      title: 'Filter',
-      textStyle: theme.textTheme.titleLarge,
+    return Get.bottomSheet(
       backgroundColor: theme.scaffoldBackgroundColor,
-      height: Get.height * 0.38.h,
-      child: Column(
-        spacing: 12.h,
-        children: [
-          AppButton(
-            text: 'Not Viewed',
-            type: AppButtonType.outline,
-            backgroundColor: Colors.white,
-            onTap: () {},
-            textStyle: theme.textTheme.titleSmall,
-            textColor: AppColors.lightTextMidColor,
-            borderColor: AppColors.grey200,
+      SafeArea(
+        child: Obx(
+          () => Container(
+            decoration: BoxDecoration(borderRadius: AppRadius.topXL),
+            padding: EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12.h,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Filter',
+                          style: theme.textTheme.titleLarge,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          size: 20.sp,
+                          color: AppColors.grey600,
+                        ),
+                        onPressed: () => Get.back(),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                ),
+                AppButton(
+                  text: 'Not Viewed',
+                  type: AppButtonType.outline,
+                  backgroundColor: Colors.white,
+                  onTap: () => controller.selectedFilter.value = 0.toString(),
+                  textStyle: theme.textTheme.titleSmall,
+                  textColor: AppColors.lightTextMidColor,
+                  borderColor: controller.selectedFilter.value == '0'
+                      ? AppColors.lightPrimary
+                      : AppColors.grey200,
+                ),
+                AppButton(
+                  text: 'Viewed',
+                  onTap: () => controller.selectedFilter.value = 1.toString(),
+                  type: AppButtonType.outline,
+                  backgroundColor: Colors.white,
+                  textStyle: theme.textTheme.titleSmall,
+                  textColor: AppColors.lightTextMidColor,
+                  borderColor: controller.selectedFilter.value == '1'
+                      ? AppColors.lightPrimary
+                      : AppColors.grey200,
+                ),
+                AppButton(
+                  text: 'Apply',
+                  onTap: () async {
+                    Get.back();
+                    await controller.getMatchList(isRefresh: true);
+                  },
+                  type: AppButtonType.secondary,
+                  backgroundColor: AppColors.lightPrimary,
+                  textColor: Colors.white,
+                  borderColor: AppColors.grey200,
+                ),
+              ],
+            ),
           ),
-          AppButton(
-            text: 'Viewed',
-            onTap: () {},
-            type: AppButtonType.outline,
-            backgroundColor: Colors.white,
-            textStyle: theme.textTheme.titleSmall,
-            textColor: AppColors.lightTextMidColor,
-            borderColor: AppColors.grey200,
-          ),
-          AppButton(
-            text: 'Apply',
-            onTap: () {},
-            type: AppButtonType.secondary,
-            backgroundColor: AppColors.lightPrimary,
-            textColor: Colors.white,
-            borderColor: AppColors.grey200,
-          ),
-        ],
+        ),
       ),
     );
   }

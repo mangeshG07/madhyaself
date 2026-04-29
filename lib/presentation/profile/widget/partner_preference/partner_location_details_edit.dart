@@ -54,7 +54,7 @@ class PartnerLocationDetailsEdit extends GetView<PreferenceController> {
   Widget _buildCountryDropdown() {
     return AppDropdownField(
       isRequired: true,
-      title: "Select Your Country",
+      title: "Select Country",
       value: controller.selectedCountry.value,
       items: controller.countryList,
       hintText: 'Country',

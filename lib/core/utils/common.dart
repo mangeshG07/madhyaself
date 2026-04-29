@@ -247,11 +247,12 @@ Widget buildDetailItem({
   );
 }
 
+// 📦 COMMON SECTION WRAPPER
 Widget buildSection(
   dynamic child,
   String title,
   dynamic icon,
-  dynamic onTap,
+  VoidCallback onTap,
   ThemeData theme, {
   bool showEdit = true,
 }) {
@@ -259,7 +260,7 @@ Widget buildSection(
     padding: EdgeInsets.all(16.w),
     decoration: BoxDecoration(
       color: theme.cardColor,
-      borderRadius: BorderRadius.circular(20.r),
+      borderRadius: BorderRadius.circular(18.r),
       boxShadow: [
         theme.brightness == Brightness.light
             ? BoxShadow(
