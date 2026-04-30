@@ -33,6 +33,7 @@ class ApiConstants {
   static Duration get receiveTimeout => connectionTimeout;
 
   /// API endpoints
+  static const String base = 'http://192.168.29.112/madhyasti';
   static const String login = '/login';
   static const String verifyOTP = '/verify-otp';
   static const String getCommonData = '/get-common-data';

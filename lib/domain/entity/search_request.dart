@@ -34,18 +34,18 @@ class SearchRequest {
   Map<String, dynamic> toJson() {
     final data = {
       "user_id": userId,
-      "patner_age_from": partnerAgeFrom,
-      "patner_age_to": partnerAgeTo,
-      "patner_height_from": partnerHeightFrom,
-      "patner_height_to": partnerHeightTo,
-      "education_category_id": educationCategoryId,
-      "job_category_id": jobCategoryId,
+      "age_from": partnerAgeFrom,
+      "age_to": partnerAgeTo,
+      "height_from": partnerHeightFrom,
+      "height_to": partnerHeightTo,
+      "education_cat": educationCategoryId,
+      "job_cat": jobCategoryId,
       "religion_id": religionId,
       "caste_id": casteId,
       "country": country,
       "state": state,
       "city": city,
-      "annual_income": annualIncome,
+      "income_range": annualIncome,
       "username": userName,
     };
 

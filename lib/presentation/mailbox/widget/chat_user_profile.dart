@@ -22,7 +22,7 @@ class ChatUserProfile extends StatelessWidget {
               backgroundColor: AppColors.grey200,
               child: ClipOval(
                 child: FadeInImage(
-                  placeholder: const AssetImage(AppAssets.appLogo),
+                  placeholder: const AssetImage(AppAssets.defaultImage),
                   image: NetworkImage(userData['profile_image'] ?? ''),
                   fit: BoxFit.cover,
                   width: double.infinity,

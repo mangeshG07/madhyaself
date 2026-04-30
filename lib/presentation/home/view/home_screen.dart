@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildStats(Theme.of(context)),
                     _buildTodayMatch(theme),
                     _buildTopMatch(theme),
-                    _buildDiscoverMatch(Theme.of(context)),
+                    _buildDiscoverMatch(theme),
                   ],
                 ),
               ),
@@ -319,32 +319,64 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () => navController.updateIndex(1),
             theme: theme,
           ),
-          SizedBox(
-            height: Get.height * 0.34.h,
-            child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: controller.topMatchList.length,
-              itemBuilder: (_, index) {
+
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(controller.topMatchList.length, (index) {
                 final match = controller.topMatchList[index] ?? {};
-                return CompactCard(
-                  details: {
-                    'name': match['name'] ?? '',
-                    'id': match['id']?.toString() ?? '',
-                    'age': getAgeJob(match),
-                    'address': getAddress(match),
-                    'image': match['profile_image']?.toString() ?? '',
-                    'isVerified': match['isVerified'] ?? false,
-                    'isPremium': match['isPremium'] ?? false,
-                  },
-                  onTap: () => Get.toNamed(
-                    Routes.othersProfile,
-                    arguments: {'id': match['id']?.toString() ?? ''},
+                return Padding(
+                  padding: EdgeInsets.only(right: 12.w),
+                  child: CompactCard(
+                    details: {
+
+                      'name': match['name'] ?? '',
+                      'id': match['id']?.toString() ?? '',
+                      'age': getAgeJob(match),
+                      'address': getAddress(match),
+                      'image': match['profile_image']?.toString() ?? '',
+                      'isVerified': match['is_verified'] != '0',
+                      'isPremium': match['isPremium'] ?? false,
+                      'isHide': match['hide_photos'] != '0',
+                      'username': match['username'] ?? '',
+                    },
+                    onTap: () => Get.toNamed(
+                      Routes.othersProfile,
+                      arguments: {'id': match['id']?.toString() ?? ''},
+                    ),
                   ),
                 );
-              },
+              }),
             ),
           ),
+          // SizedBox(
+          //   height: Get.height * 0.34.h,
+          //   child: ListView.builder(
+          //     shrinkWrap: true,
+          //     scrollDirection: Axis.horizontal,
+          //     itemCount: controller.topMatchList.length,
+          //     itemBuilder: (_, index) {
+          //       final match = controller.topMatchList[index] ?? {};
+          //       return CompactCard(
+          //         details: {
+          //           'username': match['username'] ?? '',
+          //           'name': match['name'] ?? '',
+          //           'id': match['id']?.toString() ?? '',
+          //           'age': getAgeJob(match),
+          //           'address': getAddress(match),
+          //           'image': match['profile_image']?.toString() ?? '',
+          //           'isVerified': match['is_verified'] == '0' ? false : true,
+          //           'isPremium': match['isPremium'] ?? false,
+          //           'isHide': match['hide_photos'] == '0' ? false : true,
+          //         },
+          //         onTap: () => Get.toNamed(
+          //           Routes.othersProfile,
+          //           arguments: {'id': match['id']?.toString() ?? ''},
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       );
     });
@@ -376,76 +408,79 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               final item = controller.discStatData[index];
 
-              return Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.light
-                      ? AppColors.lightCardPink
-                      : theme.cardColor,
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      spacing: 12.w,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: theme.brightness == Brightness.light
-                                ? Colors.white
-                                : theme.inputDecorationTheme.fillColor,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: HugeIcon(
-                            icon: item["icon"] as List<List<dynamic>>,
-                            color: theme.primaryColor,
-                            size: 20.r,
-                          ),
-                        ),
-                        AppText(
-                          text: item["value"]?.toString() ?? '',
-                          fontSize: 12.sp,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: AppColors.lightTextLowColor,
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: AppText(
-                            text: item["title"]?.toString() ?? '',
-                            fontSize: 14.sp,
-                            maxLines: 2,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.lightTextLowColor,
+              return GestureDetector(
+                onTap: item['onTap'],
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.light
+                        ? AppColors.lightCardPink
+                        : theme.cardColor,
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        spacing: 12.w,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: theme.brightness == Brightness.light
+                                  ? Colors.white
+                                  : theme.inputDecorationTheme.fillColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: HugeIcon(
+                              icon: item["icon"] as List<List<dynamic>>,
+                              color: theme.primaryColor,
+                              size: 20.r,
                             ),
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: theme.brightness == Brightness.light
-                                ? Colors.white
-                                : theme.inputDecorationTheme.fillColor,
-                            borderRadius: BorderRadius.circular(100),
+                          AppText(
+                            text: item["value"]?.toString() ?? '',
+                            fontSize: 12.sp,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: AppColors.lightTextLowColor,
+                              fontSize: 14.sp,
+                            ),
                           ),
-                          child: HugeIcon(
-                            icon: HugeIcons.strokeRoundedArrowUpRight03,
-                            color: AppColors.lightTextLowColor,
-                            size: 20.r,
+                        ],
+                      ),
+
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: AppText(
+                              text: item["title"]?.toString() ?? '',
+                              fontSize: 14.sp,
+                              maxLines: 2,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.lightTextLowColor,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: theme.brightness == Brightness.light
+                                  ? Colors.white
+                                  : theme.inputDecorationTheme.fillColor,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: HugeIcon(
+                              icon: HugeIcons.strokeRoundedArrowUpRight03,
+                              color: AppColors.lightTextLowColor,
+                              size: 20.r,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

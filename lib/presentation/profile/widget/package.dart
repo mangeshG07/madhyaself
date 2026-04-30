@@ -81,12 +81,50 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
                   child: Column(
                     spacing: 20.h,
                     children: [
+                      _buildToggle(isLight),
                       _buildHeader(theme),
                       _buildPackageGrid(theme, isLight),
                     ],
                   ),
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildToggle(bool isLight) {
+    return Obx(
+      () => Container(
+        padding: const EdgeInsets.all(6.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+        decoration: BoxDecoration(
+          color: isLight ? AppColors.grey100 : AppColors.grey800,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            toggleItem(
+              title: 'Online Plan',
+              isSelected: controller.selectedType.value == 0,
+              onTap: () async {
+                controller.selectedType.value = 0;
+                // await controller.getShortList(isRefresh: true);
+              },
+              isLight: isLight,
+            ),
+            SizedBox(width: 8.w),
+            toggleItem(
+              title: 'Offline Plan',
+              isSelected: controller.selectedType.value == 1,
+              onTap: () async {
+                controller.selectedType.value = 1;
+                // await controller.getShortList(isRefresh: true);
+              },
+              isLight: isLight,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -254,23 +292,28 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.light
             ? AppColors.lightPrimary.withValues(alpha: 0.1)
-            : AppColors.grey300,
+            : AppColors.grey800,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
+        spacing: 4.w,
         mainAxisSize: MainAxisSize.min,
         children: [
           AppText(
             text: '₹',
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.lightPrimary,
+            color: theme.brightness == Brightness.light
+                ? AppColors.lightPrimary
+                : Colors.white,
           ),
           AppText(
             text: price,
             fontSize: 24.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.lightPrimary,
+            color: theme.brightness == Brightness.light
+                ? AppColors.lightPrimary
+                : Colors.white,
           ),
         ],
       ),
@@ -285,7 +328,7 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Divider(color: Colors.grey.shade200, height: 8.h),
+        Divider(color: theme.dividerTheme.color, height: 8.h),
         SizedBox(height: 8.h),
         AppText(
           text: 'What\'s included:',
@@ -302,7 +345,9 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
                   Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: BoxDecoration(
-                      color: AppColors.lightPrimary.withValues(alpha: 0.1),
+                      color: theme.brightness == Brightness.light
+                          ? AppColors.lightPrimary.withValues(alpha: 0.1)
+                          : AppColors.grey800,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -326,14 +371,17 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
                         vertical: 2.h,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
+                        color: theme.brightness == Brightness.light
+                            ? Colors.grey.shade100
+                            : AppColors.grey800,
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: AppText(
                         text: feature['limit'].toString(),
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.lightPrimary,
+                        color: theme.brightness == Brightness.light
+                            ?  AppColors.lightPrimary : Colors.white,
                       ),
                     ),
                 ],

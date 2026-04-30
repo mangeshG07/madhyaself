@@ -119,6 +119,8 @@ class _ViewedState extends State<Viewed> {
                       'image': match['profile_image']?.toString() ?? '',
                       'isVerified': match['isVerified'] ?? false,
                       'isPremium': match['isPremium'] ?? false,
+                      'isHide': match['hide_photos'] != '0',
+                      'username': match['username'] ?? '',
                     },
                     onTap: () => Get.toNamed(
                       Routes.othersProfile,

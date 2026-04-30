@@ -68,7 +68,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                 backgroundColor: AppColors.grey100,
                 child: ClipOval(
                   child: FadeInImage(
-                    placeholder: const AssetImage(AppAssets.appLogo),
+                    placeholder: const AssetImage(AppAssets.defaultImage),
                     image: NetworkImage(
                       controller.userDetails['profile_image'] ?? '',
                     ),
@@ -78,7 +78,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                     fadeInDuration: const Duration(milliseconds: 300),
                     imageErrorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        AppAssets.appLogo,
+                        AppAssets.defaultImage,
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,

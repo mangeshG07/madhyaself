@@ -39,8 +39,6 @@ import 'package:madhya/presentation/profile/controller/interest_controller.dart'
     as _i598;
 import 'package:madhya/presentation/profile/controller/preference_controller.dart'
     as _i843;
-import 'package:madhya/presentation/profile/controller/profile_controller.dart'
-    as _i951;
 import 'package:madhya/presentation/profile/controller/shortlist_controller.dart'
     as _i148;
 import 'package:madhya/presentation/profile/controller/viewed_controller.dart'
@@ -71,16 +69,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i571.UpdateInterestUsecase>(),
         gh<_i571.DeleteInterestUsecase>(),
         gh<_i571.SendInterestUsecase>(),
-      ),
-    );
-    gh.lazySingleton<_i951.ProfileController>(
-      () => _i951.ProfileController(
-        gh<_i571.ProfileUsecase>(),
-        gh<_i571.CommonDataUsecase>(),
-        gh<_i571.UpdateProfileUsecase>(),
-        gh<_i571.LocationDataUsecase>(),
-        gh<_i571.GetPageDetailsUsecase>(),
-        gh<_i571.GetPageUsecase>(),
       ),
     );
     gh.lazySingleton<_i539.LoginController>(

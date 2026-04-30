@@ -1,3 +1,4 @@
+import 'package:madhya/core/component/app_share.dart';
 import 'package:madhya/core/exporters/app_export.dart';
 
 class OtherProfile extends StatefulWidget {
@@ -22,6 +23,7 @@ class _OtherProfileState extends State<OtherProfile> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -51,6 +53,7 @@ class _OtherProfileState extends State<OtherProfile> {
                               _buildReligionDetails(),
                               _buildLocationDetails(),
                               _buildFamilyDetails(),
+                              _buildMatchPercentage(theme),
                             ],
                           ),
                         ),
@@ -144,6 +147,8 @@ class _OtherProfileState extends State<OtherProfile> {
                         ),
                       ),
                     );
+                  } else if (value == 'share') {
+                    _handleShare();
                   }
                 },
                 icon: Container(
@@ -204,9 +209,12 @@ class _OtherProfileState extends State<OtherProfile> {
 
   Widget _buildTopImageList(ThemeData theme) {
     final images = controller.profileDetails['photos'] ?? [];
+    final isHide = controller.profileDetails['hide_photos'] != '0'
+        ? true
+        : false;
 
     // // 👉 EMPTY CASE
-    if (images.isEmpty) {
+    if (images.isEmpty || isHide) {
       return SizedBox(
         height: Get.height * 0.55.h,
         child: Stack(
@@ -219,7 +227,11 @@ class _OtherProfileState extends State<OtherProfile> {
                 height: double.infinity,
                 color: Colors.grey.shade100,
                 child: Center(
-                  child: Image.asset(AppAssets.defaultImage, height: 60.h),
+                  child: Image.asset(
+                    AppAssets.defaultImage,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
                 ),
               ),
             ),
@@ -277,6 +289,10 @@ class _OtherProfileState extends State<OtherProfile> {
         ],
       ),
     );
+  }
+
+  void _handleShare() {
+    AppShare.share(username: controller.profileDetails['username']);
   }
 
   /// 🔹 INDICATORS
@@ -788,5 +804,96 @@ class _OtherProfileState extends State<OtherProfile> {
         const SizedBox(height: 16),
       ],
     );
+  }
+
+  /// 🔹 MATCH PERCENT DETAILS
+  Widget _buildMatchPercentage(ThemeData theme) {
+    final matchPercent = controller.profileDetails['match_percentage'] ?? 50;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildSectionHeader(
+          'Match Compatibility',
+          HugeIcons.strokeRoundedFavourite,
+        ),
+
+        SizedBox(height: 12.h),
+
+        Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: theme.scaffoldBackgroundColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              /// 🔹 PERCENT TEXT
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppText(
+                    text: 'Your Match Score',
+                    fontSize: 14.sp,
+                    style: theme.textTheme.labelLarge,
+                  ),
+                  AppText(
+                    text: '$matchPercent%',
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightPrimary,
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 12.h),
+
+              /// 🔹 PROGRESS BAR
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
+                child: LinearProgressIndicator(
+                  value: (matchPercent / 100).clamp(0.0, 1.0),
+                  minHeight: 8.h,
+                  backgroundColor: Colors.grey.shade200,
+                  color: AppColors.lightPrimary,
+                ),
+              ),
+
+              SizedBox(height: 12.h),
+
+              /// 🔹 MESSAGE
+              AppText(
+                text: _getMatchMessage(matchPercent),
+                fontSize: 13.sp,
+                maxLines: 5,
+                style: theme.textTheme.bodySmall,
+                color: AppColors.lightTextLowColor,
+              ),
+            ],
+          ),
+        ),
+
+        SizedBox(height: 20.h),
+      ],
+    );
+  }
+
+  String _getMatchMessage(int percent) {
+    if (percent >= 80) {
+      return "Excellent match! You both share strong compatibility.";
+    } else if (percent >= 60) {
+      return "Good match. There’s a decent level of compatibility.";
+    } else if (percent >= 40) {
+      return "Average match. You may need to understand each other better.";
+    } else {
+      return "Low match. Compatibility might be challenging.";
+    }
   }
 }

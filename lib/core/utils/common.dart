@@ -394,7 +394,7 @@ Widget buildGradientOverlay() {
 }
 
 Widget buildContentOverlay(dynamic details, bool isDetails) {
-  final isVerified = details['is_verified'] == true;
+  final isVerified = details['is_verified'] == '0' ? false : true;
   return Positioned(
     left: 12.w,
     right: 12.w,
@@ -422,9 +422,9 @@ Widget buildContentOverlay(dynamic details, bool isDetails) {
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
-        if (details['id'].toString().isNotEmpty)
+        if (details['username'].toString().isNotEmpty)
           AppText(
-            text: "ID: ${details['id'] ?? ''}",
+            text: details['username'] ?? '',
             fontSize: 12.sp,
             maxLines: 2,
             textAlign: TextAlign.start,

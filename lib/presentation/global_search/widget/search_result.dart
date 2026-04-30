@@ -74,6 +74,7 @@ class _SearchResultState extends State<SearchResult> {
               'image': match['profile_image']?.toString() ?? '',
               'isVerified': match['verified'] ?? false,
               'isPremium': match['isPremium'] ?? false,
+              'isHide': match['hide_photos'] != '0',
             },
             onTap: () => Get.toNamed(
               Routes.othersProfile,

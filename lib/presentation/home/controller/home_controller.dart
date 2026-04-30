@@ -14,6 +14,7 @@ class HomeController extends GetxController {
   final homeData = {}.obs;
   final profileCompletion = 0.obs;
   final chatController = Get.find<ChatController>();
+  final controller = Get.find<GlobalSearchController>();
 
   @override
   void onInit() {
@@ -91,33 +92,66 @@ class HomeController extends GetxController {
             '${data['user_profession_matches']?.toString() ?? '0'}\nMatches',
         "value": "Profession",
         "icon": HugeIcons.strokeRoundedBriefcase01,
+        'onTap': () async {
+          controller.resetFilters();
+          controller.selectedJob.value =
+              data['user_profession']?.toString() ?? '';
+          await controller.globalSearch();
+        },
       },
       {
         "title":
             '${data['user_education_matches']?.toString() ?? '0'}\nMatches',
         "value": "Education",
         "icon": HugeIcons.strokeRoundedMortarboard02,
+        'onTap': () async {
+          controller.resetFilters();
+          controller.selectedEducation.value =
+              data['user_education']?.toString() ?? '';
+          await controller.globalSearch();
+        },
       },
       {
         "title": '${data['user_caste_matches']?.toString() ?? '0'}\nMatches',
         "value": "Caste",
         "icon": HugeIcons.strokeRoundedStar,
+        'onTap': () async {
+          controller.resetFilters();
+          controller.selectedCaste.value = data['user_caste']?.toString() ?? '';
+          await controller.globalSearch();
+        },
       },
       {
         "title":
             '${data['user_sub_caste_matches']?.toString() ?? '0'}\nMatches',
         "value": "Subcaste",
         "icon": HugeIcons.strokeRoundedStar,
+        // 'onTap': () async {
+        //   controller.selectedCaste.value =
+        //       data['user_caste']?.toString() ?? '';
+        //   await controller.globalSearch();
+        // },
       },
       {
         "title": '${data['user_city_matches']?.toString() ?? '0'}\nMatches',
         "value": "City",
         "icon": HugeIcons.strokeRoundedLocation04,
+        'onTap': () async {
+          controller.resetFilters();
+          controller.selectedCity.value = data['user_city']?.toString() ?? '';
+          await controller.globalSearch();
+        },
       },
       {
         "title": '${data['user_religion_matches']?.toString() ?? '0'}\nMatches',
         "value": "Religion",
         "icon": HugeIcons.strokeRoundedRotateLeft04,
+        'onTap': () async {
+          controller.resetFilters();
+          controller.selectedReligion.value =
+              data['user_religion']?.toString() ?? '';
+          await controller.globalSearch();
+        },
       },
     ].obs;
   }

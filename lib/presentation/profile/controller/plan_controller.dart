@@ -8,7 +8,7 @@ class PlanController extends GetxController {
 
   final isLoading = false.obs;
   final isDetailsLoading = false.obs;
-
+  final selectedType = 0.obs;
   final planList = [].obs;
   final paymentMethods = [].obs;
   final planDetails = {}.obs;

@@ -32,7 +32,7 @@ class GlobalSearchController extends GetxController {
   Future<void> fetchCommonData() async {
     try {
       final res = await _commonDataUsecase();
-      final data = res['data'];
+      final data = res['data'] ?? {};
 
       ageList.assignAll(data['age'] ?? []);
       religionList.assignAll(data['religion'] ?? []);
@@ -85,12 +85,12 @@ class GlobalSearchController extends GetxController {
   final countryList = ['India'].obs;
   final stateList = [].obs;
   final cityList = [].obs;
-
   final searchList = [].obs;
 
   /// ================= COMMON UPDATE HANDLER =================
   Future<void> globalSearch() async {
     final userId = await SecureStorageService.read('user_id') ?? '';
+    searchList.clear();
     try {
       isSearching(true);
 
@@ -124,5 +124,28 @@ class GlobalSearchController extends GetxController {
     } finally {
       isSearching(false);
     }
+  }
+
+  void resetFilters() {
+    username.clear();
+
+    selectedReligion.value = null;
+    selectedCaste.value = null;
+
+    selectedHeightFrom.value = null;
+    selectedHeightTo.value = null;
+
+    selectedAgeFrom.value = null;
+    selectedAgeTo.value = null;
+
+    selectedIncome.value = null;
+    selectedEducation.value = null;
+    selectedJob.value = null;
+
+    selectedCountry.value = null; // default
+    selectedState.value = null;
+    selectedCity.value = null;
+
+    searchList.clear();
   }
 }

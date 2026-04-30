@@ -118,15 +118,15 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                       onChanged: (val) => controller.selectedCity.value = val,
                       validator: AppValidators.required,
                     ),
-
-                    TextButton(
-                      onPressed: () {},
-                      child: AppText(
-                        text: 'Less Filters',
-                        fontSize: 14.sp,
-                        color: AppColors.lightTextMidColor,
-                      ),
-                    ),
+                    //
+                    // TextButton(
+                    //   onPressed: () {},
+                    //   child: AppText(
+                    //     text: 'Less Filters',
+                    //     fontSize: 14.sp,
+                    //     color: AppColors.lightTextMidColor,
+                    //   ),
+                    // ),
                     Obx(
                       () => AppButton(
                         text: controller.isSearching.value

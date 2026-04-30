@@ -30,6 +30,7 @@ export 'package:dio/dio.dart';
 export 'package:web_socket_channel/web_socket_channel.dart';
 export 'package:hugeicons/styles/stroke_rounded.dart';
 export 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+export 'package:share_plus/share_plus.dart';
 
 //Common//
 export 'package:madhya/core/constants/app_constants.dart';

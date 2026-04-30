@@ -2,7 +2,7 @@ import 'package:madhya/core/exporters/app_export.dart';
 import 'package:madhya/domain/usecase/get_page_details_usecase.dart';
 import 'package:madhya/domain/usecase/get_page_usecase.dart';
 
-@lazySingleton
+// @lazySingleton
 class ProfileController extends GetxController {
   final ProfileUsecase usecase;
   final CommonDataUsecase commonDataUsecase;
@@ -77,6 +77,7 @@ class ProfileController extends GetxController {
   final cityList = [].obs;
   final rashiList = [].obs;
   final removedFiles = [].obs;
+  final removedDocuments = [].obs;
   final pagesList = [].obs;
   final pagesDetails = {}.obs;
   final mStatusList = [
@@ -188,6 +189,7 @@ class ProfileController extends GetxController {
 
   /// ================= SET INITIAL DETAILS=================
   void _setInitialValues() {
+    isHide.value = profileDetails['hide_photos'] == '0' ? false : true;
     whatsappNoController.text = profileDetails['wp_no'] ?? '';
     alternateNoController.text = profileDetails['alternate_no'] ?? '';
     aboutMeController.text = profileDetails['about'] ?? '';
@@ -465,6 +467,7 @@ class ProfileController extends GetxController {
       final userid = await SecureStorageService.read('user_id') ?? '';
       print('selectedRashi.value===>${selectedRashi.value}');
       print('birthDateController.value===>${birthDateController.text.trim()}');
+      print('horoscopeFile.value===>${horoscopeFile.value}');
       print(
         'birthTimeController.text.trim()===>${birthTimeController.text.trim()}',
       );
@@ -475,6 +478,7 @@ class ProfileController extends GetxController {
           birthtime: birthTimeController.text.trim(),
           birthdate: birthDateController.text.trim(),
           rasi: selectedRashi.value,
+          horoscopeDoc: horoscopeFile.value,
         ),
       );
       if (res['common']['status'] == true) {
@@ -494,16 +498,21 @@ class ProfileController extends GetxController {
   /// ================= UPDATE PHOTOS DETAILS=================
   Future<void> updatePhotosDetails() async {
     try {
+      print('removedFiles---------->$removedFiles');
+
       isUpdateLoading(true);
       final userid = await SecureStorageService.read('user_id') ?? '';
       final fileImages = profileImages.whereType<File>().toList();
       final photos = await prepareDocuments(fileImages);
+      print('photos---------->$photos');
+
       final res = await _updateProfileUsecase.call(
         UpdateUserProfileRequest(
           userId: userid,
           profilePicture: profileImage.value,
           photos: photos,
           removeFile: removedFiles,
+          hidePhotos: isHide.value == true ? '1' : '0',
         ),
       );
       if (res['common']['status'] == true) {
@@ -529,14 +538,18 @@ class ProfileController extends GetxController {
       final userid = await SecureStorageService.read('user_id') ?? '';
       final fileDocs = documentList.whereType<File>().toList();
       final documents = await prepareDocuments(fileDocs);
-
       final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(userId: userid, documents: documents),
+        UpdateUserProfileRequest(
+          userId: userid,
+          documents: documents,
+          removeDocs: removedDocuments,
+        ),
       );
       if (res['common']['status'] == true) {
         Get.back();
         Get.snackbar('Success', res['common']['message']);
-
+        removedDocuments.clear();
+        documentList.clear();
         getProfile();
       } else {
         Get.snackbar('error', res['common']['message']);
@@ -573,5 +586,55 @@ class ProfileController extends GetxController {
     } finally {
       isPageDetailsLoading(false);
     }
+  }
+
+  /// ================= RESET ALL =================
+  void resetAll() {
+    /// Clear TextFields
+    whatsappNoController.clear();
+    alternateNoController.clear();
+    aboutMeController.clear();
+    educationDetailsController.clear();
+    jobDetailsController.clear();
+    fatherNameController.clear();
+    fatherJobController.clear();
+    motherNameController.clear();
+    motherJobController.clear();
+    siblingController.clear();
+    birthTimeController.clear();
+    birthDateController.clear();
+
+    /// Reset dropdown selections
+    selectedAge.value = null;
+    selectedMStatus.value = null;
+    selectedHeight.value = null;
+    selectedCreatedFor.value = null;
+    selectedEducationCategory.value = null;
+    selectedJobCategory.value = null;
+    selectedAnnualIncome.value = null;
+    selectedCaste.value = null;
+    selectedSubCaste.value = null;
+    selectedCountry.value = null;
+    selectedState.value = null;
+    selectedCity.value = null;
+    selectedRashi.value = null;
+    selectedDeleteReason.value = null;
+
+    /// Reset files & images
+    profileImage.value = null;
+    horoscopeFile.value = null;
+
+    profileImages.clear();
+    documentList.clear();
+    removedFiles.clear();
+    removedDocuments.clear();
+
+    /// Reset flags
+    isHide.value = false;
+
+    /// Optional: clear API data (only if needed)
+    // profileDetails.clear();
+
+    update(); // if using GetBuilder anywhere
   }
 }

@@ -107,8 +107,8 @@ class ChatTile extends StatelessWidget {
           height: 52,
           fit: BoxFit.cover,
           imageUrl: chat['profile_image'] ?? '',
-          placeholder: (_, __) => Image.asset(AppAssets.appLogo),
-          errorWidget: (_, __, ___) => Image.asset(AppAssets.appLogo),
+          placeholder: (_, __) => Image.asset(AppAssets.defaultImage),
+          errorWidget: (_, __, ___) => Image.asset(AppAssets.defaultImage),
         ),
       ),
     );

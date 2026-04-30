@@ -11,6 +11,7 @@ class CompactCard extends StatelessWidget {
     final isPremium = details['isPremium'] == true;
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -45,7 +46,7 @@ class CompactCard extends StatelessWidget {
             _buildImage(isVerified, isPremium),
 
             /// CONTENT SECTION
-            _buildContent(),
+            _buildContent(isLight),
           ],
         ),
       ),
@@ -63,7 +64,9 @@ class CompactCard extends StatelessWidget {
             aspectRatio: 0.9,
             child: FadeInImage(
               placeholder: const AssetImage(AppAssets.defaultImage),
-              image: NetworkImage(details['image'] ?? ''),
+              image: NetworkImage(
+                details['isHide'] == true ? '' : details['image'] ?? '',
+              ),
               fit: BoxFit.cover,
               imageErrorBuilder: (context, error, stackTrace) {
                 return Image.asset(AppAssets.defaultImage);
@@ -96,53 +99,100 @@ class CompactCard extends StatelessWidget {
               ],
             ),
           ),
+
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(right: 4.h),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightPrimary.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AppText(
+                          text: '${details['matchPercent']?.toString() ?? '0'} % Match' ,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                        // SizedBox(width: 4.w),
+                        // HugeIcon(
+                        //   icon: HugeIcons.strokeRoundedPercent,
+                        //   size: 10.sp,
+                        //   color: Colors.white,
+                        // ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
+  bool _hasData(dynamic value) {
+    return value != null && value.toString().trim().isNotEmpty;
+  }
+
   ///===================Content=======================
 
-  Widget _buildContent() {
+  Widget _buildContent(bool isLight) {
     return Padding(
       padding: EdgeInsets.all(10.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// NAME SECTION
-          AppText(
-            text: details['name'] ?? '',
-            fontSize: 14.sp,
-            maxLines: 2,
-            textAlign: TextAlign.start,
-            fontWeight: FontWeight.w600,
-            color: AppColors.lightTextMidColor,
-          ),
-          SizedBox(height: 4.h),
-
-          /// ID SECTION
-          AppText(
-            text: "ID: ${details['id'] ?? ''}",
-            fontSize: 11.sp,
-            maxLines: 2,
-            textAlign: TextAlign.start,
-            color: AppColors.lightTextLowColor,
-          ),
-          if (details['age'].toString().isNotEmpty)
+          if (_hasData(details['name']))
             AppText(
-              text: details['age'] ?? '',
-              fontSize: 11.sp,
+              text: details['name'] ?? '',
+              fontSize: 14.sp,
+              maxLines: 2,
               textAlign: TextAlign.start,
+              fontWeight: FontWeight.w600,
+              color: isLight ? AppColors.lightTextMidColor : Colors.white,
+            ),
+          if (_hasData(details['username'])) ...[
+            SizedBox(height: 4.h),
+            AppText(
+              text: details['username'],
+              fontSize: 11.sp,
+              maxLines: 1,
               color: AppColors.lightTextLowColor,
             ),
+          ],
+          if (_hasData(details['age'])) ...[
+            SizedBox(height: 2.h),
+            AppText(
+              text: details['age'],
+              fontSize: 11.sp,
+              maxLines: 2,
+              color: AppColors.lightTextLowColor,
+            ),
+          ],
 
           /// ADDRESS
-          AppText(
-            text: details['address'] ?? '',
-            fontSize: 12.sp,
-            maxLines: 2,
-            color: AppColors.lightTextMidColor,
-          ),
+          if (_hasData(details['address']))
+            AppText(
+              text: details['address'] ?? '',
+              fontSize: 12.sp,
+              maxLines: 2,
+              color: isLight ? AppColors.lightTextMidColor : Colors.white,
+            ),
         ],
       ),
     );

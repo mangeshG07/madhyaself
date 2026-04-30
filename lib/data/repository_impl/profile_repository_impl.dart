@@ -130,6 +130,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
     add('birthtime', request.birthtime);
     add('rasi', request.rasi);
     add('siblling_details', request.sibllingDetails);
+    add('hide_photos', request.hidePhotos);
 
     final formData = FormData.fromMap(map);
 
@@ -142,7 +143,14 @@ class ProfileRepositoryImpl extends ProfileRepository {
         ),
       );
     }
-
+    if (request.horoscopeDoc != null) {
+      formData.files.add(
+        MapEntry(
+          'horoscope_photo',
+          await MultipartFile.fromFile(request.horoscopeDoc!.path),
+        ),
+      );
+    }
     if (request.photos != null) {
       for (var file in request.photos!) {
         formData.files.add(MapEntry('photos[]', file));
@@ -154,7 +162,11 @@ class ProfileRepositoryImpl extends ProfileRepository {
         formData.fields.add(MapEntry('removed_files[]', url));
       }
     }
-
+    if (request.removeDocs != null) {
+      for (var url in request.removeDocs!) {
+        formData.fields.add(MapEntry('removed_documents[]', url));
+      }
+    }
     if (request.documents != null) {
       for (var file in request.documents!) {
         formData.files.add(MapEntry('documents[]', file));

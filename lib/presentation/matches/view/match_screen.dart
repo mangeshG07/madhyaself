@@ -182,13 +182,14 @@ class _MatchScreenState extends State<MatchScreen> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 4,
-                  childAspectRatio: 0.58,
+                  childAspectRatio: 0.6,
                 ),
                 itemBuilder: (context, index) {
                   final match = controller.items[index];
 
                   return CompactCard(
                     details: {
+                      'username': match['username'] ?? '',
                       'name': match['name'] ?? '',
                       'id': match['id'] ?? '',
                       'age': getAgeJob(match),
@@ -196,6 +197,8 @@ class _MatchScreenState extends State<MatchScreen> {
                       'image': match['profile_image']?.toString() ?? '',
                       'isVerified': match['isVerified'] ?? false,
                       'isPremium': match['isPremium'] ?? false,
+                      'isHide': match['hide_photos'] != '0',
+                      'matchPercent': match['match_percentage'] ?? 0,
                     },
                     onTap: () => Get.toNamed(
                       Routes.othersProfile,

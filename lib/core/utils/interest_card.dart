@@ -15,7 +15,7 @@ class InterestCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      width: 0.9.sw,
+      // width: 0.9.sw,
       height: Get.height * 0.2,
       margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
       decoration: _cardDecoration(isDark),
@@ -70,9 +70,10 @@ class _InterestImage extends StatelessWidget {
         height: double.infinity,
         child: FadeInImage(
           placeholder: AssetImage(AppAssets.defaultImage),
-          image: NetworkImage(image),
+          image: NetworkImage(interest['hide_photos'] == "0" ? image : ''),
           fit: BoxFit.cover,
-          imageErrorBuilder: (_, __, ___) => Image.asset(AppAssets.defaultImage),
+          imageErrorBuilder: (_, __, ___) =>
+              Image.asset(AppAssets.defaultImage),
         ),
       ),
     );

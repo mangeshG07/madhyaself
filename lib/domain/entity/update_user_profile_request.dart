@@ -32,9 +32,12 @@ class UpdateUserProfileRequest {
   final String? gender;
   final String? birthdate;
   final String? age;
+  final String? hidePhotos;
   final File? profilePicture;
+  final File? horoscopeDoc;
   final List<MultipartFile>? photos;
   final List? removeFile;
+  final List? removeDocs;
   final List<MultipartFile>? documents;
 
   UpdateUserProfileRequest({
@@ -71,7 +74,10 @@ class UpdateUserProfileRequest {
     this.age,
     this.profilePicture,
     this.photos,
+    this.removeDocs,
     this.documents,
     this.removeFile,
+    this.horoscopeDoc,
+    this.hidePhotos,
   });
 }

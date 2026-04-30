@@ -59,6 +59,7 @@ class AppPages {
         ProfileBindings(),
         ChatBinding(),
         MatchBinding(),
+        GlobalSearchBindings(),
       ],
     ),
     GetPage(

@@ -1,4 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
+import 'package:widget_zoom/widget_zoom.dart';
 
 class EditProfile extends GetView<ProfileController> {
   const EditProfile({super.key});
@@ -397,6 +398,35 @@ class EditProfile extends GetView<ProfileController> {
                 label: 'Star/rasi',
                 value: controller.profileDetails['rasi'] ?? '-',
                 isFill: false,
+              ),
+              WidgetZoom(
+                heroAnimationTag:
+                    'tag ${controller.profileDetails['horoscope_photo']}',
+                zoomWidget: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: AppColors.grey400, width: 0.2.w),
+                  ),
+
+                  child: FadeInImage(
+                    placeholder: const AssetImage(AppAssets.defaultImage),
+                    image: NetworkImage(
+                      controller.profileDetails['horoscope_photo'] ?? '',
+                    ),
+                    fit: BoxFit.contain,
+                    width: 100,
+                    height: 100,
+                    fadeInDuration: const Duration(milliseconds: 300),
+                    imageErrorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        AppAssets.defaultImage,
+                        fit: BoxFit.cover,
+                        width: 100,
+                        height: 100,
+                      );
+                    },
+                  ),
+                ),
               ),
             ],
           ),

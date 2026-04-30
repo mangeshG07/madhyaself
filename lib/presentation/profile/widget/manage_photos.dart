@@ -200,6 +200,8 @@ class ManagePhotos extends GetView<ProfileController> {
                             ),
                             image: NetworkImage(images[index] ?? ''),
                             fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
                             imageErrorBuilder: (context, error, stackTrace) {
                               return Image.asset(
                                 AppAssets.defaultImage,
@@ -358,7 +360,7 @@ class ManagePhotos extends GetView<ProfileController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppText(text: 'Supported formats: PDF', fontSize: 12.sp),
+              AppText(text: 'Supported formats: Documents', fontSize: 12.sp),
               AppText(text: 'Maximum size: 2MB', fontSize: 12.sp),
             ],
           ),
@@ -480,6 +482,12 @@ class ManagePhotos extends GetView<ProfileController> {
       trailing: GestureDetector(
         child: Icon(Icons.delete, color: Colors.red, size: 20.r),
         onTap: () {
+          final item = controller.documentList[index];
+
+          if (item is String) {
+            final fileName = Uri.parse(item).pathSegments.last;
+            controller.removedDocuments.add(fileName);
+          }
           controller.documentList.removeAt(index);
         },
       ),
