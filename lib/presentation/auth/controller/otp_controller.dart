@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class OtpController extends GetxController with CodeAutoFill {
   final VerifyOtpUsecase verifyOtpUsecase;
   OtpController(this.verifyOtpUsecase);
@@ -8,23 +7,21 @@ class OtpController extends GetxController with CodeAutoFill {
   final otpController = TextEditingController();
   final verifyKey = GlobalKey<FormState>();
   final isLoading = false.obs;
-  var start = 30.obs;
+  final start = 30.obs;
   Timer? _timer;
 
   @override
   void onInit() {
     startTimer();
     listenForCode();
-    SmsAutoFill().getAppSignature.then((value) {});
+    SmsAutoFill().getAppSignature;
     super.onInit();
   }
 
   @override
   void codeUpdated() {
     if (code != null) {
-      String extractedOtp = extractOtp(code!);
-
-      otpController.text = extractedOtp;
+      otpController.text = extractOtp(code!);
     }
   }
 

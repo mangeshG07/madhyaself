@@ -1,5 +1,6 @@
 import '../../core/exporters/app_export.dart';
 
+@LazySingleton(as: ProfileRepository)
 class ProfileRepositoryImpl extends ProfileRepository {
   final ApiService _apiService;
 
@@ -194,5 +195,28 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<dynamic> getPlanDetails(UserRequest request) async {
     return await _apiService.getPlanDetails(request.userId, request.type);
+  }
+
+  @override
+  Future<dynamic> checkOut(CheckoutRequest request) async {
+    return await _apiService.checkout(
+      request.userId,
+      request.planId,
+      request.price,
+      request.paymentMethod,
+      request.type,
+    );
+  }
+
+  @override
+  Future<dynamic> verifyPayment(VerifyPaymentRequest request) async {
+    return await _apiService.verifyPayment(
+      request.userId,
+      request.razorpayPaymentId,
+      request.razorpayOrderId,
+      request.paymentId,
+      request.razorpaySignature,
+      request.status,
+    );
   }
 }

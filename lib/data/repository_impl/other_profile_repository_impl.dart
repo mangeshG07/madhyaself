@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@LazySingleton(as: OtherUserRepository)
 class OtherProfileRepositoryImpl extends OtherUserRepository {
   final ApiService _apiService;
 

@@ -100,45 +100,48 @@ class CompactCard extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            top: 8,
-            left: 8,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: 4.h),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.lightPrimary.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AppText(
-                          text: '${details['matchPercent']?.toString() ?? '0'} % Match' ,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                        // SizedBox(width: 4.w),
-                        // HugeIcon(
-                        //   icon: HugeIcons.strokeRoundedPercent,
-                        //   size: 10.sp,
-                        //   color: Colors.white,
-                        // ),
-                      ],
+          if (details['matchPercent'].toString() != "0" &&
+              details['matchPercent'] != null)
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 4.h),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 4.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightPrimary.withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AppText(
+                            text:
+                                '${details['matchPercent']?.toString() ?? '0'} % Match',
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                          // SizedBox(width: 4.w),
+                          // HugeIcon(
+                          //   icon: HugeIcons.strokeRoundedPercent,
+                          //   size: 10.sp,
+                          //   color: Colors.white,
+                          // ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

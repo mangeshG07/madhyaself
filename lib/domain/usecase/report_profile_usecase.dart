@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@lazySingleton
 class ReportProfileUsecase {
   final OtherUserRepository _otherUserRepository;
   ReportProfileUsecase(this._otherUserRepository);

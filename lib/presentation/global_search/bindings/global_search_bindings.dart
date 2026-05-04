@@ -3,14 +3,23 @@ import 'package:madhya/core/exporters/app_export.dart';
 class GlobalSearchBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(Get.find()));
-    Get.lazyPut<ProfileRepository>(() => ProfileRepositoryImpl(Get.find()));
-
-    Get.lazyPut(() => LocationDataUsecase(Get.find()));
-    Get.lazyPut(() => CommonDataUsecase(Get.find()));
-    Get.lazyPut(() => GlobalSearchUsecase(Get.find()));
-    Get.lazyPut(
-      () => GlobalSearchController(Get.find(), Get.find(), Get.find()),
+    Get.lazyPut<GlobalSearchController>(
+      () => GlobalSearchController(
+        getIt<CommonDataUsecase>(),
+        getIt<LocationDataUsecase>(),
+        getIt<GlobalSearchUsecase>(),
+      ),
+      fenix: true,
     );
+
+    // Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(Get.find()));
+    // Get.lazyPut<ProfileRepository>(() => ProfileRepositoryImpl(Get.find()));
+    //
+    // Get.lazyPut(() => LocationDataUsecase(Get.find()));
+    // Get.lazyPut(() => CommonDataUsecase(Get.find()));
+    // Get.lazyPut(() => GlobalSearchUsecase(Get.find()));
+    // Get.lazyPut(
+    //   () => GlobalSearchController(Get.find(), Get.find(), Get.find()),
+    // );
   }
 }

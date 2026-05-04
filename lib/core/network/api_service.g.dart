@@ -963,6 +963,72 @@ class _ApiService implements ApiService {
     return _value;
   }
 
+  @override
+  Future<dynamic> checkout(
+    String userId,
+    String planId,
+    String price,
+    String payMethod,
+    String type,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('user_id', userId));
+    _data.fields.add(MapEntry('plan_id', planId));
+    _data.fields.add(MapEntry('price', price));
+    _data.fields.add(MapEntry('payment_method', payMethod));
+    _data.fields.add(MapEntry('type', type));
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/checkout',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
+  @override
+  Future<dynamic> verifyPayment(
+    String userId,
+    String razorpayPaymentId,
+    String razorpayOrderId,
+    String paymentId,
+    String razorpaySignature,
+    String status,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('user_id', userId));
+    _data.fields.add(MapEntry('razorpay_payment_id', razorpayPaymentId));
+    _data.fields.add(MapEntry('razorpayOrderId', razorpayOrderId));
+    _data.fields.add(MapEntry('payment_id', paymentId));
+    _data.fields.add(MapEntry('razorpay_signature', razorpaySignature));
+    _data.fields.add(MapEntry('status', status));
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/verify-payment',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

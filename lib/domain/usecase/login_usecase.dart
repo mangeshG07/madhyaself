@@ -1,5 +1,6 @@
 import '../../core/exporters/app_export.dart';
 
+@lazySingleton
 class LoginUsecase {
   final AuthRepository repo;
 

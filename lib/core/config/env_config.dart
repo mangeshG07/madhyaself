@@ -9,7 +9,7 @@ class EnvConfig {
 
     try {
       await dotenv.load(fileName: envFile);
-      AppLogger.info('Environment loaded', 'Using $envFile');
+      // AppLogger.info('Environment loaded', 'Using $envFile');
     } catch (e) {
       AppLogger.error(
         'Failed to load environment',

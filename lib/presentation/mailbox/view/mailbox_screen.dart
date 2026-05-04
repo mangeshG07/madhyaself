@@ -13,7 +13,9 @@ class _MailboxScreenState extends State<MailboxScreen> {
   @override
   void initState() {
     super.initState();
-    controller.getChatList(isRefresh: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getChatList(isRefresh: true);
+    });
   }
 
   @override
@@ -22,17 +24,7 @@ class _MailboxScreenState extends State<MailboxScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: _buildAppBar(theme),
-      body: Obx(() {
-        final chatList = controller.chatListPagination;
-
-        if (chatList.isLoading.value) {
-          return AppLoader.circular(color: AppColors.lightPrimary);
-        }
-        if (chatList.items.isEmpty) {
-          return emptyData(theme);
-        }
-        return _buildMainState(chatList, theme);
-      }),
+      body: _buildMainState(theme),
     );
   }
 
@@ -48,14 +40,6 @@ class _MailboxScreenState extends State<MailboxScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      // actions: [
-      //   AppIconButton(
-      //     onPressed: () => Get.back(),
-      //     icon: HugeIcons.strokeRoundedUserLove02,
-      //     iconColor: Colors.grey,
-      //     backgroundColor: theme.inputDecorationTheme.fillColor,
-      //   ),
-      // ],
     );
   }
 
@@ -73,14 +57,36 @@ class _MailboxScreenState extends State<MailboxScreen> {
     );
   }
 
-  Widget _buildMainState(dynamic chatList, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-      child: Column(
-        children: [
-          _buildSearchField(theme),
-          Expanded(
-            child: NotificationListener<ScrollNotification>(
+  Widget _buildMainState(ThemeData theme) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildSearchField(theme),
+        ),
+        const SizedBox(height: 10),
+
+        Expanded(
+          child: Obx(() {
+            final chatList = controller.chatListPagination;
+
+            if (chatList.isLoading.value) {
+              return CustomShimmerWidget.list(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                itemCount: 4,
+                width: double.infinity,
+                height: Get.height * 0.08.h,
+              );
+            }
+
+            if (chatList.items.isEmpty) {
+              return emptyData(theme);
+            }
+
+            return NotificationListener<ScrollNotification>(
               onNotification: (scroll) {
                 if (scroll is ScrollEndNotification &&
                     scroll.metrics.pixels >=
@@ -93,43 +99,31 @@ class _MailboxScreenState extends State<MailboxScreen> {
                 return false;
               },
               child: ListView.separated(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                separatorBuilder: (_, __) => _buildDivider(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 itemCount: chatList.items.length,
+                separatorBuilder: (_, __) => _buildDivider(),
                 itemBuilder: (_, index) {
                   final chat = chatList.items[index];
                   return ChatTile(chat: chat, controller: controller);
                 },
               ),
-            ),
-          ),
-          Obx(() {
-            if (chatList.isLoadMore.value) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.h),
-                child: AppLoader.circular(color: AppColors.lightPrimary),
-              );
-            }
-            // else if (!controller.hasMore) {
-            //   // All data loaded
-            //   return Padding(
-            //     padding: EdgeInsets.symmetric(vertical: 16.h),
-            //     child: AppText(
-            //       text: 'No more chats to show',
-            //       fontSize: 14.sp,
-            //       fontWeight: FontWeight.w600,
-            //       color: Colors.grey,
-            //     ),
-            //   );
-            // }
-            else {
-              return const SizedBox();
-            }
+            );
           }),
-        ],
-      ),
+        ),
+
+        Obx(() {
+          if (controller.chatListPagination.isLoadMore.value) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h),
+              child: AppLoader.circular(color: AppColors.lightPrimary),
+            );
+          }
+          return const SizedBox();
+        }),
+      ],
     );
   }
 
@@ -138,13 +132,10 @@ class _MailboxScreenState extends State<MailboxScreen> {
   }
 
   Widget emptyData(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          _buildSearchField(theme),
-          AppText(text: 'No chat Found', fontSize: 14.sp),
-        ],
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: AppText(text: 'No chat Found', fontSize: 14.sp),
       ),
     );
   }

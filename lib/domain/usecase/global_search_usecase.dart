@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@lazySingleton
 class GlobalSearchUsecase {
   final HomeRepository _repository;
 

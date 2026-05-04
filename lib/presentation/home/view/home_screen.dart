@@ -12,6 +12,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final navController = getIt<NavigationController>();
 
   @override
+  void initState() {
+    super.initState();
+    controller.getHome();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
@@ -19,7 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: _buildAppBar(theme),
       body: Obx(
         () => controller.isLoading.isTrue
-            ? AppLoader.circular()
+            ?
+              // AppLoader.circular()
+              _shimmerLoader()
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -34,6 +42,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _shimmerLoader() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        spacing: 12.h,
+        children: [
+          CustomShimmerWidget.single(
+            width: double.infinity,
+            height: Get.height * 0.23.h,
+          ),
+          CustomShimmerWidget.single(width: double.infinity),
+          CustomShimmerWidget.grid(
+            itemCount: 4,
+            width: double.infinity,
+            height: Get.height * 0.12.h,
+            childAspectRatio: 1.4,
+          ),
+        ],
       ),
     );
   }
@@ -68,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
         activeIndicatorColor: AppColors.lightPrimary,
         imageUrls: List<String>.from(controller.sliderList),
         height: Get.height * 0.23.h,
+        placeholder: Image.asset(AppAssets.defaultImage, width: 0.4.sw),
       ),
     );
   }
@@ -329,7 +360,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.only(right: 12.w),
                   child: CompactCard(
                     details: {
-
                       'name': match['name'] ?? '',
                       'id': match['id']?.toString() ?? '',
                       'age': getAgeJob(match),

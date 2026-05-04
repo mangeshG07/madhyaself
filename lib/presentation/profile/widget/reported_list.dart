@@ -25,7 +25,14 @@ class _ReportedListState extends State<ReportedList> {
       body: Obx(() {
         /// 🔹 Initial Loading (Shimmer)
         if (controller.isLoading.isTrue) {
-          return AppLoader.circular(color: AppColors.lightPrimary);
+          return SingleChildScrollView(
+            child: CustomShimmerWidget.list(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              itemCount: 10,
+              width: double.infinity,
+              height: Get.height * 0.08.h,
+            ),
+          );
         }
 
         /// 🔹 Empty State
@@ -83,7 +90,6 @@ class _ReportedListState extends State<ReportedList> {
     final imageUrl = reportedUser['profile_image']?.toString() ?? '';
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
-      padding: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
         color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12.r),
@@ -103,26 +109,34 @@ class _ReportedListState extends State<ReportedList> {
         padding: EdgeInsets.all(10.w),
         child: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.r),
-              child: FadeInImage(
-                placeholder: const AssetImage(AppAssets.defaultImage),
-                image: (imageUrl.toString().isNotEmpty)
-                    ? NetworkImage(imageUrl)
-                    : const AssetImage(AppAssets.defaultImage) as ImageProvider,
-                fit: BoxFit.cover,
-                width: 55.w,
-                height: 55.h,
-                fadeInDuration: const Duration(milliseconds: 300),
-                imageErrorBuilder: (_, __, ___) {
-                  return Image.asset(
-                    AppAssets.defaultImage,
-                    fit: BoxFit.cover,
-                    width: 55.w,
-                    height: 55.h,
-                  );
-                },
-              )),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 0.5, color: AppColors.grey300),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
+                child: FadeInImage(
+                  placeholder: const AssetImage(AppAssets.defaultImage),
+                  image: (imageUrl.toString().isNotEmpty)
+                      ? NetworkImage(imageUrl)
+                      : const AssetImage(AppAssets.defaultImage)
+                            as ImageProvider,
+                  fit: BoxFit.cover,
+                  width: 55.w,
+                  height: 55.h,
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  imageErrorBuilder: (_, __, ___) {
+                    return Image.asset(
+                      AppAssets.defaultImage,
+                      fit: BoxFit.cover,
+                      width: 55.w,
+                      height: 55.h,
+                    );
+                  },
+                ),
+              ),
+            ),
             SizedBox(width: 12.w),
             Expanded(
               child: Column(
@@ -135,21 +149,24 @@ class _ReportedListState extends State<ReportedList> {
                     textAlign: TextAlign.start,
                     style: theme.textTheme.titleMedium,
                   ),
-                  AppText(
-                    text: "@${reportedUser['username'] ?? ''}",
-                    fontSize: 12.sp,
-                    style: theme.textTheme.bodySmall!.copyWith(
-                      color: Colors.grey,
+                  if (reportedUser['username']!.toString().isNotEmpty)
+                    AppText(
+                      text: "@${reportedUser['username'] ?? ''}",
+                      fontSize: 12.sp,
+                      style: theme.textTheme.bodySmall!.copyWith(
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  AppText(
-                    text: reportedUser['reason']?.toString() ?? '',
-                    fontSize: 12.sp,
-                    style: theme.textTheme.bodySmall!.copyWith(
-                      color: Colors.grey,
+                  if (reportedUser['reason']!.toString().isNotEmpty) ...[
+                    AppText(
+                      text: reportedUser['reason']?.toString() ?? '',
+                      fontSize: 12.sp,
+                      style: theme.textTheme.bodySmall!.copyWith(
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 6.h),
+                    SizedBox(height: 6.h),
+                  ],
                 ],
               ),
             ),

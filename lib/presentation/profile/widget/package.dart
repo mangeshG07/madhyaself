@@ -42,52 +42,20 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppbar(title: 'Packages'),
-      body: Obx(
-        () => controller.isLoading.isTrue
-            ? Center(
-                child: AppLoader.circular(
-                  color: AppColors.lightPrimary,
-                  size: 20.r,
-                  strokeWidth: 2.5,
-                ),
-              )
-            : controller.planList.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.inbox_outlined,
-                      size: 64.sp,
-                      color: Colors.grey.shade400,
-                    ),
-                    SizedBox(height: 16.h),
-                    AppText(
-                      text: 'No Plans Found',
-                      fontSize: 16.sp,
-                      color: Colors.grey.shade600,
-                    ),
-                  ],
-                ),
-              )
-            : FadeTransition(
-                opacity: _fadeAnimation,
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 12.h,
-                  ),
-                  child: Column(
-                    spacing: 20.h,
-                    children: [
-                      _buildToggle(isLight),
-                      _buildHeader(theme),
-                      _buildPackageGrid(theme, isLight),
-                    ],
-                  ),
-                ),
-              ),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          child: Column(
+            spacing: 20.h,
+            children: [
+              _buildToggle(isLight),
+              _buildHeader(theme),
+              _buildPackageGrid(theme, isLight),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -153,19 +121,50 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildPackageGrid(ThemeData theme, bool isLight) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: controller.planList.length,
-      itemBuilder: (context, index) {
-        final plan = controller.planList[index];
-        final isPopular = index == 1; // Mark middle plan as popular
-        return Padding(
-          padding: EdgeInsets.only(bottom: 16.h),
-          child: _buildPackageCard(theme, plan, isPopular, isLight),
+    return Obx(() {
+      if (controller.isLoading.isTrue) {
+        return SingleChildScrollView(
+          child: CustomShimmerWidget.list(
+            itemCount: 10,
+            width: double.infinity,
+            height: Get.height * 0.48.h,
+          ),
         );
-      },
-    );
+      }
+      if (controller.planList.isEmpty) {
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.inbox_outlined,
+                size: 64.sp,
+                color: Colors.grey.shade400,
+              ),
+              SizedBox(height: 16.h),
+              AppText(
+                text: 'No Plans Found',
+                fontSize: 16.sp,
+                color: Colors.grey.shade600,
+              ),
+            ],
+          ),
+        );
+      }
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: controller.planList.length,
+        itemBuilder: (context, index) {
+          final plan = controller.planList[index];
+          final isPopular = index == 1; // Mark middle plan as popular
+          return Padding(
+            padding: EdgeInsets.only(bottom: 16.h),
+            child: _buildPackageCard(theme, plan, isPopular, isLight),
+          );
+        },
+      );
+    });
   }
 
   Widget _buildPackageCard(
@@ -234,13 +233,15 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
                   fontSize: 14.sp,
                   color: Colors.grey.shade600,
                   maxLines: 4,
-                  // height: 1.4,
                 ),
 
                 // Action Button
                 AppButton(
                   text: isPopular ? '👑 Get Premium' : 'Get Started',
-                  onTap: () => _showPremiumDialog(plan),
+                  onTap: () => Get.toNamed(
+                    Routes.paymentScreen,
+                    arguments: {'id': plan['id']?.toString() ?? ''},
+                  ),
                   backgroundColor: isPopular
                       ? AppColors.lightPrimary
                       : Colors.grey.shade100,
@@ -381,7 +382,8 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w500,
                         color: theme.brightness == Brightness.light
-                            ?  AppColors.lightPrimary : Colors.white,
+                            ? AppColors.lightPrimary
+                            : Colors.white,
                       ),
                     ),
                 ],

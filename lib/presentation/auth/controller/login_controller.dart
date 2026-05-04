@@ -1,10 +1,9 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class LoginController extends GetxController {
-  final LoginUsecase usecase;
+  final LoginUsecase _loginUsecase;
 
-  LoginController(this.usecase);
+  LoginController(this._loginUsecase);
 
   final numberController = TextEditingController();
   final loginKey = GlobalKey<FormState>();
@@ -17,7 +16,7 @@ class LoginController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await usecase(
+      final response = await _loginUsecase(
         LoginRequest(numberController.text.trim()),
       );
 
@@ -25,7 +24,8 @@ class LoginController extends GetxController {
         Get.snackbar('Success', response['common']['message']);
         Get.toNamed(Routes.verifyOTP);
       }
-    } catch (_) {
+    } catch (e) {
+      AppLogger.error(e);
     } finally {
       isLoading.value = false;
     }

@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class ShortlistController extends GetxController with PaginationMixin {
   final GetShortlistUsecase _getShortlistUsecase;
   final ShortlistProfileUsecase _shortlistProfileUsecase;

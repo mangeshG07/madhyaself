@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@lazySingleton
 class CasteByRelUsecase {
   final AuthRepository repository;
   CasteByRelUsecase(this.repository);

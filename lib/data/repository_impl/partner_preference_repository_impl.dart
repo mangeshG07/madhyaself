@@ -1,5 +1,6 @@
 import '../../core/exporters/app_export.dart';
 
+@LazySingleton(as: PartnerPreferenceRepository)
 class PartnerPreferenceRepositoryImpl extends PartnerPreferenceRepository {
   final ApiService _apiService;
 

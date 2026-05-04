@@ -27,7 +27,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: _buildAppBar(theme),
       body: Obx(
         () => controller.isLoading.isTrue
-            ? AppLoader.circular(color: AppColors.lightPrimary)
+            ?
+              // AppLoader.circular(color: AppColors.lightPrimary)
+              SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  spacing: 12.h,
+                  children: [
+                    CustomShimmerWidget.single(
+                      width: Get.width * 0.45.w,
+                      height: Get.height * 0.25.w,
+                    ),
+                    CustomShimmerWidget.single(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(
+                        // horizontal: 16.w,
+                        vertical: 10.h,
+                      ),
+                    ),
+                    CustomShimmerWidget.list(
+                      // padding: const EdgeInsets.symmetric(
+                      //   horizontal: 16,
+                      //   vertical: 10,
+                      // ),
+                      itemCount: 4,
+                      width: double.infinity,
+                      height: Get.height * 0.08.h,
+                    ),
+                  ],
+                ),
+              )
             : RefreshIndicator(
                 onRefresh: () async => await controller.getProfile(),
                 child: SingleChildScrollView(

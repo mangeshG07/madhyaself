@@ -31,6 +31,10 @@ export 'package:web_socket_channel/web_socket_channel.dart';
 export 'package:hugeicons/styles/stroke_rounded.dart';
 export 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 export 'package:share_plus/share_plus.dart';
+export 'package:connectivity_plus/connectivity_plus.dart';
+export 'package:package_info_plus/package_info_plus.dart';
+export 'package:url_launcher/url_launcher.dart';
+export 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 //Common//
 export 'package:madhya/core/constants/app_constants.dart';
@@ -49,6 +53,10 @@ export 'package:madhya/core/network/interceptors/auth_interceptor.dart';
 export 'package:madhya/core/constants/api_constants.dart';
 export 'package:madhya/core/network/api_service.dart';
 export 'package:madhya/core/utils/documents_preparation.dart';
+export 'package:madhya/presentation/global_search/widget/search_filter.dart';
+export 'package:madhya/core/utils/check_update.dart';
+export 'package:madhya/core/constants/init_service.dart';
+export 'package:madhya/core/network/initial_bindings.dart';
 
 //Pages//
 export 'package:madhya/presentation/splash/view/splash_screen.dart';
@@ -69,6 +77,7 @@ export 'package:madhya/presentation/profile/widget/viewed.dart';
 export 'package:madhya/presentation/profile/widget/interest.dart';
 export 'package:madhya/presentation/profile/widget/edit_profile.dart';
 export 'package:madhya/core/utils/policy_data.dart';
+export 'package:madhya/presentation/profile/view/profile_screen.dart';
 
 //Controller//
 export 'package:madhya/presentation/splash/controller/splash_controller.dart';
@@ -134,6 +143,8 @@ export 'package:madhya/domain/entity/create_chat_request.dart';
 export 'package:madhya/domain/entity/update_user_profile_request.dart';
 export 'package:madhya/domain/entity/update_prefs_request.dart';
 export 'package:madhya/domain/entity/search_request.dart';
+export 'package:madhya/domain/entity/checkout_request.dart';
+export 'package:madhya/domain/entity/verify_payment_request.dart';
 
 //Repository Implementation//
 export 'package:madhya/data/repository_impl/auth_repository_impl.dart';
@@ -181,3 +192,5 @@ export 'package:madhya/domain/usecase/get_page_usecase.dart';
 export 'package:madhya/domain/usecase/global_search_usecase.dart';
 export 'package:madhya/domain/usecase/get_plan_details_usecase.dart';
 export 'package:madhya/domain/usecase/get_plan_usecase.dart';
+export 'package:madhya/domain/usecase/checkout_usecase.dart';
+export 'package:madhya/domain/usecase/verify_payment_usecase.dart';

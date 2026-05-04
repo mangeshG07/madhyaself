@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@lazySingleton
 class RegisterUsecase {
   final AuthRepository repository;
   RegisterUsecase(this.repository);

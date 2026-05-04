@@ -9,8 +9,12 @@ class OtherProfileBinding extends Bindings {
     Get.lazyPut(() => OtherProfileUsecase(Get.find()));
     Get.lazyPut(() => BlockUserUsecase(Get.find()));
     Get.lazyPut(() => ReportProfileUsecase(Get.find()));
-    Get.lazyPut(
-      () => OtherProfileController(Get.find(), Get.find(), Get.find()),
+    Get.lazyPut<OtherProfileController>(
+      () => OtherProfileController(
+        getIt<OtherProfileUsecase>(),
+        getIt<BlockUserUsecase>(),
+        getIt<ReportProfileUsecase>(),
+      ),
     );
   }
 }

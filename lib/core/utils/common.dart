@@ -1,6 +1,12 @@
 import '../exporters/app_export.dart' hide DateFormat;
 import 'package:intl/intl.dart';
 
+Future<void> launchInBrowser(Uri url) async {
+  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+    throw Exception('Could not launch $url');
+  }
+}
+
 Widget buildBackgroundImage(ThemeData theme) {
   final isDark = theme.brightness == Brightness.dark;
   return IgnorePointer(

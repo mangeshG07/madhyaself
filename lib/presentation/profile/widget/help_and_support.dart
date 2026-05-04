@@ -18,19 +18,30 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppbar(title: 'Help & Support'),
       body: Obx(
         () => _controller.isPageLoading.isTrue
-            ? AppLoader.circular(color: AppColors.lightPrimary)
+            ? SingleChildScrollView(
+                child: CustomShimmerWidget.list(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  itemCount: 10,
+                  width: double.infinity,
+                  height: Get.height * 0.08.h,
+                ),
+              )
             : _controller.pagesList.isEmpty
             ? _buildEmptyState()
             : ListView.separated(
                 padding: EdgeInsets.symmetric(vertical: 8.h),
                 itemCount: _controller.pagesList.length,
                 separatorBuilder: (_, __) => Divider(
-                  color: AppColors.grey500,
+                  color: theme.dividerTheme.color,
                   indent: Get.width * 0.04,
                   endIndent: Get.width * 0.04,
                   height: 1,
@@ -41,10 +52,10 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
                     onTap: () =>
                         Get.to(() => PolicyData(slug: page['slug'] ?? '')),
                     title: AppText(
-                      text: page['name'] ?? 'Untitled',
+                      text: page['name'] ?? '',
                       fontSize: 16.sp,
-                      textAlign: TextAlign.start,
-                      fontWeight: FontWeight.w600,
+                      maxLines: 2,
+                      style: theme.textTheme.titleMedium,
                     ),
                     trailing: Icon(
                       Icons.arrow_forward_ios_rounded,

@@ -75,7 +75,12 @@ class _ViewedState extends State<Viewed> {
     return Obx(() {
       if (controller.isLoading.value) {
         // return const LoadingWidget();
-        return Center(child: AppLoader.circular(color: AppColors.lightPrimary));
+        return CustomShimmerWidget.grid(
+          itemCount: 4,
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          width: double.infinity,
+          childAspectRatio: 0.6,
+        );
       }
 
       if (controller.items.isEmpty) {
@@ -96,17 +101,20 @@ class _ViewedState extends State<Viewed> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              GridView.builder(
+              MasonryGridView.count(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 itemCount: controller.items.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12.h,
-                  crossAxisSpacing: 6.w,
-                  childAspectRatio: 0.59.h,
-                ),
+                crossAxisCount: 2,
+                mainAxisSpacing: 12.h,
+                crossAxisSpacing: 6.w,
+                // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //   crossAxisCount: 2,
+                //   mainAxisSpacing: 12.h,
+                //   crossAxisSpacing: 6.w,
+                //   childAspectRatio: 0.59.h,
+                // ),
                 itemBuilder: (context, index) {
                   final match = controller.items[index];
 

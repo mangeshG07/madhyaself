@@ -7,7 +7,7 @@ class AppConstants {
   AppConstants._();
 
   /// App name
-  static const String appName = 'Madhyasthi';
+  static const String appName = 'Madhyasti';
 
   /// Environment (dev, staging, prod)
   ///

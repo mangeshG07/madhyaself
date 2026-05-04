@@ -1,9 +1,11 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class HomeController extends GetxController {
   final HomeUsecase homeUsecase;
-  HomeController(this.homeUsecase);
+  final ChatController chatController;
+  final GlobalSearchController searchController;
+  HomeController(this.homeUsecase, this.chatController, this.searchController);
+
   final isLoading = false.obs;
 
   final sliderList = [].obs;
@@ -13,14 +15,12 @@ class HomeController extends GetxController {
   final topMatchList = [].obs;
   final homeData = {}.obs;
   final profileCompletion = 0.obs;
-  final chatController = Get.find<ChatController>();
-  final controller = Get.find<GlobalSearchController>();
 
   @override
   void onInit() {
     super.onInit();
     connectSocket();
-    _getHome();
+    getHome();
   }
 
   Future<void> connectSocket() async {
@@ -28,30 +28,113 @@ class HomeController extends GetxController {
     chatController.connectSocket(userid, isGlobal: true);
   }
 
-  Future<void> _getHome() async {
+  Future<void> getHome() async {
     try {
       final userid = await SecureStorageService.read('user_id') ?? '';
+
       isLoading(true);
+
       final res = await homeUsecase.call(UserRequest(userid));
 
-      if (res['common']['status'] == true) {
-        final data = res['data'];
-        topMatchList.value = data['top_matches'] ?? [];
-        todayMatchList.value = data['today_matches'] ?? [];
-        profileCompletion.value = data['profile_completion'] ?? 0;
-        setStatsData(data);
-        sliderList.assignAll(
-          data['slider']
-              .map((e) => e['image'] ?? '')
-              .where((url) => url.toString().isNotEmpty)
-              .map((e) => e.toString())
-              .toList(),
+      if (res['common']['status'] != true) return;
+
+      final data = res['data'];
+
+      _setHomeData(data);
+
+      final platformData = Platform.isAndroid ? res['android'] : res['ios'];
+
+      /// Maintenance first
+      if (platformData['is_maintenance'] == true) {
+        isLoading(false);
+
+        Get.offAll(
+          () => MaintenanceScreen(
+            message: platformData['maintenance_msg'] ?? '',
+            imageAsset: AppAssets.appMaintainance,
+            buttonTextColor: AppColors.lightPrimary,
+            buttonBorderColor: AppColors.lightPrimary,
+          ),
         );
+
+        return;
       }
+
+      /// Update after maintenance check
+      await handleUpdate(platformData);
+    } catch (e) {
+      debugPrint('Home API error: $e');
     } finally {
       isLoading(false);
     }
   }
+
+  void _setHomeData(dynamic data) {
+    topMatchList.value = data['top_matches'] ?? [];
+    todayMatchList.value = data['today_matches'] ?? [];
+    profileCompletion.value = data['profile_completion'] ?? 0;
+
+    setStatsData(data);
+
+    sliderList.assignAll(
+      (data['slider'] ?? [])
+          .map((e) => e['image'] ?? '')
+          .where((e) => e.toString().isNotEmpty)
+          .map((e) => e.toString())
+          .toList(),
+    );
+  }
+
+  // Future<void> _getHome() async {
+  //   try {
+  //     final userid = await SecureStorageService.read('user_id') ?? '';
+  //     isLoading(true);
+  //     final res = await homeUsecase.call(UserRequest(userid));
+  //
+  //     if (res['common']['status'] == true) {
+  //       final data = res['data'];
+  //       topMatchList.value = data['top_matches'] ?? [];
+  //       todayMatchList.value = data['today_matches'] ?? [];
+  //       profileCompletion.value = data['profile_completion'] ?? 0;
+  //       setStatsData(data);
+  //       sliderList.assignAll(
+  //         data['slider']
+  //             .map((e) => e['image'] ?? '')
+  //             .where((url) => url.toString().isNotEmpty)
+  //             .map((e) => e.toString())
+  //             .toList(),
+  //       );
+  //       handleUpdate(Platform.isAndroid ? res['android'] : res['ios']);
+  //       if (Platform.isAndroid) {
+  //         if (res['android']['is_maintenance'] == true) {
+  //           Get.offAll(
+  //             () => MaintenanceScreen(
+  //               message: res['android']['maintenance_msg'] ?? '',
+  //               imageAsset: AppAssets.appMaintainance,
+  //               buttonTextColor: AppColors.lightPrimary,
+  //               buttonBorderColor: AppColors.lightPrimary,
+  //             ),
+  //             transition: Transition.rightToLeftWithFade,
+  //           );
+  //         }
+  //       } else if (Platform.isIOS) {
+  //         if (res['ios']['is_maintenance'] == true) {
+  //           Get.offAll(
+  //             () => MaintenanceScreen(
+  //               buttonTextColor: AppColors.lightPrimary,
+  //               buttonBorderColor: AppColors.lightPrimary,
+  //               message: res['ios']['maintenance_msg'] ?? '',
+  //               imageAsset: AppAssets.appMaintainance,
+  //             ),
+  //             transition: Transition.rightToLeftWithFade,
+  //           );
+  //         }
+  //       }
+  //     }
+  //   } finally {
+  //     isLoading(false);
+  //   }
+  // }
 
   void setStatsData(dynamic data) {
     statsData.value = [
@@ -93,10 +176,10 @@ class HomeController extends GetxController {
         "value": "Profession",
         "icon": HugeIcons.strokeRoundedBriefcase01,
         'onTap': () async {
-          controller.resetFilters();
-          controller.selectedJob.value =
+          searchController.resetFilters();
+          searchController.selectedJob.value =
               data['user_profession']?.toString() ?? '';
-          await controller.globalSearch();
+          await searchController.globalSearch();
         },
       },
       {
@@ -105,10 +188,10 @@ class HomeController extends GetxController {
         "value": "Education",
         "icon": HugeIcons.strokeRoundedMortarboard02,
         'onTap': () async {
-          controller.resetFilters();
-          controller.selectedEducation.value =
+          searchController.resetFilters();
+          searchController.selectedEducation.value =
               data['user_education']?.toString() ?? '';
-          await controller.globalSearch();
+          await searchController.globalSearch();
         },
       },
       {
@@ -116,9 +199,10 @@ class HomeController extends GetxController {
         "value": "Caste",
         "icon": HugeIcons.strokeRoundedStar,
         'onTap': () async {
-          controller.resetFilters();
-          controller.selectedCaste.value = data['user_caste']?.toString() ?? '';
-          await controller.globalSearch();
+          searchController.resetFilters();
+          searchController.selectedCaste.value =
+              data['user_caste']?.toString() ?? '';
+          await searchController.globalSearch();
         },
       },
       {
@@ -137,9 +221,10 @@ class HomeController extends GetxController {
         "value": "City",
         "icon": HugeIcons.strokeRoundedLocation04,
         'onTap': () async {
-          controller.resetFilters();
-          controller.selectedCity.value = data['user_city']?.toString() ?? '';
-          await controller.globalSearch();
+          searchController.resetFilters();
+          searchController.selectedCity.value =
+              data['user_city']?.toString() ?? '';
+          await searchController.globalSearch();
         },
       },
       {
@@ -147,10 +232,10 @@ class HomeController extends GetxController {
         "value": "Religion",
         "icon": HugeIcons.strokeRoundedRotateLeft04,
         'onTap': () async {
-          controller.resetFilters();
-          controller.selectedReligion.value =
+          searchController.resetFilters();
+          searchController.selectedReligion.value =
               data['user_religion']?.toString() ?? '';
-          await controller.globalSearch();
+          await searchController.globalSearch();
         },
       },
     ].obs;

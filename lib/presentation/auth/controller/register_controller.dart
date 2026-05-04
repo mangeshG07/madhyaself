@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class RegisterController extends GetxController {
   final CommonDataUsecase commonDataUsecase;
   final RegisterUsecase registerUsecase;
@@ -51,7 +50,6 @@ class RegisterController extends GetxController {
   final casteList = [].obs;
   final subCasteList = [].obs;
 
-
   /// ------------------ COMMON DATA ------------------ ///
   Future<void> fetchInitialData() async {
     try {
@@ -65,7 +63,6 @@ class RegisterController extends GetxController {
         religionList.assignAll(data['religion'] ?? []);
       }
     } catch (_) {
-
     } finally {
       isDataLoading(false);
     }
@@ -83,7 +80,6 @@ class RegisterController extends GetxController {
       final res = await casteUsecase.call(CasteRequest(religionId));
 
       if (res['common']['status'] == true) {
-
         final data = res['data'];
         casteList.value = data['caste'] ?? [];
       }
@@ -106,12 +102,10 @@ class RegisterController extends GetxController {
         subCasteList.value = data['sub_caste'] ?? [];
       }
     } catch (_) {
-
-    }finally {
+    } finally {
       isSubCasteLoading(false);
     }
   }
-
 
   /// ------------------ REGISTER ------------------ ///
   Future<void> registerUser(String phone) async {

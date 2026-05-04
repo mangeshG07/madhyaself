@@ -248,7 +248,6 @@ class _OtherProfileState extends State<OtherProfile> {
         clipBehavior: Clip.none,
         children: [
           PageView.builder(
-            controller: controller.pageController,
             itemCount: images.length,
             onPageChanged: (index) {
               controller.currentIndex.value = index;

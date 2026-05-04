@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class PreferenceController extends GetxController {
   final GetPartPrefUsecase getPartPrefUsecase;
   final CommonDataUsecase commonDataUsecase;
@@ -74,7 +73,7 @@ class PreferenceController extends GetxController {
   final locationDetailsFormKey = GlobalKey<FormState>();
 
   /// ================= SET INITIAL VALUES =================
-  ///
+
   void _setInitialValues(Map data) {
     educationCtrl.text = data['education_detail'] ?? '';
     jobCtrl.text = data['job_detail'] ?? '';
@@ -119,7 +118,7 @@ class PreferenceController extends GetxController {
     subCasteList.assignAll(data['sub_caste'] ?? []);
   }
 
-  /// ================= COMMON DATA =================
+  /// ================= Location DATA =================
   Future<void> _fetchLocationData() async {
     final res = await _locationDataUsecase();
     final data = res['data'];
@@ -155,10 +154,20 @@ class PreferenceController extends GetxController {
 
       if (res['common']['status'] == true) {
         Get.back();
-        Get.snackbar('Success', res['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.success,
+        );
+        // Get.snackbar('Success', res['common']['message']);
         await getPreference();
       } else {
-        Get.snackbar('Error', res['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.error,
+        );
+        // Get.snackbar('Error', res['common']['message']);
       }
     } finally {
       isUpdating(false);

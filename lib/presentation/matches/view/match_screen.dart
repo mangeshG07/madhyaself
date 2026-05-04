@@ -152,7 +152,12 @@ class _MatchScreenState extends State<MatchScreen> {
   Widget _buildTopMatchList() {
     return Obx(() {
       if (controller.isLoading.value) {
-        return Center(child: AppLoader.circular(color: AppColors.lightPrimary));
+        return CustomShimmerWidget.grid(
+          itemCount: 4,
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          width: double.infinity,
+          childAspectRatio: 0.6,
+        );
       }
 
       if (controller.items.isEmpty) {
@@ -173,17 +178,12 @@ class _MatchScreenState extends State<MatchScreen> {
         child: Column(
           children: [
             Expanded(
-              child: GridView.builder(
-                // shrinkWrap: true,
-                // physics: NeverScrollableScrollPhysics(),
+              child: MasonryGridView.count(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                crossAxisCount: 2,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 4,
                 itemCount: controller.items.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 4,
-                  childAspectRatio: 0.6,
-                ),
                 itemBuilder: (context, index) {
                   final match = controller.items[index];
 
@@ -209,6 +209,42 @@ class _MatchScreenState extends State<MatchScreen> {
               ),
             ),
 
+            // Expanded(
+            //   child: GridView.builder(
+            //     // shrinkWrap: true,
+            //     // physics: NeverScrollableScrollPhysics(),
+            //     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            //     itemCount: controller.items.length,
+            //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            //       crossAxisCount: 2,
+            //       mainAxisSpacing: 12,
+            //       crossAxisSpacing: 4,
+            //       childAspectRatio: 0.6,
+            //     ),
+            //     itemBuilder: (context, index) {
+            //       final match = controller.items[index];
+            //
+            //       return CompactCard(
+            //         details: {
+            //           'username': match['username'] ?? '',
+            //           'name': match['name'] ?? '',
+            //           'id': match['id'] ?? '',
+            //           'age': getAgeJob(match),
+            //           'address': getAddress(match),
+            //           'image': match['profile_image']?.toString() ?? '',
+            //           'isVerified': match['isVerified'] ?? false,
+            //           'isPremium': match['isPremium'] ?? false,
+            //           'isHide': match['hide_photos'] != '0',
+            //           'matchPercent': match['match_percentage'] ?? 0,
+            //         },
+            //         onTap: () => Get.toNamed(
+            //           Routes.othersProfile,
+            //           arguments: {'id': match['id']?.toString() ?? ''},
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
             Obx(() {
               if (controller.isLoadMore.value) {
                 // Still loading next page
@@ -231,7 +267,8 @@ class _MatchScreenState extends State<MatchScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.favorite_border, size: 50.r, color: Colors.grey),
+          Image.asset(AppAssets.noMatchFound, width: Get.width * 0.35.w),
+          // Icon(Icons.favorite_border, size: 50.r, color: Colors.grey),
           SizedBox(height: 10.h),
           AppText(
             text: 'No Matches yet',

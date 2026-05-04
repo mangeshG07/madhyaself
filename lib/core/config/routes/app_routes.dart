@@ -33,6 +33,7 @@ class Routes {
   static const String partnerBasicDetailsEdit = "/partnerBasicDetailsEdit";
   static const String searchResult = "/searchResult";
   static const String packageScreen = "/packageScreen";
+  static const String paymentScreen = "/paymentScreen";
   static const String partnerProfessionalDetailsEdit =
       "/partnerProfessionalDetailsEdit";
   static const String partnerReligionDetailsEdit =

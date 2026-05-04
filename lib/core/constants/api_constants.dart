@@ -15,7 +15,6 @@ class ApiConstants {
     // Check --dart-define first
     const dartDefine = String.fromEnvironment('BASE_URL');
     if (dartDefine.isNotEmpty) return dartDefine;
-
     // Then check .env file
     return dotenv.env['BASE_URL'] ?? '';
   }
@@ -73,4 +72,6 @@ class ApiConstants {
   /////////////////////Pending////////////////////////
   static const String getPlans = '/get-plans';
   static const String getPlanDetails = '/plans-details';
+  static const String checkout = '/checkout';
+  static const String verifyPayment = '/verify-payment';
 }

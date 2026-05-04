@@ -26,7 +26,16 @@ class _BlockUserListState extends State<BlockUserList> {
       body: Obx(() {
         /// 🔹 Initial Loading (Shimmer)
         if (controller.isLoading.isTrue) {
-          return AppLoader.circular(color: AppColors.lightPrimary);
+          return SingleChildScrollView(
+            child: CustomShimmerWidget.list(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              itemCount: 10,
+              width: double.infinity,
+              height: Get.height * 0.08.h,
+            ),
+          );
+
+          // AppLoader.circular(color: AppColors.lightPrimary);
         }
 
         /// 🔹 Empty State

@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class GlobalSearchController extends GetxController {
   final CommonDataUsecase _commonDataUsecase;
   final LocationDataUsecase _locationDataUsecase;

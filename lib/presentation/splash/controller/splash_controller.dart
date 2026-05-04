@@ -2,12 +2,6 @@ import 'package:madhya/core/exporters/app_export.dart';
 
 @lazySingleton
 class SplashController extends GetxController {
-  @override
-  void onInit() {
-    super.onInit();
-    checkLogin();
-  }
-
   void checkLogin() async {
     await Future.delayed(const Duration(seconds: 2));
 

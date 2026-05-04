@@ -1,6 +1,3 @@
-import 'package:madhya/core/constants/init_service.dart';
-import 'package:madhya/core/network/initial_bindings.dart';
-
 import 'core/exporters/app_export.dart';
 
 void main() {
@@ -21,7 +18,7 @@ void main() {
       runApp(const MyApp());
     },
     (error, stack) {
-      AppLogger.fatal('Unhandled Error', error, stack);
+      AppLogger.fatal('Platform Error', error, stack);
     },
   );
 }

@@ -32,4 +32,8 @@ abstract class ProfileRepository {
   Future<dynamic> getPlans(UserRequest request);
 
   Future<dynamic> getPlanDetails(UserRequest request);
+
+  Future<dynamic> checkOut(CheckoutRequest request);
+
+  Future<dynamic> verifyPayment(VerifyPaymentRequest request);
 }

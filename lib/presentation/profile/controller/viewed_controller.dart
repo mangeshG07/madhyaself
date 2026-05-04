@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class ViewedController extends GetxController with PaginationMixin {
   final GetViewUsecase _getViewUsecase;
 

@@ -1,7 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 import '../../../core/component/socket_service.dart' as socket_service;
 
-@lazySingleton
 class ChatController extends GetxController {
   final ChatListUsecase usecase;
   final ChatDetailsUsecase detailsUsecase;
@@ -32,6 +31,7 @@ class ChatController extends GetxController {
   final nextCursor = RxnString();
   final isCreating = false.obs;
   RxString creatingChatId = ''.obs;
+
   Future<void> createChat(String partTwoId) async {
     final userId = await SecureStorageService.read('user_id') ?? '';
 

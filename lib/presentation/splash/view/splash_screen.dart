@@ -77,38 +77,5 @@ class _SplashPageState extends State<SplashPage>
       height: double.infinity,
       fit: BoxFit.contain,
     );
-
-    // return Container(
-    //   width: double.infinity,
-    //   height:  double.infinity,
-    //   decoration: BoxDecoration(
-    //     borderRadius: BorderRadius.circular(24),
-    //     boxShadow: [
-    //       BoxShadow(
-    //         color: theme.colorScheme.primary.withOpacity(0.2),
-    //         blurRadius: 20,
-    //         offset: const Offset(0, 10),
-    //       ),
-    //     ],
-    //   ),
-    //   child: Center(
-    //     child: Icon(
-    //       Icons.rocket_launch_rounded,
-    //       size: 64,
-    //       color: theme.colorScheme.primary,
-    //     ),
-    //   ),
-    // );
-
-    // NOTE: To use your custom logo asset, replace the above Container with:
-    //
-    // return Image.asset(
-    //   AppAssets.splashLogo,
-    //   width: 120,
-    //   height: 120,
-    //   fit: BoxFit.contain,
-    // );
-    //
-    // Make sure to replace assets/images/splash_logo.png with your actual logo!
   }
 }

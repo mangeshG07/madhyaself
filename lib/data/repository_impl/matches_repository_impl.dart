@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@LazySingleton(as: MatchesRepository)
 class MatchesRepositoryImpl extends MatchesRepository {
   final ApiService _apiService;
   MatchesRepositoryImpl(this._apiService);

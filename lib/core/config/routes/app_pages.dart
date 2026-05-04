@@ -10,8 +10,8 @@ import 'package:madhya/presentation/matches/bindings/match_binding.dart';
 import 'package:madhya/presentation/others_profile/binding/other_profile_binding.dart';
 import 'package:madhya/presentation/profile/binding/partner_prefs_bindings.dart';
 import 'package:madhya/presentation/profile/binding/profile_bindings.dart';
-import 'package:madhya/presentation/profile/view/profile_screen.dart';
 import 'package:madhya/presentation/profile/widget/block_list.dart';
+import 'package:madhya/presentation/profile/widget/buy_package.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/about_me_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/basic_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/edit_profile_content/family_details_edit.dart';
@@ -103,6 +103,7 @@ class AppPages {
     GetPage(name: Routes.basicDetailsEdit, page: () => BasicDetailsEdit()),
     GetPage(name: Routes.aboutMeEdit, page: () => AboutMeEdit()),
     GetPage(name: Routes.deleteScreen, page: () => DeleteScreen()),
+    GetPage(name: Routes.paymentScreen, page: () => PaymentMethod()),
     GetPage(
       name: Routes.packageScreen,
       page: () => Package(),
@@ -131,7 +132,7 @@ class AppPages {
         OtherProfileBinding(), // ✅ ADD THIS
       ],
     ),
-    GetPage(name: Routes.reportedUserList, page: () => ReportedList()),
+    GetPage(name: Routes.reportedUserList, page: () => ReportedList(),binding: ProfileBindings(),),
     GetPage(
       name: Routes.searchResult,
       page: () => SearchResult(),

@@ -6,7 +6,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    controller.resetFilters();
     return Scaffold(
       appBar: CustomAppbar(title: 'Global Search'),
       body: Obx(

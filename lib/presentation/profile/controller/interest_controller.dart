@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class InterestController extends GetxController with PaginationMixin {
   final GetInterestUsecase _getInterestUsecase;
   final UpdateInterestUsecase _updateInterestUsecase;

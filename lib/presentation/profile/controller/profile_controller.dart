@@ -1,8 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
-import 'package:madhya/domain/usecase/get_page_details_usecase.dart';
-import 'package:madhya/domain/usecase/get_page_usecase.dart';
 
-// @lazySingleton
 class ProfileController extends GetxController {
   final ProfileUsecase usecase;
   final CommonDataUsecase commonDataUsecase;
@@ -176,8 +173,18 @@ class ProfileController extends GetxController {
       'title': 'Logout',
       'icon': HugeIcons.strokeRoundedLogout01,
       'onTap': () async {
-        await SecureStorageService.clear();
-        Get.offAllNamed(Routes.login);
+        AllDialogs().showConfirmationDialog(
+          'Logout',
+          'Are you sure you want to logout?',
+          onConfirm: () async {
+            // perform logout
+            Get.back();
+            await LocalStorage.clear();
+            Get.snackbar('Logout', 'You have logged out successfully');
+            await SecureStorageService.clear();
+            Get.offAllNamed(Routes.login);
+          },
+        );
       },
     },
   ].obs;
@@ -295,240 +302,338 @@ class ProfileController extends GetxController {
 
   /// ================= UPDATE BASIC DETAILS=================
   Future<void> updateBasicDetails() async {
-    try {
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          wpNumber: whatsappNoController.text,
-          alternateNumber: alternateNoController.text,
-          age: selectedAge.value,
-          maritalStatus: selectedMStatus.value,
-          height: selectedHeight.value,
-          profileCreatedFor: selectedCreatedFor.value,
-        ),
-      );
+    final userid = await SecureStorageService.read('user_id') ?? '';
 
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        wpNumber: whatsappNoController.text,
+        alternateNumber: alternateNoController.text,
+        age: selectedAge.value,
+        maritalStatus: selectedMStatus.value,
+        height: selectedHeight.value,
+        profileCreatedFor: selectedCreatedFor.value,
+      ),
+    );
 
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    // try {
+    //   isUpdateLoading(true);
+    //   final userid = await SecureStorageService.read('user_id') ?? '';
+    //   final res = await _updateProfileUsecase.call(
+    //     UpdateUserProfileRequest(
+    //       userId: userid,
+    //       wpNumber: whatsappNoController.text,
+    //       alternateNumber: alternateNoController.text,
+    //       age: selectedAge.value,
+    //       maritalStatus: selectedMStatus.value,
+    //       height: selectedHeight.value,
+    //       profileCreatedFor: selectedCreatedFor.value,
+    //     ),
+    //   );
+    //
+    //   if (res['common']['status'] == true) {
+    //     Get.back();
+    //     CustomSnackbar.show(
+    //       context: Get.context!,
+    //       message: res['common']['message'],
+    //       type: SnackbarType.success,
+    //     );
+    //
+    //     // Get.snackbar('Success', res['common']['message']);
+    //
+    //     getProfile();
+    //   } else {
+    //     CustomSnackbar.show(
+    //       context: Get.context!,
+    //       message: res['common']['message'],
+    //       type: SnackbarType.error,
+    //     );
+    //     // Get.snackbar('error', res['common']['message']);
+    //   }
+    // } catch (_) {
+    // } finally {
+    //   isUpdateLoading(false);
+    // }
   }
 
   /// ================= UPDATE ABOUT ME DETAILS=================
   Future<void> updateAboutMeDetails() async {
-    try {
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          aboutMe: aboutMeController.text.trim(),
-        ),
-      );
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
+    final userid = await SecureStorageService.read('user_id') ?? '';
 
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        aboutMe: aboutMeController.text.trim(),
+      ),
+    );
+
+    // try {
+    //   isUpdateLoading(true);
+    //   final userid = await SecureStorageService.read('user_id') ?? '';
+    //   final res = await _updateProfileUsecase.call(
+    //     UpdateUserProfileRequest(
+    //       userId: userid,
+    //       aboutMe: aboutMeController.text.trim(),
+    //     ),
+    //   );
+    //   if (res['common']['status'] == true) {
+    //     Get.back();
+    //     Get.snackbar('Success', res['common']['message']);
+    //
+    //     getProfile();
+    //   } else {
+    //     Get.snackbar('error', res['common']['message']);
+    //   }
+    // } catch (_) {
+    // } finally {
+    //   isUpdateLoading(false);
+    // }
   }
 
   /// ================= UPDATE PROFESSIONAL DETAILS=================
   Future<void> updateProfessionalDetails() async {
-    try {
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          educationCategoryId: selectedEducationCategory.value,
-          educationDetail: educationDetailsController.text.trim(),
-          jobCategoryId: selectedJobCategory.value,
-          jobDetail: jobDetailsController.text.trim(),
-          annualIncome: selectedAnnualIncome.value,
-        ),
-      );
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
+    final userid = await SecureStorageService.read('user_id') ?? '';
 
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        educationCategoryId: selectedEducationCategory.value,
+        educationDetail: educationDetailsController.text.trim(),
+        jobCategoryId: selectedJobCategory.value,
+        jobDetail: jobDetailsController.text.trim(),
+        annualIncome: selectedAnnualIncome.value,
+      ),
+    );
+
+    // try {
+    //   isUpdateLoading(true);
+    //   final userid = await SecureStorageService.read('user_id') ?? '';
+    //   final res = await _updateProfileUsecase.call(
+    //     UpdateUserProfileRequest(
+    //       userId: userid,
+    //       educationCategoryId: selectedEducationCategory.value,
+    //       educationDetail: educationDetailsController.text.trim(),
+    //       jobCategoryId: selectedJobCategory.value,
+    //       jobDetail: jobDetailsController.text.trim(),
+    //       annualIncome: selectedAnnualIncome.value,
+    //     ),
+    //   );
+    //   if (res['common']['status'] == true) {
+    //     Get.back();
+    //     Get.snackbar('Success', res['common']['message']);
+    //
+    //     getProfile();
+    //   } else {
+    //     Get.snackbar('error', res['common']['message']);
+    //   }
+    // } catch (_) {
+    // } finally {
+    //   isUpdateLoading(false);
+    // }
   }
 
   /// ================= UPDATE RELIGION DETAILS=================
   Future<void> updateReligionDetails() async {
-    try {
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          casteId: selectedCaste.value,
-          subCasteId: selectedSubCaste.value,
-        ),
-      );
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
+    final userid = await SecureStorageService.read('user_id') ?? '';
 
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        casteId: selectedCaste.value,
+        subCasteId: selectedSubCaste.value,
+      ),
+    );
+
+    //
+    // try {
+    //   isUpdateLoading(true);
+    //   final userid = await SecureStorageService.read('user_id') ?? '';
+    //   final res = await _updateProfileUsecase.call(
+    //     UpdateUserProfileRequest(
+    //       userId: userid,
+    //       casteId: selectedCaste.value,
+    //       subCasteId: selectedSubCaste.value,
+    //     ),
+    //   );
+    //   if (res['common']['status'] == true) {
+    //     Get.back();
+    //     Get.snackbar('Success', res['common']['message']);
+    //
+    //     getProfile();
+    //   } else {
+    //     Get.snackbar('error', res['common']['message']);
+    //   }
+    // } catch (_) {
+    // } finally {
+    //   isUpdateLoading(false);
+    // }
   }
 
   /// ================= UPDATE LOCATION DETAILS=================
   Future<void> updateLocationDetails() async {
-    try {
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          country: selectedCountry.value,
-          state: selectedState.value,
-          city: selectedCity.value,
-        ),
-      );
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
+    final userid = await SecureStorageService.read('user_id') ?? '';
 
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        country: selectedCountry.value,
+        state: selectedState.value,
+        city: selectedCity.value,
+      ),
+    );
+
+    // try {
+    //   isUpdateLoading(true);
+    //   final userid = await SecureStorageService.read('user_id') ?? '';
+    //   final res = await _updateProfileUsecase.call(
+    //     UpdateUserProfileRequest(
+    //       userId: userid,
+    //       country: selectedCountry.value,
+    //       state: selectedState.value,
+    //       city: selectedCity.value,
+    //     ),
+    //   );
+    //   if (res['common']['status'] == true) {
+    //     Get.back();
+    //     Get.snackbar('Success', res['common']['message']);
+    //
+    //     getProfile();
+    //   } else {
+    //     Get.snackbar('error', res['common']['message']);
+    //   }
+    // } catch (_) {
+    // } finally {
+    //   isUpdateLoading(false);
+    // }
   }
 
   /// ================= UPDATE FAMILY DETAILS=================
   Future<void> updateFamilyDetails() async {
-    try {
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          fatherName: fatherNameController.text.trim(),
-          fatherJob: fatherJobController.text.trim(),
-          motherName: motherNameController.text.trim(),
-          motherJob: motherJobController.text.trim(),
-          sibllingDetails: siblingController.text.trim(),
-        ),
-      );
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
+    final userid = await SecureStorageService.read('user_id') ?? '';
 
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        fatherName: fatherNameController.text.trim(),
+        fatherJob: fatherJobController.text.trim(),
+        motherName: motherNameController.text.trim(),
+        motherJob: motherJobController.text.trim(),
+        sibllingDetails: siblingController.text.trim(),
+      ),
+    );
+
+    // try {
+    //   isUpdateLoading(true);
+    //   final userid = await SecureStorageService.read('user_id') ?? '';
+    //   final res = await _updateProfileUsecase.call(
+    //     UpdateUserProfileRequest(
+    //       userId: userid,
+    //       fatherName: fatherNameController.text.trim(),
+    //       fatherJob: fatherJobController.text.trim(),
+    //       motherName: motherNameController.text.trim(),
+    //       motherJob: motherJobController.text.trim(),
+    //       sibllingDetails: siblingController.text.trim(),
+    //     ),
+    //   );
+    //   if (res['common']['status'] == true) {
+    //     Get.back();
+    //     Get.snackbar('Success', res['common']['message']);
+    //
+    //     getProfile();
+    //   } else {
+    //     Get.snackbar('error', res['common']['message']);
+    //   }
+    // } catch (_) {
+    // } finally {
+    //   isUpdateLoading(false);
+    // }
   }
 
   /// ================= UPDATE HOROSCOPE DETAILS=================
   Future<void> updateHoroscopeDetails() async {
-    try {
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      print('selectedRashi.value===>${selectedRashi.value}');
-      print('birthDateController.value===>${birthDateController.text.trim()}');
-      print('horoscopeFile.value===>${horoscopeFile.value}');
-      print(
-        'birthTimeController.text.trim()===>${birthTimeController.text.trim()}',
-      );
+    final userid = await SecureStorageService.read('user_id') ?? '';
 
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          birthtime: birthTimeController.text.trim(),
-          birthdate: birthDateController.text.trim(),
-          rasi: selectedRashi.value,
-          horoscopeDoc: horoscopeFile.value,
-        ),
-      );
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        birthtime: birthTimeController.text.trim(),
+        birthdate: birthDateController.text.trim(),
+        rasi: selectedRashi.value,
+        horoscopeDoc: horoscopeFile.value,
+      ),
+    );
 
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    // try {
+    //   isUpdateLoading(true);
+    //   final userid = await SecureStorageService.read('user_id') ?? '';
+    //   final res = await _updateProfileUsecase.call(
+    //     UpdateUserProfileRequest(
+    //       userId: userid,
+    //       birthtime: birthTimeController.text.trim(),
+    //       birthdate: birthDateController.text.trim(),
+    //       rasi: selectedRashi.value,
+    //       horoscopeDoc: horoscopeFile.value,
+    //     ),
+    //   );
+    //   if (res['common']['status'] == true) {
+    //     Get.back();
+    //     Get.snackbar('Success', res['common']['message']);
+    //
+    //     getProfile();
+    //   } else {
+    //     Get.snackbar('error', res['common']['message']);
+    //   }
+    // } catch (_) {
+    // } finally {
+    //   isUpdateLoading(false);
+    // }
   }
 
   /// ================= UPDATE PHOTOS DETAILS=================
   Future<void> updatePhotosDetails() async {
-    try {
-      print('removedFiles---------->$removedFiles');
+    final userid = await SecureStorageService.read('user_id') ?? '';
+    final fileImages = profileImages.whereType<File>().toList();
+    final photos = await prepareDocuments(fileImages);
 
-      isUpdateLoading(true);
-      final userid = await SecureStorageService.read('user_id') ?? '';
-      final fileImages = profileImages.whereType<File>().toList();
-      final photos = await prepareDocuments(fileImages);
-      print('photos---------->$photos');
+    await _performProfileUpdate(
+      UpdateUserProfileRequest(
+        userId: userid,
+        profilePicture: profileImage.value,
+        photos: photos,
+        removeFile: removedFiles,
+        hidePhotos: isHide.value == true ? '1' : '0',
+      ),
+    );
 
-      final res = await _updateProfileUsecase.call(
-        UpdateUserProfileRequest(
-          userId: userid,
-          profilePicture: profileImage.value,
-          photos: photos,
-          removeFile: removedFiles,
-          hidePhotos: isHide.value == true ? '1' : '0',
-        ),
-      );
-      if (res['common']['status'] == true) {
-        Get.back();
-        Get.snackbar('Success', res['common']['message']);
-        profileImage.value = null;
-        profileImages.clear();
-        removedFiles.clear();
-        getProfile();
-      } else {
-        Get.snackbar('error', res['common']['message']);
-      }
-    } catch (_) {
-    } finally {
-      isUpdateLoading(false);
-    }
+    //   try {
+    //     isUpdateLoading(true);
+    //     final userid = await SecureStorageService.read('user_id') ?? '';
+    //     final fileImages = profileImages.whereType<File>().toList();
+    //     final photos = await prepareDocuments(fileImages);
+    //
+    //     final res = await _updateProfileUsecase.call(
+    //       UpdateUserProfileRequest(
+    //         userId: userid,
+    //         profilePicture: profileImage.value,
+    //         photos: photos,
+    //         removeFile: removedFiles,
+    //         hidePhotos: isHide.value == true ? '1' : '0',
+    //       ),
+    //     );
+    //     if (res['common']['status'] == true) {
+    //       Get.back();
+    //       Get.snackbar('Success', res['common']['message']);
+    //       profileImage.value = null;
+    //       profileImages.clear();
+    //       removedFiles.clear();
+    //       getProfile();
+    //     } else {
+    //       Get.snackbar('error', res['common']['message']);
+    //     }
+    //   } catch (_) {
+    //   } finally {
+    //     isUpdateLoading(false);
+    //   }
   }
 
   /// ================= UPDATE DOCUMENTS DETAILS=================
@@ -636,5 +741,36 @@ class ProfileController extends GetxController {
     // profileDetails.clear();
 
     update(); // if using GetBuilder anywhere
+  }
+
+  /// ================= PROFILE UPDATE COMPONENT =================
+  Future<void> _performProfileUpdate(UpdateUserProfileRequest request) async {
+    try {
+      isUpdateLoading(true);
+
+      final res = await _updateProfileUsecase.call(request);
+
+      if (res['common']['status'] == true) {
+        Get.back();
+
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.success,
+        );
+
+        await getProfile();
+      } else {
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.error,
+        );
+      }
+    } catch (e) {
+      AppLogger.error(e.toString());
+    } finally {
+      isUpdateLoading(false);
+    }
   }
 }

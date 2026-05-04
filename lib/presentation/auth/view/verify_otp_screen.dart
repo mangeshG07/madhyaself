@@ -89,7 +89,7 @@ class VerifyOTPScreen extends GetView<OtpController> {
                 border: Border.all(color: AppColors.lightPrimary),
               ),
             ),
-            onCompleted: (pin) => debugPrint('Entered OTP: $pin'),
+            onCompleted: (pin) {},
           ),
         ),
       ],

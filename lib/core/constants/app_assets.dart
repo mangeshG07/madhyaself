@@ -18,6 +18,7 @@ class AppAssets {
   static const String bgImageDark = '$_imagesPath/bg_img_dark.png';
   static const String noMatchFound = '$_imagesPath/no_match_found.png';
   static const String defaultImage = '$_imagesPath/default_image.png';
+  static const String appMaintainance = '$_imagesPath/app_maintainance.png';
 
   // ==============Onboarding==============
   static const String onboarding_1 = '$_imagesPath/onb_1.png';
@@ -27,4 +28,5 @@ class AppAssets {
   // ============== Icons ===========
   static const String flag = '$_iconsPath/ic_flag.png';
   static const String navIcon = '$_iconsPath/ic_nav.png';
+  static const String noInternet = '$_iconsPath/ic_no_internet.png';
 }

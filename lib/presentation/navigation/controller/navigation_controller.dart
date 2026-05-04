@@ -1,7 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-import '../../profile/view/profile_screen.dart';
-
 @lazySingleton
 class NavigationController extends GetxController {
   final currentIndex = 0.obs;

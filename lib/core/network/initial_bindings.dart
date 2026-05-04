@@ -8,7 +8,12 @@ class InitialBindings extends Bindings {
     //
     Get.put<ApiService>(ApiService(dio), permanent: true);
     Get.lazyPut(
-      () => InterestController(Get.find(), Get.find(), Get.find(), Get.find()),
+      () => InterestController(
+        getIt<GetInterestUsecase>(),
+        getIt<UpdateInterestUsecase>(),
+        getIt<DeleteInterestUsecase>(),
+        getIt<SendInterestUsecase>(),
+      ),
       fenix: true,
     );
   }

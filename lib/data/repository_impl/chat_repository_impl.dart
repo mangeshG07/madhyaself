@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@LazySingleton(as: ChatRepository)
 class ChatRepositoryImpl extends ChatRepository {
   final ApiService _apiService;
 

@@ -1,5 +1,6 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
+@LazySingleton(as: HomeRepository)
 class HomeRepositoryImpl extends HomeRepository {
   final ApiService apiService;
 

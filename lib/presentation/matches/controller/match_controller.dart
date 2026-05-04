@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class MatchController extends GetxController with PaginationMixin {
   final GetMatchesUsecase _getMatchesUsecase;
   MatchController(this._getMatchesUsecase);

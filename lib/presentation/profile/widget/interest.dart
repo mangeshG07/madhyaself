@@ -32,7 +32,16 @@ class _InterestState extends State<Interest> {
   Widget _buildInterestList() {
     return Obx(() {
       if (controller.isLoading.value) {
-        return Center(child: AppLoader.circular(color: AppColors.lightPrimary));
+        return SingleChildScrollView(
+          child: CustomShimmerWidget.list(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            itemCount: 4,
+            width: double.infinity,
+            height: Get.height * 0.2.h,
+          ),
+        );
+
+        Center(child: AppLoader.circular(color: AppColors.lightPrimary));
       }
 
       if (controller.items.isEmpty) {

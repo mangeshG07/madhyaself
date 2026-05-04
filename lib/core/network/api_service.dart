@@ -213,4 +213,23 @@ abstract class ApiService {
     @Part(name: "user_id") String userId,
     @Part(name: "plan_id") String planId,
   );
+
+  @POST(ApiConstants.checkout)
+  Future<dynamic> checkout(
+    @Part(name: "user_id") String userId,
+    @Part(name: "plan_id") String planId,
+    @Part(name: "price") String price,
+    @Part(name: "payment_method") String payMethod,
+    @Part(name: "type") String type,
+  );
+
+  @POST(ApiConstants.verifyPayment)
+  Future<dynamic> verifyPayment(
+    @Part(name: "user_id") String userId,
+    @Part(name: "razorpay_payment_id") String razorpayPaymentId,
+    @Part(name: "razorpayOrderId") String razorpayOrderId,
+    @Part(name: "payment_id") String paymentId,
+    @Part(name: "razorpay_signature") String razorpaySignature,
+    @Part(name: "status") String status,
+  );
 }

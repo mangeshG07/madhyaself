@@ -1,5 +1,6 @@
 import '../../core/exporters/app_export.dart';
 
+@lazySingleton
 class GetMatchesUsecase {
   final MatchesRepository _repository;
   GetMatchesUsecase(this._repository);

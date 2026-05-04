@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-@lazySingleton
 class OtherProfileController extends GetxController {
   final OtherProfileUsecase usecase;
   final BlockUserUsecase _blockUserUsecase;
@@ -12,7 +11,6 @@ class OtherProfileController extends GetxController {
   );
 
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
-  final PageController pageController = PageController();
 
   final interestOptions = <InterestOptionModel>[].obs;
 

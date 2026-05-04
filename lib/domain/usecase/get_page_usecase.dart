@@ -1,5 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
-
+@lazySingleton
 class GetPageUsecase {
   final ProfileRepository _repository;
 
