@@ -34,6 +34,7 @@ export 'package:share_plus/share_plus.dart';
 export 'package:connectivity_plus/connectivity_plus.dart';
 export 'package:package_info_plus/package_info_plus.dart';
 export 'package:url_launcher/url_launcher.dart';
+export 'package:razorpay_flutter/razorpay_flutter.dart';
 export 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 //Common//

@@ -20,7 +20,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     connectSocket();
-    getHome();
+    // getHome();
   }
 
   Future<void> connectSocket() async {
@@ -210,11 +210,12 @@ class HomeController extends GetxController {
             '${data['user_sub_caste_matches']?.toString() ?? '0'}\nMatches',
         "value": "Subcaste",
         "icon": HugeIcons.strokeRoundedStar,
-        // 'onTap': () async {
-        //   controller.selectedCaste.value =
-        //       data['user_caste']?.toString() ?? '';
-        //   await controller.globalSearch();
-        // },
+        'onTap': () async {
+          searchController.resetFilters();
+          searchController.selectedSubCaste.value =
+              data['user_sub_caste']?.toString() ?? '';
+          await searchController.globalSearch();
+        },
       },
       {
         "title": '${data['user_city_matches']?.toString() ?? '0'}\nMatches',

@@ -32,6 +32,12 @@ class _BlockUserListState extends State<BlockUserList> {
               itemCount: 10,
               width: double.infinity,
               height: Get.height * 0.08.h,
+              baseColor: theme.brightness == Brightness.light
+                  ? Colors.grey.shade300
+                  : Colors.grey.shade800,
+              highlightColor: theme.brightness == Brightness.light
+                  ? Colors.grey.shade100
+                  : Colors.grey.shade700,
             ),
           );
 

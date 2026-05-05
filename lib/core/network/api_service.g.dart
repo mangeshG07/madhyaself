@@ -71,12 +71,7 @@ class _ApiService implements ApiService {
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<dynamic>(
-      Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            responseType: ResponseType.plain,
-          )
+      Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/get-common-data',
@@ -97,12 +92,7 @@ class _ApiService implements ApiService {
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<dynamic>(
-      Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            responseType: ResponseType.plain,
-          )
+      Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/get-location-data',
@@ -760,12 +750,7 @@ class _ApiService implements ApiService {
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<dynamic>(
-      Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            responseType: ResponseType.plain,
-          )
+      Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/get-page-list',

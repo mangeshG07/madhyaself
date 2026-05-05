@@ -20,9 +20,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<dynamic> getCommonData() async {
     final res = await _api.getCommonData();
 
-    final decoded = jsonDecode(res.toString());
+    // final decoded = jsonDecode(res.toString());
 
-    return decoded;
+    return res;
   }
 
   @override

@@ -13,6 +13,7 @@ class SearchRequest {
   final String? city;
   final String? annualIncome;
   final String? userName;
+  final String? subcaste;
 
   SearchRequest({
     required this.userId,
@@ -29,6 +30,7 @@ class SearchRequest {
     this.city,
     this.annualIncome,
     this.userName,
+    this.subcaste,
   });
 
   Map<String, dynamic> toJson() {
@@ -47,6 +49,7 @@ class SearchRequest {
       "city": city,
       "income_range": annualIncome,
       "username": userName,
+      "sub_caste": subcaste,
     };
 
     // 🔥 remove null & empty values

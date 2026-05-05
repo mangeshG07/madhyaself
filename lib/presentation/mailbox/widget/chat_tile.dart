@@ -9,7 +9,7 @@ class ChatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final unread = chat['unread_count'] ?? 0;
-
+    final theme = Theme.of(context);
     return InkWell(
       onTap: () => Get.toNamed(
         Routes.chatDetails,
@@ -19,7 +19,7 @@ class ChatTile extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Row(
           children: [
-            _avatar(),
+            _avatar(theme),
 
             SizedBox(width: 12.w),
 
@@ -97,16 +97,20 @@ class ChatTile extends StatelessWidget {
     );
   }
 
-  Widget _avatar() {
+  Widget _avatar(ThemeData theme) {
     return CircleAvatar(
       radius: 26.r,
-      backgroundColor: AppColors.grey200,
+      backgroundColor: theme.brightness == Brightness.light
+          ? AppColors.grey200
+          : AppColors.grey800,
       child: ClipOval(
         child: CachedNetworkImage(
-          width: 52,
-          height: 52,
+          width: 52.w,
+          height: 52.h,
           fit: BoxFit.cover,
-          imageUrl: chat['profile_image'] ?? '',
+          imageUrl: chat['hide_photos'] == '1'
+              ? ''
+              : chat['profile_image'] ?? '',
           placeholder: (_, __) => Image.asset(AppAssets.defaultImage),
           errorWidget: (_, __, ___) => Image.asset(AppAssets.defaultImage),
         ),

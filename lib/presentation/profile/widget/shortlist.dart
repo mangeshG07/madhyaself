@@ -26,7 +26,7 @@ class _ShortlistState extends State<Shortlist> {
         child: Column(
           children: [
             _buildToggle(isLight),
-            Expanded(child: _buildShortList()),
+            Expanded(child: _buildShortList(theme)),
           ],
         ),
       ),
@@ -71,7 +71,7 @@ class _ShortlistState extends State<Shortlist> {
   }
 
   // ---------------- GRID ----------------
-  Widget _buildShortList() {
+  Widget _buildShortList(ThemeData theme) {
     return Obx(() {
       if (controller.isLoading.value) {
         // return const LoadingWidget();
@@ -79,7 +79,12 @@ class _ShortlistState extends State<Shortlist> {
           itemCount: 4,
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           width: double.infinity,
-          childAspectRatio: 0.6,
+          childAspectRatio: 0.6,   baseColor: theme.brightness == Brightness.light
+            ? Colors.grey.shade300
+            : Colors.grey.shade800,
+          highlightColor: theme.brightness == Brightness.light
+              ? Colors.grey.shade100
+              : Colors.grey.shade700,
         );
       }
 

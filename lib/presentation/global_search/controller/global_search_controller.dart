@@ -63,6 +63,7 @@ class GlobalSearchController extends GetxController {
 
   final selectedReligion = Rxn<String>();
   final selectedCaste = Rxn<String>();
+  final selectedSubCaste = Rxn<String>();
   final selectedHeightFrom = Rxn<String>();
   final selectedHeightTo = Rxn<String>();
   final selectedAgeFrom = Rxn<String>();
@@ -109,6 +110,7 @@ class GlobalSearchController extends GetxController {
           religionId: selectedReligion.value,
           state: selectedState.value,
           userName: username.text.trim(),
+          subcaste: selectedSubCaste.value,
         ),
       );
 
@@ -130,6 +132,7 @@ class GlobalSearchController extends GetxController {
 
     selectedReligion.value = null;
     selectedCaste.value = null;
+    selectedSubCaste.value = null;
 
     selectedHeightFrom.value = null;
     selectedHeightTo.value = null;

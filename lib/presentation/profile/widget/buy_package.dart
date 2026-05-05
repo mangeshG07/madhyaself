@@ -18,8 +18,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: const CustomAppbar(titleSpacing: 0, title: 'Checkout'),
       body: Obx(
         () => controller.isDetailsLoading.isTrue
@@ -126,7 +128,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       height: 15.h,
                     ),
                     SizedBox(height: 8.h),
-                    _buildPayMethod(),
+                    _buildPayMethod(theme),
                     _buildPayNowButton(),
                   ],
                 ),
@@ -135,8 +137,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
     );
   }
 
-  Widget _buildPayMethod() {
+  Widget _buildPayMethod(ThemeData theme) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8.h,
       children: [
         AppText(
           text: 'Select Payment Method',
@@ -153,10 +157,11 @@ class _PaymentMethodState extends State<PaymentMethod> {
             itemBuilder: (context, index) {
               final payMethod = controller.paymentMethods[index];
               return Card(
-                surfaceTintColor: Colors.white,
-                color: Colors.white,
-                elevation: 1,
+                surfaceTintColor: theme.scaffoldBackgroundColor,
+                color: theme.scaffoldBackgroundColor,
+                elevation: 0,
                 shape: RoundedRectangleBorder(
+                  side: BorderSide(color: theme.dividerTheme.color!),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
@@ -219,35 +224,11 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   controller.planDetails['final_price'].toString(),
                   controller.selectedPaymentId.value,
                   controller.planDetails['type'].toString(),
+                  pay['key_id'].toString(),
                 );
               },
               backgroundColor: AppColors.lightSecondary,
             ),
-    );
-  }
-
-  Widget _customButton(
-    String title,
-    Color color,
-    dynamic icon,
-    VoidCallback onTap,
-  ) {
-    return Center(
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          fixedSize: Size(Get.width * 0.35.w, 40.h),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-        ),
-        onPressed: onTap,
-        icon: icon is IconData
-            ? Icon(icon, size: 20, color: Colors.white)
-            : HugeIcon(icon: icon, color: Colors.white, size: 20),
-        label: Text(title),
-      ),
     );
   }
 }

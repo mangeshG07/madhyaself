@@ -26,7 +26,7 @@ class _ViewedState extends State<Viewed> {
         child: Column(
           children: [
             _buildToggle(isLight),
-            Expanded(child: _buildViewList()),
+            Expanded(child: _buildViewList(theme)),
           ],
         ),
       ),
@@ -71,7 +71,7 @@ class _ViewedState extends State<Viewed> {
   }
 
   // ---------------- GRID ----------------
-  Widget _buildViewList() {
+  Widget _buildViewList(ThemeData theme) {
     return Obx(() {
       if (controller.isLoading.value) {
         // return const LoadingWidget();
@@ -80,6 +80,12 @@ class _ViewedState extends State<Viewed> {
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           width: double.infinity,
           childAspectRatio: 0.6,
+          baseColor: theme.brightness == Brightness.light
+              ? Colors.grey.shade300
+              : Colors.grey.shade800,
+          highlightColor: theme.brightness == Brightness.light
+              ? Colors.grey.shade100
+              : Colors.grey.shade700,
         );
       }
 

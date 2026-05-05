@@ -11,6 +11,7 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   final controller = Get.find<PlanController>();
+  final pController = Get.find<ProfileController>();
 
   @override
   void initState() {
@@ -50,12 +51,99 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
           child: Column(
             spacing: 20.h,
             children: [
+              _buildCurrentPlanCard(theme),
               _buildToggle(isLight),
               _buildHeader(theme),
               _buildPackageGrid(theme, isLight),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCurrentPlanCard(ThemeData theme) {
+    final planName = pController.planDetails['plan_name'] ?? 'Free Plan';
+    final endDate = pController.planDetails['end_date'] ?? 'No expiry';
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.brightness == Brightness.light
+                ? AppColors.lightPrimary.withValues(alpha: 0.08)
+                : AppColors.lightMidPrimary.withValues(alpha: 0.4),
+            theme.cardColor.withValues(alpha: 0.2),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12.r),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.workspace_premium,
+              color: theme.colorScheme.onSurface,
+              size: 24.sp,
+            ),
+          ),
+
+          SizedBox(width: 14.w),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  text: 'Current Plan',
+                  fontSize: 12.sp,
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
+                ),
+
+                SizedBox(height: 4.h),
+
+                AppText(
+                  text: planName,
+                  fontSize: 18.sp,
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+
+                SizedBox(height: 4.h),
+
+                Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 14.sp,
+                      color: AppColors.grey600,
+                    ),
+                    SizedBox(width: 4.w),
+                    Expanded(
+                      child: AppText(
+                        text: 'Valid till $endDate',
+                        fontSize: 12.sp,
+                        color: AppColors.grey600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          Icon(Icons.verified, color: Colors.blue, size: 22.sp),
+        ],
       ),
     );
   }
@@ -128,6 +216,12 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
             itemCount: 10,
             width: double.infinity,
             height: Get.height * 0.48.h,
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
           ),
         );
       }
@@ -393,77 +487,6 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
           return const SizedBox();
         }).toList(),
       ],
-    );
-  }
-
-  void _showPremiumDialog(dynamic plan) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(24.r),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(16.r),
-                decoration: BoxDecoration(
-                  color: AppColors.lightPrimary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.rocket_launch,
-                  size: 40.sp,
-                  color: AppColors.lightPrimary,
-                ),
-              ),
-              SizedBox(height: 16.h),
-              AppText(
-                text: 'Ready to Upgrade?',
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-              ),
-              SizedBox(height: 8.h),
-              AppText(
-                text:
-                    'Get ${plan['name'] ?? 'Premium'} and start your journey today!',
-                fontSize: 14.sp,
-                textAlign: TextAlign.center,
-                color: Colors.grey.shade600,
-              ),
-              SizedBox(height: 24.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: AppButton(
-                      text: 'Maybe Later',
-                      onTap: () => Navigator.pop(context),
-                      type: AppButtonType.outline,
-                      backgroundColor: Colors.transparent,
-                      textColor: Colors.grey.shade600,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: AppButton(
-                      text: 'Proceed',
-                      onTap: () {
-                        Navigator.pop(context);
-                        // Add payment navigation logic
-                      },
-                      backgroundColor: AppColors.lightPrimary,
-                      textColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

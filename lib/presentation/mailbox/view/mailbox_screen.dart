@@ -77,6 +77,12 @@ class _MailboxScreenState extends State<MailboxScreen> {
                   vertical: 10,
                 ),
                 itemCount: 4,
+                baseColor: theme.brightness == Brightness.light
+                    ? Colors.grey.shade300
+                    : Colors.grey.shade800,
+                highlightColor: theme.brightness == Brightness.light
+                    ? Colors.grey.shade100
+                    : Colors.grey.shade700,
                 width: double.infinity,
                 height: Get.height * 0.08.h,
               );

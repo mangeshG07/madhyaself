@@ -68,6 +68,7 @@ class CompactCard extends StatelessWidget {
                 details['isHide'] == true ? '' : details['image'] ?? '',
               ),
               fit: BoxFit.cover,
+              placeholderFit: BoxFit.cover,
               imageErrorBuilder: (context, error, stackTrace) {
                 return Image.asset(AppAssets.defaultImage);
               },

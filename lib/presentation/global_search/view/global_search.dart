@@ -19,10 +19,10 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                   children: [
                     AppTextField(
                       filled: true,
-                      label: 'Search By Username',
+                      label: 'Search by Madhyasthi Id',
                       showLabel: true,
                       minLines: 1,
-                      hint: 'Username',
+                      hint: 'Madhyasthi Id',
                       contentPadding: const EdgeInsets.all(8),
                       focusedBorder: theme.inputDecorationTheme.focusedBorder,
                       enabledBorder: theme.inputDecorationTheme.enabledBorder,
@@ -66,9 +66,11 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                           .map<String>((e) => e['name'].toString())
                           .toList(),
                     ),
+
                     _dropdownField(
                       isDynamic: true,
                       title: "Income",
+                      isPremium: true,
                       value: controller.selectedIncome,
                       items: controller.annualIncomeList,
                     ),
@@ -76,6 +78,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                     _dropdownField(
                       isDynamic: true,
                       title: "Education",
+                      isPremium: true,
                       value: controller.selectedEducation,
                       items: controller.educationCategoryList,
                     ),
@@ -83,6 +86,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                     _dropdownField(
                       isDynamic: true,
                       title: "Occupation",
+                      isPremium: true,
                       value: controller.selectedJob,
                       items: controller.jobCategoryList,
                     ),
@@ -118,15 +122,6 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                       onChanged: (val) => controller.selectedCity.value = val,
                       validator: AppValidators.required,
                     ),
-                    //
-                    // TextButton(
-                    //   onPressed: () {},
-                    //   child: AppText(
-                    //     text: 'Less Filters',
-                    //     fontSize: 14.sp,
-                    //     color: AppColors.lightTextMidColor,
-                    //   ),
-                    // ),
                     Obx(
                       () => AppButton(
                         text: controller.isSearching.value
@@ -153,24 +148,135 @@ class GlobalSearch extends GetView<GlobalSearchController> {
   }
 
   /// ================= COMMON DROPDOWN =================
+
   Widget _dropdownField({
     required String title,
     required Rxn<String> value,
     required List items,
     bool isHeight = false,
     bool isDynamic = false,
+    Widget? suffixIcon,
+    bool isPremium = false, // Add premium flag
   }) {
     return Obx(
-      () => AppDropdownField(
-        isRequired: false,
-        title: title,
-        value: value.value,
-        items: items,
-        hintText: "Select",
-        validator: AppValidators.required,
-        isHeight: isHeight,
-        isDynamic: isDynamic,
-        onChanged: (val) => value.value = val, // ✅ correct update
+      () => GestureDetector(
+        onTap: isPremium ? _showPremiumDialog : null,
+        child: AbsorbPointer(
+          absorbing:
+              isPremium &&
+              !controller.isSearching.value, // Disable if premium locked
+          child: Opacity(
+            opacity: isPremium && !controller.isSearching.value ? 0.6 : 1.0,
+            child: Stack(
+              children: [
+                AppDropdownField(
+                  isRequired: false,
+                  title: title,
+                  value: value.value,
+                  items: items,
+                  hintText: "Select",
+                  validator: AppValidators.required,
+                  isHeight: isHeight,
+                  isDynamic: isDynamic,
+                  suffixIcon:
+                      suffixIcon ??
+                      (isPremium && !controller.isSearching.value
+                          ? _buildPremiumIcon()
+                          : null),
+                  onChanged: (val) {
+                    if (isPremium && !controller.isSearching.value) {
+                      _showPremiumDialog();
+                      return;
+                    }
+                    value.value = val;
+                  },
+                ),
+                if (isPremium && !controller.isSearching.value)
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _showPremiumDialog,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPremiumIcon() {
+    return GestureDetector(
+      onTap: _showPremiumDialog,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        child: const Icon(Icons.lock, color: AppColors.lightPrimary, size: 22),
+      ),
+    );
+  }
+  // Widget _dropdownField({
+  //   required String title,
+  //   required Rxn<String> value,
+  //   required List items,
+  //   bool isHeight = false,
+  //   bool isDynamic = false,
+  //   Widget? suffixIcon,
+  // }) {
+  //   return Obx(
+  //     () => AppDropdownField(
+  //       isRequired: false,
+  //       title: title,
+  //       value: value.value,
+  //       items: items,
+  //       hintText: "Select",
+  //       validator: AppValidators.required,
+  //       isHeight: isHeight,
+  //       isDynamic: isDynamic,
+  //       suffixIcon: suffixIcon,
+  //       onChanged: (val) => value.value = val, // ✅ correct update
+  //     ),
+  //   );
+  // }
+
+  void _showPremiumDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.stars, color: Colors.amber),
+            SizedBox(width: 8),
+            Text("Premium Feature"),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Upgrade to Premium to unlock this feature and more!"),
+            SizedBox(height: 16),
+            // Add premium benefits list
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("Maybe Later"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              // Navigate to premium subscription page
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
+              foregroundColor: Colors.black,
+            ),
+            child: const Text("UPGRADE NOW"),
+          ),
+        ],
       ),
     );
   }

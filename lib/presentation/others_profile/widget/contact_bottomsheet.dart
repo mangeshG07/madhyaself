@@ -57,8 +57,8 @@ class ContactBottomsheet extends StatelessWidget {
         SizedBox(height: 10.h),
         if (whatsappNumber.isNotEmpty)
           _contactCard(
-            'WhatsApp: +91 $whatsappNumber',
-            HugeIcons.strokeRoundedWhatsapp,
+            'Alternate: +91 $whatsappNumber',
+            HugeIcons.strokeRoundedCall,
           ),
         SizedBox(height: 20.h),
         AppButton(

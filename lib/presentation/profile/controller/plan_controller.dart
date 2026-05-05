@@ -60,6 +60,7 @@ class PlanController extends GetxController {
     String price,
     String paymentMethod,
     String type,
+    String key,
   ) async {
     try {
       isCheckOutLoading(true);
@@ -71,15 +72,12 @@ class PlanController extends GetxController {
       if (response['common']['status'] == true) {
         final checkoutRes = response['data'] ?? {};
         openRazorPaySession(
-          email: checkoutRes['email'] ?? '',
           number: checkoutRes['mobile_no'] ?? '',
           orderId: checkoutRes['razorpayOrderId'] ?? '',
           price: int.parse(price),
-          productName: name,
+          productName: checkoutRes['name'] ?? '',
           key: key,
         );
-        print('response');
-        print(response);
       }
     } finally {
       isCheckOutLoading(false);
@@ -101,18 +99,35 @@ class PlanController extends GetxController {
         VerifyPaymentRequest(
           userid,
           razorpayId,
-          razorpayId,
+          orderId,
           payId,
           signature,
           status,
         ),
       );
-      if (response['common']['status'] == true) {}
+      if (response['common']['status'] == true) {
+        if (response['data']['payment_status'] == 'success') {
+          AllDialogs().showOrderSuccessDialog(
+            () {
+              Get.offAllNamed(Routes.mainScreen);
+            },
+            "",
+            response['common']['message'],
+          );
+        }
+      } else {
+        AllDialogs().showOrderSuccessDialog(
+          () {
+            Get.back();
+          },
+          "",
+          response['common']['message'],
+        );
+      }
     } finally {
       isCheckOutLoading(false);
     }
   }
-
 
   final Razorpay _razorpay = Razorpay();
 
@@ -120,7 +135,7 @@ class PlanController extends GetxController {
     required int price,
     required String productName,
     required String number,
-    required String email,
+    // required String email,
     required String orderId,
     required String key,
   }) {
@@ -131,7 +146,7 @@ class PlanController extends GetxController {
         'name': productName,
         'description': '',
         'order_id': orderId,
-        'prefill': {'contact': number, 'email': email},
+        'prefill': {'contact': '+91$number'},
       };
       _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
       _razorpay.on(
@@ -152,54 +167,26 @@ class PlanController extends GetxController {
       "Payment Failed",
       "Code: ${response.code}\nDescription: ${response.message}\nMetadata:${response.error.toString()}",
     );
-    verifyPayment('', '', selectedPaymentId.value, '2', '');
+    verifyPayment('', '', selectedPaymentId.value, '', '2');
   }
 
-  void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
-    verifyPayment(
+  void handlePaymentSuccessResponse(PaymentSuccessResponse response) async {
+    await verifyPayment(
       response.paymentId!,
       response.orderId!,
       selectedPaymentId.value,
-      '1',
       response.signature!,
+      '1',
     );
-
-    // checkStatus(
-    //   orderId: response.paymentId!,
-    //   paymentHistoryId: controller.orderId.value,
-    //   reason: response.paymentId!,
-    //   response: response,
-    //   status: 'Success',
-    // );
   }
 
   void handleExternalWalletSelected(ExternalWalletResponse response) {
     showAlertDialog("External Wallet Selected", "${response.walletName}");
-    // checkStatus(
-    //   orderId: '',
-    //   paymentHistoryId: controller.orderId.value,
-    //   reason: response.walletName!,
-    //   response: response,
-    //   status: 'Failed',
-    // );
   }
 
   void showAlertDialog(String title, String message) {
-    // set up the buttons
-    // Widget continueButton = ElevatedButton(
-    //   child: const Text("Continue"),
-    //   onPressed: () {},
-    // );
-    // // set up the AlertDialog
     AlertDialog alert = AlertDialog(title: Text(title), content: Text(message));
-    // show the dialog
 
     Get.dialog(alert);
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return alert;
-    //   },
-    // );
   }
 }

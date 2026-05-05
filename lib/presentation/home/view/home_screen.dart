@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
         () => controller.isLoading.isTrue
             ?
               // AppLoader.circular()
-              _shimmerLoader()
+              _shimmerLoader(theme)
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _shimmerLoader() {
+  Widget _shimmerLoader(ThemeData theme) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -54,12 +54,32 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           CustomShimmerWidget.single(
             width: double.infinity,
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
             height: Get.height * 0.23.h,
           ),
-          CustomShimmerWidget.single(width: double.infinity),
+          CustomShimmerWidget.single(
+            width: double.infinity,
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
+          ),
           CustomShimmerWidget.grid(
             itemCount: 4,
             width: double.infinity,
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
             height: Get.height * 0.12.h,
             childAspectRatio: 1.4,
           ),
@@ -425,16 +445,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         Obx(
-          () => GridView.builder(
+          () => MasonryGridView.count(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 4,
             itemCount: controller.discStatData.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.4,
-            ),
             itemBuilder: (context, index) {
               final item = controller.discStatData[index];
 
@@ -515,6 +533,97 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+
+          //     GridView.builder(
+          //   shrinkWrap: true,
+          //   physics: const NeverScrollableScrollPhysics(),
+          //   itemCount: controller.discStatData.length,
+          //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          //     crossAxisCount: 2,
+          //     mainAxisSpacing: 12,
+          //     crossAxisSpacing: 12,
+          //     childAspectRatio: 1.4,
+          //   ),
+          //   itemBuilder: (context, index) {
+          //     final item = controller.discStatData[index];
+          //
+          //     return GestureDetector(
+          //       onTap: item['onTap'],
+          //       child: Container(
+          //         padding: const EdgeInsets.all(14),
+          //         decoration: BoxDecoration(
+          //           color: theme.brightness == Brightness.light
+          //               ? AppColors.lightCardPink
+          //               : theme.cardColor,
+          //           borderRadius: BorderRadius.circular(16.r),
+          //         ),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //           children: [
+          //             Row(
+          //               spacing: 12.w,
+          //               children: [
+          //                 Container(
+          //                   padding: const EdgeInsets.all(6),
+          //                   decoration: BoxDecoration(
+          //                     color: theme.brightness == Brightness.light
+          //                         ? Colors.white
+          //                         : theme.inputDecorationTheme.fillColor,
+          //                     borderRadius: BorderRadius.circular(10),
+          //                   ),
+          //                   child: HugeIcon(
+          //                     icon: item["icon"] as List<List<dynamic>>,
+          //                     color: theme.primaryColor,
+          //                     size: 20.r,
+          //                   ),
+          //                 ),
+          //                 AppText(
+          //                   text: item["value"]?.toString() ?? '',
+          //                   fontSize: 12.sp,
+          //                   style: theme.textTheme.titleLarge?.copyWith(
+          //                     color: AppColors.lightTextLowColor,
+          //                     fontSize: 14.sp,
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //
+          //             Row(
+          //               crossAxisAlignment: CrossAxisAlignment.end,
+          //               children: [
+          //                 Expanded(
+          //                   child: AppText(
+          //                     text: item["title"]?.toString() ?? '',
+          //                     fontSize: 14.sp,
+          //                     maxLines: 2,
+          //                     style: theme.textTheme.bodyMedium?.copyWith(
+          //                       color: AppColors.lightTextLowColor,
+          //                     ),
+          //                   ),
+          //                 ),
+          //                 Container(
+          //                   padding: const EdgeInsets.all(3),
+          //                   decoration: BoxDecoration(
+          //                     color: theme.brightness == Brightness.light
+          //                         ? Colors.white
+          //                         : theme.inputDecorationTheme.fillColor,
+          //                     borderRadius: BorderRadius.circular(100),
+          //                   ),
+          //                   child: HugeIcon(
+          //                     icon: HugeIcons.strokeRoundedArrowUpRight03,
+          //                     color: AppColors.lightTextLowColor,
+          //                     size: 20.r,
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
         ),
       ],
     );

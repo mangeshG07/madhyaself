@@ -15,7 +15,6 @@ class InterestCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      // width: 0.9.sw,
       height: Get.height * 0.2,
       margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
       decoration: _cardDecoration(isDark),
@@ -178,10 +177,10 @@ class _InterestViewModel {
         : data['receiver_name'];
 
     final id = selectedType == 0
-        ? (isSelf ? data['receiver_id'] : data['sender_id'])
+        ? (isSelf ? data['receiver_username'] : data['sender_username'])
         : selectedType == 1
-        ? data['sender_id']
-        : data['receiver_id'];
+        ? data['sender_username']
+        : data['receiver_username'];
 
     final hasBadges = data['isVerified'] == true || data['isPremium'] == true;
 
@@ -235,7 +234,7 @@ class _IdText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppText(
-      text: 'ID : ${viewModel.id}',
+      text: viewModel.id,
       fontSize: 11.sp,
       color: colorScheme.onSurface.withValues(alpha: 0.6),
     );

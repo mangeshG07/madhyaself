@@ -11,6 +11,7 @@ class MatchCardOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => Get.toNamed(
         Routes.othersProfile,
@@ -34,7 +35,9 @@ class MatchCardOverlay extends StatelessWidget {
                 height: double.infinity,
                 imageErrorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: Colors.grey.shade100,
+                    color: theme.brightness == Brightness.light
+                        ? Colors.grey.shade100
+                        : Colors.grey.shade800,
                     child: Center(
                       child: Image.asset(
                         AppAssets.defaultImage,

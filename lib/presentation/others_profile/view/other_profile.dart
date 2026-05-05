@@ -53,7 +53,6 @@ class _OtherProfileState extends State<OtherProfile> {
                               _buildReligionDetails(),
                               _buildLocationDetails(),
                               _buildFamilyDetails(),
-                              _buildMatchPercentage(theme),
                             ],
                           ),
                         ),
@@ -225,7 +224,9 @@ class _OtherProfileState extends State<OtherProfile> {
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
-                color: Colors.grey.shade100,
+                color: theme.brightness == Brightness.light
+                    ? Colors.grey.shade100
+                    : Colors.grey.shade900,
                 child: Center(
                   child: Image.asset(
                     AppAssets.defaultImage,
@@ -328,12 +329,12 @@ class _OtherProfileState extends State<OtherProfile> {
   Widget _buildBottomMenu(ThemeData theme) {
     return Positioned(
       bottom: -35,
-      left: 16,
-      right: 16,
+      left: 8,
+      right: 8,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 4.w),
         child: Row(
-          spacing: 16.w,
+          spacing: 4.w,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildMenuCard(
@@ -426,9 +427,30 @@ class _OtherProfileState extends State<OtherProfile> {
                   contactNumber:
                       controller.profileDetails['mobile_no']?.toString() ?? '',
                   whatsappNumber:
-                      controller.profileDetails['wp_no']?.toString() ?? '',
+                      controller.profileDetails['alternate_no']?.toString() ??
+                      '',
                 ),
               );
+            }, theme),
+            _buildMenuCard('WhatsApp', HugeIcons.strokeRoundedWhatsapp, () {
+              openWhatsApp(
+                controller.profileDetails['wp_no']?.toString() ?? '',
+                '',
+              );
+
+              // AppBottomSheet.show(
+              //   context: context,
+              //   showCloseButton: false,
+              //   height: Get.height * 0.4.h,
+              //   backgroundColor: theme.scaffoldBackgroundColor,
+              //   child: ContactBottomsheet(
+              //     isUnlocked: true,
+              //     contactNumber:
+              //         controller.profileDetails['mobile_no']?.toString() ?? '',
+              //     whatsappNumber:
+              //         controller.profileDetails['wp_no']?.toString() ?? '',
+              //   ),
+              // );
             }, theme),
           ],
         ),
@@ -449,7 +471,7 @@ class _OtherProfileState extends State<OtherProfile> {
       onTap: onTap,
       child: Container(
         height: Get.height * 0.1.h,
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 12.w),
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
           border: Border.all(

@@ -506,3 +506,20 @@ String formatDate(String inputDate) {
   String formattedDate = DateFormat('dd/MM/yyyy').format(parsedDate);
   return formattedDate;
 }
+
+Future<void> openWhatsApp(String number, String msg) async {
+  final formattedPhone = number.replaceAll('+', '');
+  final uri = Uri.parse(
+    'https://wa.me/$formattedPhone?text=${Uri.encodeComponent(msg)}',
+  );
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } else {
+    Get.snackbar(
+      'Error',
+      'WhatsApp not installed',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+}

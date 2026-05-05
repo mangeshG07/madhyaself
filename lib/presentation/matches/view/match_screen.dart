@@ -26,7 +26,7 @@ class _MatchScreenState extends State<MatchScreen> {
         spacing: 16.h,
         children: [
           _buildTopCategory(theme),
-          Expanded(child: _buildTopMatchList()),
+          Expanded(child: _buildTopMatchList(theme)),
         ],
       ),
     );
@@ -149,10 +149,12 @@ class _MatchScreenState extends State<MatchScreen> {
     );
   }
 
-  Widget _buildTopMatchList() {
+  Widget _buildTopMatchList(ThemeData theme) {
     return Obx(() {
       if (controller.isLoading.value) {
         return CustomShimmerWidget.grid(
+          baseColor: theme.brightness == Brightness.light ? Colors.grey.shade300 : Colors.grey.shade800,
+          highlightColor:theme.brightness == Brightness.light ? Colors.grey.shade100 : Colors.grey.shade700,
           itemCount: 4,
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           width: double.infinity,

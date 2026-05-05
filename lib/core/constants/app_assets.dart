@@ -19,6 +19,8 @@ class AppAssets {
   static const String noMatchFound = '$_imagesPath/no_match_found.png';
   static const String defaultImage = '$_imagesPath/default_image.png';
   static const String appMaintainance = '$_imagesPath/app_maintainance.png';
+  static const String paymentFailed = '$_imagesPath/payment_failed.json';
+  static const String paymentSuccess = '$_imagesPath/payment_success.json';
 
   // ==============Onboarding==============
   static const String onboarding_1 = '$_imagesPath/onb_1.png';

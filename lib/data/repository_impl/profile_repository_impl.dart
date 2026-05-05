@@ -10,18 +10,18 @@ class ProfileRepositoryImpl extends ProfileRepository {
   Future<dynamic> getLocationData() async {
     final res = await _apiService.getLocationData();
 
-    final decoded = jsonDecode(res.toString());
+    // final decoded = jsonDecode(res.toString());
 
-    return decoded;
+    return res;
   }
 
   @override
   Future<dynamic> getPages() async {
     final res = await _apiService.getPages();
 
-    final decoded = jsonDecode(res.toString());
+    // final decoded = jsonDecode(res.toString());
 
-    return decoded;
+    return res;
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:lottie/lottie.dart';
 import 'package:madhya/core/exporters/app_export.dart';
 
 class AllDialogs {
@@ -222,5 +223,53 @@ class AllDialogs {
         barrierDismissible: false,
       );
     }
+  }
+
+  void showOrderSuccessDialog(
+    void Function()? onPressed,
+    String status,
+    String msg,
+  ) {
+    Get.dialog(
+      barrierDismissible: false,
+      Dialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Lottie.asset(
+                status == 'Order is Failed....'
+                    ? AppAssets.paymentFailed
+                    : AppAssets.paymentSuccess,
+                height: Get.height * 0.25,
+                width: double.infinity,
+              ),
+
+              Text(msg, textAlign: TextAlign.center),
+              const SizedBox(height: 8.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.lightPrimary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                ),
+                onPressed: onPressed,
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -18,30 +18,35 @@ class _InterestState extends State<Interest> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: CustomAppbar(title: 'Interests'),
       body: Column(
         children: [
           CustomToggle(controller: controller),
-          Expanded(child: _buildInterestList()),
+          Expanded(child: _buildInterestList(theme)),
         ],
       ),
     );
   }
 
-  Widget _buildInterestList() {
+  Widget _buildInterestList(ThemeData theme) {
     return Obx(() {
       if (controller.isLoading.value) {
         return SingleChildScrollView(
           child: CustomShimmerWidget.list(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             itemCount: 4,
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
             width: double.infinity,
             height: Get.height * 0.2.h,
           ),
         );
-
-        Center(child: AppLoader.circular(color: AppColors.lightPrimary));
       }
 
       if (controller.items.isEmpty) {

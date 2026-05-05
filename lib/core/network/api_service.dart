@@ -23,11 +23,11 @@ abstract class ApiService {
   );
 
   @POST(ApiConstants.getCommonData)
-  @DioResponseType(ResponseType.plain)
+  // @DioResponseType(ResponseType.plain)
   Future<dynamic> getCommonData();
 
   @POST(ApiConstants.getLocationData)
-  @DioResponseType(ResponseType.plain)
+  // @DioResponseType(ResponseType.plain)
   Future<dynamic> getLocationData();
 
   @POST(ApiConstants.register)
@@ -177,7 +177,7 @@ abstract class ApiService {
   );
 
   @POST(ApiConstants.getPages)
-  @DioResponseType(ResponseType.plain)
+  // @DioResponseType(ResponseType.plain)
   Future<dynamic> getPages();
 
   @POST(ApiConstants.getPageDetails)

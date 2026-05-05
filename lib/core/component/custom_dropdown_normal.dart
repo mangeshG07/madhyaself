@@ -13,7 +13,7 @@ class AppDropdownField extends StatelessWidget {
   final bool? isDynamic;
   final bool? isWithColor;
   final bool? isHeight;
-
+  final Widget? suffixIcon;
   const AppDropdownField({
     super.key,
     required this.items,
@@ -22,6 +22,7 @@ class AppDropdownField extends StatelessWidget {
     this.value,
     this.validator,
     this.onChanged,
+    this.suffixIcon,
     this.isExpanded = true,
     this.isRequired = false,
     this.errorText,
@@ -65,7 +66,11 @@ class AppDropdownField extends StatelessWidget {
                 horizontal: 12.w,
                 vertical: 12.h,
               ),
-              isDense: true,
+              prefixIcon: suffixIcon,
+              prefixIconConstraints: BoxConstraints(
+                minWidth: 50.w,
+                minHeight: 50.h,
+              ),
               filled: true,
               fillColor: Theme.of(Get.context!).scaffoldBackgroundColor,
               focusedBorder: buildOutlineInputBorder(),

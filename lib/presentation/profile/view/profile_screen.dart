@@ -27,37 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: _buildAppBar(theme),
       body: Obx(
         () => controller.isLoading.isTrue
-            ?
-              // AppLoader.circular(color: AppColors.lightPrimary)
-              SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  spacing: 12.h,
-                  children: [
-                    CustomShimmerWidget.single(
-                      width: Get.width * 0.45.w,
-                      height: Get.height * 0.25.w,
-                    ),
-                    CustomShimmerWidget.single(
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(
-                        // horizontal: 16.w,
-                        vertical: 10.h,
-                      ),
-                    ),
-                    CustomShimmerWidget.list(
-                      // padding: const EdgeInsets.symmetric(
-                      //   horizontal: 16,
-                      //   vertical: 10,
-                      // ),
-                      itemCount: 4,
-                      width: double.infinity,
-                      height: Get.height * 0.08.h,
-                    ),
-                  ],
-                ),
-              )
+            ? _buildShimmerLoader(theme)
             : RefreshIndicator(
                 onRefresh: () async => await controller.getProfile(),
                 child: SingleChildScrollView(
@@ -72,6 +42,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoader(ThemeData theme) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        spacing: 12.h,
+        children: [
+          CustomShimmerWidget.single(
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
+            width: Get.width * 0.45.w,
+            height: Get.height * 0.25.w,
+          ),
+          CustomShimmerWidget.single(
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 10.h),
+          ),
+          CustomShimmerWidget.list(
+            baseColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.grey.shade800,
+            highlightColor: theme.brightness == Brightness.light
+                ? Colors.grey.shade100
+                : Colors.grey.shade700,
+            itemCount: 4,
+            width: double.infinity,
+            height: Get.height * 0.08.h,
+          ),
+        ],
       ),
     );
   }
@@ -98,7 +111,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.r),
         gradient: LinearGradient(
-          colors: [Colors.white, Colors.grey.shade50],
+          colors: [
+            theme.scaffoldBackgroundColor,
+            theme.brightness == Brightness.light
+                ? Colors.grey.shade50
+                : AppColors.grey800,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

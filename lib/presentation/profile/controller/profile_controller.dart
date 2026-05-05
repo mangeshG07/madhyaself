@@ -106,6 +106,7 @@ class ProfileController extends GetxController {
   ].obs;
 
   final profileDetails = {}.obs;
+  final planDetails = {}.obs;
 
   final basicDetailsFormKey = GlobalKey<FormState>();
   final aboutMeDetailsFormKey = GlobalKey<FormState>();
@@ -118,7 +119,80 @@ class ProfileController extends GetxController {
   final profileImage = Rx<File?>(null);
   final horoscopeFile = Rx<File?>(null);
 
-  final menuList = [
+  // late final menuList = [
+  //   {
+  //     'title': 'Profile',
+  //     'icon': HugeIcons.strokeRoundedUserCircle,
+  //     'onTap': () => Get.toNamed(Routes.editProfile),
+  //   },
+  //   {
+  //     'title': 'Partner Preference',
+  //     'icon': HugeIcons.strokeRoundedUserLove02,
+  //     'onTap': () => Get.toNamed(Routes.partnerPreference),
+  //   },
+  //   {
+  //     'title': 'Manage Photos',
+  //     'icon': HugeIcons.strokeRoundedAlbum02,
+  //     'onTap': () => Get.toNamed(Routes.managePhotos),
+  //   },
+  //   {
+  //     'title': 'Interests',
+  //     'icon': HugeIcons.strokeRoundedHeartCheck,
+  //     'onTap': () => Get.toNamed(Routes.interest),
+  //   },
+  //   {
+  //     'title': 'Viewed',
+  //     'icon': HugeIcons.strokeRoundedEye,
+  //     'onTap': () => Get.toNamed(Routes.viewed),
+  //   },
+  //   {
+  //     'title': 'Shortlist',
+  //     'icon': HugeIcons.strokeRoundedStar,
+  //     'onTap': () => Get.toNamed(Routes.shortList),
+  //   },
+  //
+  //   if (profileDetails['hide_plans'] == false)
+  //     {
+  //       'title': 'Packages',
+  //       'icon': HugeIcons.strokeRoundedCrown,
+  //       'onTap': () => Get.toNamed(Routes.packageScreen),
+  //     },
+  //   {
+  //     'title': 'Blocked User',
+  //     'icon': HugeIcons.strokeRoundedUserBlock02,
+  //     'onTap': () => Get.toNamed(Routes.blockedUserList),
+  //   },
+  //   {
+  //     'title': 'Reported Profile',
+  //     'icon': HugeIcons.strokeRoundedComplaint,
+  //     'onTap': () => Get.toNamed(Routes.reportedUserList),
+  //   },
+  //   {
+  //     'title': 'Help and support',
+  //     'icon': HugeIcons.strokeRoundedMailOpen,
+  //     'onTap': () => Get.toNamed(Routes.helpAndSupport),
+  //   },
+  //   {
+  //     'title': 'Logout',
+  //     'icon': HugeIcons.strokeRoundedLogout01,
+  //     'onTap': () async {
+  //       AllDialogs().showConfirmationDialog(
+  //         'Logout',
+  //         'Are you sure you want to logout?',
+  //         onConfirm: () async {
+  //           // perform logout
+  //           Get.back();
+  //           await LocalStorage.clear();
+  //           Get.snackbar('Logout', 'You have logged out successfully');
+  //           await SecureStorageService.clear();
+  //           Get.offAllNamed(Routes.login);
+  //         },
+  //       );
+  //     },
+  //   },
+  // ].obs;
+
+  List<Map<String, dynamic>> get menuList => [
     {
       'title': 'Profile',
       'icon': HugeIcons.strokeRoundedUserCircle,
@@ -149,11 +223,15 @@ class ProfileController extends GetxController {
       'icon': HugeIcons.strokeRoundedStar,
       'onTap': () => Get.toNamed(Routes.shortList),
     },
-    {
-      'title': 'Packages',
-      'icon': HugeIcons.strokeRoundedCrown,
-      'onTap': () => Get.toNamed(Routes.packageScreen),
-    },
+
+    // Dynamic condition
+    if (profileDetails['hide_plans'] == false)
+      {
+        'title': 'Packages',
+        'icon': HugeIcons.strokeRoundedCrown,
+        'onTap': () => Get.toNamed(Routes.packageScreen),
+      },
+
     {
       'title': 'Blocked User',
       'icon': HugeIcons.strokeRoundedUserBlock02,
@@ -177,17 +255,23 @@ class ProfileController extends GetxController {
           'Logout',
           'Are you sure you want to logout?',
           onConfirm: () async {
-            // perform logout
             Get.back();
             await LocalStorage.clear();
-            Get.snackbar('Logout', 'You have logged out successfully');
             await SecureStorageService.clear();
+
+            Get.snackbar(
+              'Logout',
+              'You have logged out successfully',
+            );
+
             Get.offAllNamed(Routes.login);
           },
         );
       },
     },
-  ].obs;
+  ];
+
+
 
   final selectedType = 0.obs;
 
@@ -293,6 +377,7 @@ class ProfileController extends GetxController {
       if (res['common']['status'] == true) {
         final data = res['data'] ?? {};
         profileDetails.value = data['user_data'][0] ?? {};
+        planDetails.value = data['plan_info'] ?? {};
         _setInitialValues();
       }
     } finally {

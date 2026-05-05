@@ -1,6 +1,6 @@
 // core/network/interceptors/logger_interceptor.dart
 import 'dart:developer';
-import 'package:dio/dio.dart';
+import 'package:madhya/core/exporters/app_export.dart';
 
 class LoggerInterceptor extends Interceptor {
   @override
@@ -15,6 +15,21 @@ class LoggerInterceptor extends Interceptor {
   void onResponse(response, handler) {
     log("✅ RESPONSE: ${response.statusCode} ${response.requestOptions.uri}");
     log("Data: ${response.data}");
+    final isLoggedOut = response.data['user_login'] == false;
+    if (isLoggedOut) {
+      CustomSnackbar.show(
+        message: "You have logged in on another device. Please login again.",
+        context: Get.context!,
+      );
+
+      Future.microtask(() async {
+        await SecureStorageService.clear();
+        await LocalStorage.clear();
+
+        Get.offAllNamed(Routes.login);
+        return;
+      });
+    }
     handler.next(response);
   }
 
