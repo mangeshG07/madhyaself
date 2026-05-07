@@ -34,13 +34,11 @@ class ChatController extends GetxController {
 
   Future<void> createChat(String partTwoId) async {
     final userId = await SecureStorageService.read('user_id') ?? '';
-
-    /// 🔥 OR fallback API
     try {
       isCreating(true);
       creatingChatId.value = partTwoId;
       final res = await createChatUsecase.call(
-        CreateChatRequest(userId, partTwoId),
+        CreateChatRequest(userId, partTwoId, userId),
       );
 
       if (res['common']['status'] == true) {
@@ -48,8 +46,13 @@ class ChatController extends GetxController {
           Routes.chatDetails,
           arguments: {'id': res['data']['conversation_id']?.toString() ?? ''},
         );
+      } else {
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.error,
+        );
       }
-    } catch (_) {
     } finally {
       isCreating(false);
       creatingChatId.value = '';
@@ -259,6 +262,9 @@ class ChatController extends GetxController {
     final message = msgController.text.trim();
     msgController.clear();
     final userId = await SecureStorageService.read('user_id') ?? '';
+    print('userId===========>$userId');
+    print('convId===========>$convId');
+    print('message===========>$message');
 
     /// 🔥 OR fallback API
     try {

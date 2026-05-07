@@ -150,4 +150,38 @@ class GlobalSearchController extends GetxController {
 
     searchList.clear();
   }
+
+
+
+  bool get hasAdvancedFilter =>
+      Get.arguments['hasAdvancedFilter'] == true;
+
+  bool get hasBasicFilter =>
+      Get.arguments['hasBasicFilter'] == true;
+
+  /// Decide if filter should be locked
+  bool isFilterLocked(String fieldName) {
+    // Advanced plan → unlock everything
+    if (hasAdvancedFilter) {
+      return false;
+    }
+
+    // No plan → lock everything
+    if (!hasAdvancedFilter && !hasBasicFilter) {
+      return true;
+    }
+
+    // Basic plan → lock only premium fields
+    if (hasBasicFilter) {
+      const premiumFields = [
+        "Income",
+        "Education",
+        "Occupation",
+      ];
+
+      return premiumFields.contains(fieldName);
+    }
+
+    return false;
+  }
 }

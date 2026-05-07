@@ -259,10 +259,7 @@ class ProfileController extends GetxController {
             await LocalStorage.clear();
             await SecureStorageService.clear();
 
-            Get.snackbar(
-              'Logout',
-              'You have logged out successfully',
-            );
+            Get.snackbar('Logout', 'You have logged out successfully');
 
             Get.offAllNamed(Routes.login);
           },
@@ -270,8 +267,6 @@ class ProfileController extends GetxController {
       },
     },
   ];
-
-
 
   final selectedType = 0.obs;
 
@@ -377,7 +372,11 @@ class ProfileController extends GetxController {
       if (res['common']['status'] == true) {
         final data = res['data'] ?? {};
         profileDetails.value = data['user_data'][0] ?? {};
-        planDetails.value = data['plan_info'] ?? {};
+        final planInfo = data['plan_info'];
+
+        planDetails.value = (planInfo is List && planInfo.isNotEmpty)
+            ? planInfo.first
+            : {};
         _setInitialValues();
       }
     } finally {
@@ -637,7 +636,6 @@ class ProfileController extends GetxController {
   /// ================= UPDATE HOROSCOPE DETAILS=================
   Future<void> updateHoroscopeDetails() async {
     final userid = await SecureStorageService.read('user_id') ?? '';
-
     await _performProfileUpdate(
       UpdateUserProfileRequest(
         userId: userid,

@@ -326,13 +326,18 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<dynamic> createChat(String partOneId, String partTwoId) async {
+  Future<dynamic> createChat(
+    String partOneId,
+    String partTwoId,
+    String userId,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('participant_one_id', partOneId));
     _data.fields.add(MapEntry('participant_two_id', partTwoId));
+    _data.fields.add(MapEntry('user_id', userId));
     final _options = _setStreamType<dynamic>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -381,6 +386,7 @@ class _ApiService implements ApiService {
 
   @override
   Future<dynamic> sendMsg(
+    String userId,
     String conversationId,
     String senderId,
     String message, {
@@ -391,6 +397,7 @@ class _ApiService implements ApiService {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = FormData();
+    _data.fields.add(MapEntry('user_id', userId));
     _data.fields.add(MapEntry('conversation_id', conversationId));
     _data.fields.add(MapEntry('sender_id', senderId));
     _data.fields.add(MapEntry('message', message));
@@ -1004,6 +1011,51 @@ class _ApiService implements ApiService {
           .compose(
             _dio.options,
             '/verify-payment',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
+  @override
+  Future<dynamic> whatsappConnect(String userId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('user_id', userId));
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/whatsapp-connnect',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
+  @override
+  Future<dynamic> viewContact(String userId, String profileId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('user_id', userId));
+    _data.fields.add(MapEntry('profile_id', profileId));
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/view-contact',
             queryParameters: queryParameters,
             data: _data,
           )

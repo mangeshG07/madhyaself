@@ -440,18 +440,60 @@ class EditProfile extends GetView<ProfileController> {
   }
 
   // 📸 PHOTOS
+  // 📸 PHOTOS
   Widget _buildPhotosDetails(ThemeData theme) {
     final photos = controller.profileDetails['photos'] ?? [];
-    if (photos.isEmpty) return const SizedBox();
+
+    if (photos.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return buildSection(
       showEdit: false,
-      Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: AttachmentPreviewList(
-          attachments: List<String>.from(photos),
-          config: AttachmentPreviewConfig(showDownload: false),
-          onDownload: (_) {},
+      SizedBox(
+        height: 120.h,
+        width: double.infinity,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.only(top: 8),
+          itemCount: photos.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 12),
+          itemBuilder: (context, index) {
+            final file = photos[index]?.toString() ?? '';
+
+            return WidgetZoom(
+              heroAnimationTag: 'photo_$index',
+              zoomWidget: ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: SizedBox(
+                  width: 100.w,
+                  height: 100.h,
+                  child: CustomImage(
+                    image: file,
+                    width: 100.w,
+                    height: 100.h,
+                    fit: BoxFit.cover,
+
+                    /// 🔥 Placeholder
+                    placeholder: Image.asset(
+                      AppAssets.defaultImage,
+                      width: 100.w,
+                      height: 100.h,
+                      fit: BoxFit.cover,
+                    ),
+
+                    /// 🔥 Error Widget
+                    errorWidget: Image.asset(
+                      AppAssets.defaultImage,
+                      width: 100.w,
+                      height: 100.h,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
       'Images',
@@ -460,4 +502,71 @@ class EditProfile extends GetView<ProfileController> {
       theme,
     );
   }
+
+  // Widget _buildPhotosDetails(ThemeData theme) {
+  //   final photos = controller.profileDetails['photos'] ?? [];
+  //   if (photos.isEmpty) return const SizedBox();
+  //
+  //   return buildSection(
+  //     showEdit: false,
+  //     Container(
+  //       height: 120.h,
+  //       padding: const EdgeInsets.only(top: 8.0),
+  //       child: ListView.builder(
+  //         scrollDirection: Axis.horizontal,
+  //         itemCount: photos.length,
+  //         itemBuilder: (context, index) {
+  //           final file = photos[index];
+  //           return Padding(
+  //             padding: const EdgeInsets.only(right: 12),
+  //             child: WidgetZoom(
+  //               heroAnimationTag: 'tag $file',
+  //               zoomWidget: ClipRRect(
+  //                 borderRadius: BorderRadius.circular(12),
+  //                 child:
+  //                     // Image.network(
+  //                     //   file,
+  //                     //   height: 80,
+  //                     //   // width: double.infinity,
+  //                     //   loadingBuilder: (_, __, ___) => AppLoader.circular(),
+  //                     //   fit: BoxFit.contain,
+  //                     //   errorBuilder: (_, __, ___) =>
+  //                     //       Image.asset(AppAssets.defaultImage),
+  //                     // ),
+  //                     CustomImage(
+  //                       image: file,
+  //                       height: 80,
+  //                       fit: BoxFit.contain,
+  //                       width: 100,
+  //                       placeholder: Image.asset(AppAssets.defaultImage),
+  //                       errorWidget: Image.asset(AppAssets.defaultImage),
+  //                     ),
+  //
+  //                 // FadeInImage(
+  //                 //   placeholder: AssetImage(AppAssets.defaultImage),
+  //                 //   image: NetworkImage(file),
+  //                 //   height: 80,
+  //                 //   imageErrorBuilder: (_, __, ___) =>
+  //                 //       Image.asset(AppAssets.defaultImage),
+  //                 //   // width: double.infinity,
+  //                 //   fit: BoxFit.contain,
+  //                 // ),
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       ),
+  //
+  //       // AttachmentPreviewList(
+  //       //   attachments: List<String>.from(photos),
+  //       //   config: AttachmentPreviewConfig(showDownload: false),
+  //       //   onDownload: (_) {},
+  //       // ),
+  //     ),
+  //     'Images',
+  //     HugeIcons.strokeRoundedAlbum02,
+  //     () {},
+  //     theme,
+  //   );
+  // }
 }

@@ -195,3 +195,5 @@ export 'package:madhya/domain/usecase/get_plan_details_usecase.dart';
 export 'package:madhya/domain/usecase/get_plan_usecase.dart';
 export 'package:madhya/domain/usecase/checkout_usecase.dart';
 export 'package:madhya/domain/usecase/verify_payment_usecase.dart';
+export 'package:madhya/domain/usecase/view_contact_usecase.dart';
+export 'package:madhya/domain/usecase/whatsapp_connect_usecase.dart';

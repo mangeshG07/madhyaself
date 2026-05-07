@@ -96,7 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
       title: Image.asset(AppAssets.appLogoEnglish, width: 0.4.sw),
       actions: [
         AppIconButton(
-          onPressed: () => Get.toNamed(Routes.searchScreen),
+          onPressed: () => Get.toNamed(
+            Routes.searchScreen,
+            arguments: {
+              'hasBasicFilter': controller.hasBasicFilter,
+              'hasAdvancedFilter': controller.hasAdvancedFilter,
+            },
+          ),
           icon: HugeIcons.strokeRoundedSearch01,
           iconColor: Colors.grey,
           backgroundColor: theme.inputDecorationTheme.fillColor,

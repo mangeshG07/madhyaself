@@ -23,6 +23,7 @@ class ChatRepositoryImpl extends ChatRepository {
   @override
   Future<dynamic> sendMsg(SendMessageRequest request) async {
     return await _apiService.sendMsg(
+      request.userId,
       request.conversationId,
       request.userId,
       request.message,
@@ -57,6 +58,7 @@ class ChatRepositoryImpl extends ChatRepository {
     return await _apiService.createChat(
       request.participateOne,
       request.participateTwo,
+      request.userId,
     );
   }
 }

@@ -126,9 +126,7 @@ class HoroscopeDetailsEdit extends GetView<ProfileController> {
 
         if (pickedDate != null) {
           controller.birthDateController.text =
-              "${pickedDate.day.toString().padLeft(2, '0')}/"
-              "${pickedDate.month.toString().padLeft(2, '0')}/"
-              "${pickedDate.year}";
+              "${pickedDate.year}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.day.toString().padLeft(2, '0')}";
         }
       },
       suffixIcon: Padding(

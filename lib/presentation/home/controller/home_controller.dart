@@ -7,6 +7,8 @@ class HomeController extends GetxController {
   HomeController(this.homeUsecase, this.chatController, this.searchController);
 
   final isLoading = false.obs;
+  final hasAdvancedFilter = false.obs;
+  final hasBasicFilter = false.obs;
 
   final sliderList = [].obs;
   final statsData = [].obs;
@@ -39,7 +41,8 @@ class HomeController extends GetxController {
       if (res['common']['status'] != true) return;
 
       final data = res['data'];
-
+      hasBasicFilter.value = data['hasBasicFilter'] ?? false;
+      hasAdvancedFilter.value = data['hasAdvancedFilter'] ?? false;
       _setHomeData(data);
 
       final platformData = Platform.isAndroid ? res['android'] : res['ios'];

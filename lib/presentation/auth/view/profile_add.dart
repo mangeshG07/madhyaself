@@ -38,9 +38,11 @@ class ProfileAdd extends GetView<RegisterController> {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _buildContinueButton(),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildContinueButton(),
+        ),
       ),
     );
   }

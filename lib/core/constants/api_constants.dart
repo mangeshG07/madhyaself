@@ -32,7 +32,7 @@ class ApiConstants {
   static Duration get receiveTimeout => connectionTimeout;
 
   /// API endpoints
-  static const String base = 'http://192.168.29.112/madhyasti';
+  static const String base = 'https://beta.madhyasthi.com';
   static const String login = '/login';
   static const String verifyOTP = '/verify-otp';
   static const String getCommonData = '/get-common-data';
@@ -68,10 +68,12 @@ class ApiConstants {
   static const String blockUserList = '/block-user-list';
   static const String reportProfileList = '/report-profile-list';
   static const String globalSearch = '/search';
-
-  /////////////////////Pending////////////////////////
   static const String getPlans = '/get-plans';
   static const String getPlanDetails = '/plans-details';
   static const String checkout = '/checkout';
   static const String verifyPayment = '/verify-payment';
+
+  /////////////////////Pending////////////////////////
+  static const String whatsappConnect = '/whatsapp-connnect';
+  static const String viewContact = '/view-contact';
 }

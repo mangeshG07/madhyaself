@@ -76,6 +76,7 @@ abstract class ApiService {
   Future<dynamic> createChat(
     @Part(name: "participant_one_id") String partOneId,
     @Part(name: "participant_two_id") String partTwoId,
+    @Part(name: "user_id") String userId,
   );
 
   @POST(ApiConstants.getChatDetails)
@@ -88,6 +89,7 @@ abstract class ApiService {
   @POST(ApiConstants.sendMsg)
   @MultiPart()
   Future<dynamic> sendMsg(
+    @Part(name: "user_id") String userId,
     @Part(name: "conversation_id") String conversationId,
     @Part(name: "sender_id") String senderId,
     @Part(name: "message") String message, {
@@ -231,5 +233,14 @@ abstract class ApiService {
     @Part(name: "payment_id") String paymentId,
     @Part(name: "razorpay_signature") String razorpaySignature,
     @Part(name: "status") String status,
+  );
+
+  @POST(ApiConstants.whatsappConnect)
+  Future<dynamic> whatsappConnect(@Part(name: "user_id") String userId);
+
+  @POST(ApiConstants.viewContact)
+  Future<dynamic> viewContact(
+    @Part(name: "user_id") String userId,
+    @Part(name: "profile_id") String profileId,
   );
 }

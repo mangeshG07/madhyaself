@@ -65,6 +65,8 @@ import 'package:madhya/domain/usecase/update_prefs_usecase.dart' as _i577;
 import 'package:madhya/domain/usecase/update_profile_usecase.dart' as _i672;
 import 'package:madhya/domain/usecase/verify_otp_usecase.dart' as _i791;
 import 'package:madhya/domain/usecase/verify_payment_usecase.dart' as _i1021;
+import 'package:madhya/domain/usecase/view_contact_usecase.dart' as _i305;
+import 'package:madhya/domain/usecase/whatsapp_connect_usecase.dart' as _i232;
 import 'package:madhya/presentation/auth/controller/onboarding_controller.dart'
     as _i20;
 import 'package:madhya/presentation/navigation/controller/navigation_controller.dart'
@@ -122,6 +124,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i570.ReportProfileUsecase>(
       () => _i570.ReportProfileUsecase(gh<_i571.OtherUserRepository>()),
+    );
+    gh.lazySingleton<_i305.ViewContactUsecase>(
+      () => _i305.ViewContactUsecase(gh<_i571.OtherUserRepository>()),
+    );
+    gh.lazySingleton<_i232.WhatsappConnectUsecase>(
+      () => _i232.WhatsappConnectUsecase(gh<_i571.OtherUserRepository>()),
     );
     gh.lazySingleton<_i812.HomeUsecase>(
       () => _i812.HomeUsecase(gh<_i571.HomeRepository>()),

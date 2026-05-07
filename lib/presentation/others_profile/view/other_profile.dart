@@ -337,121 +337,115 @@ class _OtherProfileState extends State<OtherProfile> {
           spacing: 4.w,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildMenuCard(
-              controller.profileDetails['is_interest_sent'] == true
-                  ? 'Interest\nSent ✔'
-                  : 'Send\nInterest',
-              HugeIcons.strokeRoundedFavouriteCircle,
-
-              () {
-                controller.selectedId.value = null;
-                interestController.isSuccess.value = false;
-                AppBottomSheet.show(
-                  context: context,
-                  backgroundColor: theme.scaffoldBackgroundColor,
-                  showCloseButton: false,
-                  height: Get.height * 0.6.h,
-                  child: Obx(() {
-                    return InterestOptionsList(
-                      onSubmit: () async {
-                        final selectedItem = controller.interestOptions
-                            .firstWhere(
-                              (e) => e.id == controller.selectedId.value,
-                            );
-
-                        final msg = selectedItem.text;
-                        await interestController
-                            .sendInterest(
-                              controller.profileDetails['id'].toString(),
-                              msg,
-                            )
-                            .then((v) async {
-                              await controller.otherProfileDetails(
-                                controller.profileDetails['id'].toString(),
+            Expanded(
+              child: _buildMenuCard(
+                controller.profileDetails['is_interest_sent'] == true
+                    ? 'Interest\nSent ✔'
+                    : 'Send\nInterest',
+                HugeIcons.strokeRoundedFavouriteCircle,
+                () {
+                  controller.selectedId.value = null;
+                  interestController.isSuccess.value = false;
+                  AppBottomSheet.show(
+                    context: context,
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    showCloseButton: false,
+                    height: Get.height * 0.6.h,
+                    child: Obx(() {
+                      return InterestOptionsList(
+                        onSubmit: () async {
+                          final selectedItem = controller.interestOptions
+                              .firstWhere(
+                                (e) => e.id == controller.selectedId.value,
                               );
-                            });
-                      },
-                      controller: interestController,
-                      items: controller.interestOptions,
-                      selectedValue: controller.selectedId.value,
-                      onChanged: (val) {
-                        controller.selectedId.value = val;
-                      },
-                    );
-                  }),
-                );
-              },
-              theme,
-            ),
-            Obx(
-              () => _buildMenuCard(
-                isLoading: shortListController.isShortListing.value,
-                controller.profileDetails['is_shortlisted'] == true
-                    ? 'Shortlisted'
-                    : 'Shortlist',
-                HugeIcons.strokeRoundedStar,
-                () async {
-                  // if (controller.profileDetails['is_shortlisted'] == true) {
-                  //   return;
-                  // }
-                  await shortListController
-                      .shortListPeople(
-                        controller.profileDetails['id'].toString(),
-                      )
-                      .then((v) async {
-                        await controller.otherProfileDetails(
-                          controller.profileDetails['id'].toString(),
-                          showLoading: false,
-                        );
-                      });
-                  // AppBottomSheet.show(
-                  //   context: context,
-                  //   showCloseButton: false,
-                  //   height: Get.height * 0.4.h,
-                  //   child: ShortlistBottomsheet(
-                  //     isUnlocked: shortListController.isSuccess.value,
-                  //   ),
-                  // );
+
+                          final msg = selectedItem.text;
+                          await interestController
+                              .sendInterest(
+                                controller.profileDetails['id'].toString(),
+                                msg,
+                              )
+                              .then((v) async {
+                                await controller.otherProfileDetails(
+                                  controller.profileDetails['id'].toString(),
+                                );
+                              });
+                        },
+                        controller: interestController,
+                        items: controller.interestOptions,
+                        selectedValue: controller.selectedId.value,
+                        onChanged: (val) {
+                          controller.selectedId.value = val;
+                        },
+                      );
+                    }),
+                  );
                 },
                 theme,
               ),
             ),
-            _buildMenuCard('Contact', HugeIcons.strokeRoundedCall02, () {
-              AppBottomSheet.show(
-                context: context,
-                showCloseButton: false,
-                height: Get.height * 0.4.h,
-                backgroundColor: theme.scaffoldBackgroundColor,
-                child: ContactBottomsheet(
-                  isUnlocked: true,
-                  contactNumber:
-                      controller.profileDetails['mobile_no']?.toString() ?? '',
-                  whatsappNumber:
-                      controller.profileDetails['alternate_no']?.toString() ??
-                      '',
+            Expanded(
+              child: Obx(
+                () => _buildMenuCard(
+                  isLoading: shortListController.isShortListing.value,
+                  controller.profileDetails['is_shortlisted'] == true
+                      ? 'Shortlisted'
+                      : 'Shortlist',
+                  controller.profileDetails['is_shortlisted'] == true
+                      ? Icons.star_rounded
+                      : HugeIcons.strokeRoundedStar,
+                  () async {
+                    await shortListController
+                        .shortListPeople(
+                          controller.profileDetails['id'].toString(),
+                        )
+                        .then((v) async {
+                          await controller.otherProfileDetails(
+                            controller.profileDetails['id'].toString(),
+                            showLoading: false,
+                          );
+                        });
+                  },
+                  theme,
                 ),
-              );
-            }, theme),
-            _buildMenuCard('WhatsApp', HugeIcons.strokeRoundedWhatsapp, () {
-              openWhatsApp(
-                controller.profileDetails['wp_no']?.toString() ?? '',
-                '',
-              );
-
-              // AppBottomSheet.show(
-              //   context: context,
-              //   showCloseButton: false,
-              //   height: Get.height * 0.4.h,
-              //   backgroundColor: theme.scaffoldBackgroundColor,
-              //   child: ContactBottomsheet(
-              //     isUnlocked: true,
-              //     contactNumber:
-              //         controller.profileDetails['mobile_no']?.toString() ?? '',
-              //     whatsappNumber:
-              //         controller.profileDetails['wp_no']?.toString() ?? '',
-              //   ),
-              // );
-            }, theme),
+              ),
+            ),
+            Expanded(
+              child: _buildMenuCard(
+                'Contact',
+                HugeIcons.strokeRoundedCall02,
+                () async {
+                  await controller.viewContact(theme);
+                  // AppBottomSheet.show(
+                  //   context: context,
+                  //   showCloseButton: false,
+                  //   height: Get.height * 0.4.h,
+                  //   backgroundColor: theme.scaffoldBackgroundColor,
+                  //   child: ContactBottomsheet(
+                  //     isUnlocked: true,
+                  //     contactNumber:
+                  //         controller.profileDetails['mobile_no']?.toString() ?? '',
+                  //     whatsappNumber:
+                  //         controller.profileDetails['alternate_no']?.toString() ??
+                  //         '',
+                  //   ),
+                  // );
+                },
+                theme,
+                isLoading: controller.isViewLoading.value,
+              ),
+            ),
+            Expanded(
+              child: _buildMenuCard(
+                'WhatsApp',
+                HugeIcons.strokeRoundedWhatsapp,
+                () async {
+                  await controller.whatsappConnect();
+                },
+                theme,
+                isLoading: controller.isWhatsappLoading.value,
+              ),
+            ),
           ],
         ),
       ),
@@ -471,7 +465,7 @@ class _OtherProfileState extends State<OtherProfile> {
       onTap: onTap,
       child: Container(
         height: Get.height * 0.1.h,
-        padding: EdgeInsets.symmetric(horizontal: 12.w),
+        padding: EdgeInsets.symmetric(horizontal: 8.w),
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
           border: Border.all(
@@ -499,11 +493,13 @@ class _OtherProfileState extends State<OtherProfile> {
                 spacing: 6.h,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  HugeIcon(
-                    icon: icon,
-                    color: AppColors.lightPrimary,
-                    size: 24.r,
-                  ),
+                  icon == Icons.star_rounded
+                      ? Icon(icon, color: AppColors.lightPrimary, size: 30.r)
+                      : HugeIcon(
+                          icon: icon,
+                          color: AppColors.lightPrimary,
+                          size: 24.r,
+                        ),
                   SizedBox(
                     height: 30.h,
                     child: Center(
@@ -556,11 +552,17 @@ class _OtherProfileState extends State<OtherProfile> {
                 SizedBox(width: 6.w),
 
                 /// 🔹 TEXT
-                AppText(
-                  text: i['title']?.toString() ?? '',
-                  fontSize: 14.sp,
-                  style: theme.textTheme.labelLarge!.copyWith(
-                    color: isLight ? AppColors.lightTextMidColor : Colors.white,
+                Flexible(
+                  child: AppText(
+                    text: i['title']?.toString() ?? '',
+                    fontSize: 14.sp,
+                    maxLines: 2,
+                    style: theme.textTheme.labelLarge!.copyWith(
+                      overflow: TextOverflow.ellipsis,
+                      color: isLight
+                          ? AppColors.lightTextMidColor
+                          : Colors.white,
+                    ),
                   ),
                 ),
               ],

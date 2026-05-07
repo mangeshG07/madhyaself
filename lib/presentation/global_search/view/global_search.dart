@@ -12,128 +12,147 @@ class GlobalSearch extends GetView<GlobalSearchController> {
       body: Obx(
         () => controller.isLoading.isTrue
             ? AppLoader.circular(color: AppColors.lightPrimary)
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  spacing: 12.h,
-                  children: [
-                    AppTextField(
-                      filled: true,
-                      label: 'Search by Madhyasthi Id',
-                      showLabel: true,
-                      minLines: 1,
-                      hint: 'Madhyasthi Id',
-                      contentPadding: const EdgeInsets.all(8),
-                      focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                      enabledBorder: theme.inputDecorationTheme.enabledBorder,
-                      textStyle: TextStyle(
-                        color: theme.colorScheme.onSurface,
-                        fontSize: 14.sp,
+            : SafeArea(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    spacing: 12.h,
+                    children: [
+                      AppTextField(
+                        filled: true,
+                        label: 'Search by Madhyasthi Id',
+                        showLabel: true,
+                        minLines: 1,
+                        hint: 'Madhyasthi Id',
+                        contentPadding: const EdgeInsets.all(8),
+                        focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                        enabledBorder: theme.inputDecorationTheme.enabledBorder,
+                        textStyle: TextStyle(
+                          color: theme.colorScheme.onSurface,
+                          fontSize: 14.sp,
+                        ),
+                        labelStyle: theme.textTheme.labelMedium,
+                        controller: controller.username,
+                        fillColor: theme.cardColor,
                       ),
-                      labelStyle: theme.textTheme.labelMedium,
-                      controller: controller.username,
-                      fillColor: theme.cardColor,
-                    ),
 
-                    _dropdownField(
-                      isDynamic: true,
-                      title: "Religion",
-                      value: controller.selectedReligion,
-                      items: controller.religionList,
-                    ),
-
-                    _dropdownField(
-                      isDynamic: true,
-                      title: "Caste",
-                      value: controller.selectedCaste,
-                      items: controller.casteList,
-                    ),
-
-                    _buildRangeRow(
-                      isDynamic: true,
-                      isHeight: true,
-                      title: "Height",
-                      fromValue: controller.selectedHeightFrom,
-                      toValue: controller.selectedHeightTo,
-                      items: controller.heightList,
-                    ),
-
-                    _buildRangeRow(
-                      title: "Age",
-                      fromValue: controller.selectedAgeFrom,
-                      toValue: controller.selectedAgeTo,
-                      items: controller.ageList
-                          .map<String>((e) => e['name'].toString())
-                          .toList(),
-                    ),
-
-                    _dropdownField(
-                      isDynamic: true,
-                      title: "Income",
-                      isPremium: true,
-                      value: controller.selectedIncome,
-                      items: controller.annualIncomeList,
-                    ),
-
-                    _dropdownField(
-                      isDynamic: true,
-                      title: "Education",
-                      isPremium: true,
-                      value: controller.selectedEducation,
-                      items: controller.educationCategoryList,
-                    ),
-
-                    _dropdownField(
-                      isDynamic: true,
-                      title: "Occupation",
-                      isPremium: true,
-                      value: controller.selectedJob,
-                      items: controller.jobCategoryList,
-                    ),
-
-                    _dropdownField(
-                      title: "Country",
-                      value: controller.selectedCountry,
-                      items: controller.countryList,
-                    ),
-                    AppDropdownSearch<String>(
-                      title: "State",
-                      isRequired: false,
-                      value: controller.selectedState.value,
-                      items: controller.stateList
-                          .map<String>((e) => e['name'])
-                          .toList(),
-                      hintText: "State",
-                      showSearchBox: true,
-                      searchHintText: "",
-                      onChanged: (val) => controller.selectedState.value = val,
-                      validator: AppValidators.required,
-                    ),
-                    AppDropdownSearch<String>(
-                      title: "City",
-                      isRequired: false,
-                      value: controller.selectedCity.value,
-                      items: controller.cityList
-                          .map<String>((e) => e['name'])
-                          .toList(),
-                      hintText: "City",
-                      showSearchBox: true,
-                      searchHintText: "",
-                      onChanged: (val) => controller.selectedCity.value = val,
-                      validator: AppValidators.required,
-                    ),
-                    Obx(
-                      () => AppButton(
-                        text: controller.isSearching.value
-                            ? 'Searching...'
-                            : 'Search',
-                        onTap: controller.isSearching.value
-                            ? null
-                            : () async => await controller.globalSearch(),
-                        backgroundColor: AppColors.lightPrimary,
+                      _dropdownField(
+                        isDynamic: true,
+                        title: "Religion",
+                        value: controller.selectedReligion,
+                        items: controller.religionList,
                       ),
-                    ),
-                  ],
+
+                      _dropdownField(
+                        isDynamic: true,
+                        title: "Caste",
+                        value: controller.selectedCaste,
+                        items: controller.casteList,
+                      ),
+
+                      _buildRangeRow(
+                        isDynamic: true,
+                        isHeight: true,
+                        title: "Height",
+                        fromValue: controller.selectedHeightFrom,
+                        toValue: controller.selectedHeightTo,
+                        items: controller.heightList,
+                      ),
+
+                      _buildRangeRow(
+                        title: "Age",
+                        fromValue: controller.selectedAgeFrom,
+                        toValue: controller.selectedAgeTo,
+                        items: controller.ageList
+                            .map<String>((e) => e['name'].toString())
+                            .toList(),
+                      ),
+
+                      _dropdownField(
+                        title: "Country",
+                        value: controller.selectedCountry,
+                        items: controller.countryList,
+                      ),
+
+                      _searchDropdownField(
+                        title: "State",
+                        value: controller.selectedState,
+                        items: controller.stateList
+                            .map<String>((e) => e['name'])
+                            .toList(),
+                      ),
+
+                      _searchDropdownField(
+                        title: "City",
+                        value: controller.selectedCity,
+                        items: controller.cityList
+                            .map<String>((e) => e['name'])
+                            .toList(),
+                      ),
+
+                      // AppDropdownSearch<String>(
+                      //   title: "State",
+                      //   isRequired: false,
+                      //   value: controller.selectedState.value,
+                      //   items: controller.stateList
+                      //       .map<String>((e) => e['name'])
+                      //       .toList(),
+                      //   hintText: "State",
+                      //   showSearchBox: true,
+                      //   searchHintText: "",
+                      //   onChanged: (val) => controller.selectedState.value = val,
+                      //   validator: AppValidators.required,
+                      // ),
+                      // AppDropdownSearch<String>(
+                      //   title: "City",
+                      //   isRequired: false,
+                      //   value: controller.selectedCity.value,
+                      //   items: controller.cityList
+                      //       .map<String>((e) => e['name'])
+                      //       .toList(),
+                      //   hintText: "City",
+                      //   showSearchBox: true,
+                      //   searchHintText: "",
+                      //   onChanged: (val) => controller.selectedCity.value = val,
+                      //   validator: AppValidators.required,
+                      // ),
+                      _dropdownField(
+                        isDynamic: true,
+                        title: "Income",
+                        isPremium: true,
+                        value: controller.selectedIncome,
+                        items: controller.annualIncomeList,
+                      ),
+
+                      _dropdownField(
+                        isDynamic: true,
+                        title: "Education",
+                        isPremium: true,
+                        value: controller.selectedEducation,
+                        items: controller.educationCategoryList,
+                      ),
+
+                      _dropdownField(
+                        isDynamic: true,
+                        title: "Occupation",
+                        isPremium: true,
+                        value: controller.selectedJob,
+                        items: controller.jobCategoryList,
+                      ),
+
+                      Obx(
+                        () => AppButton(
+                          text: controller.isSearching.value
+                              ? 'Searching...'
+                              : 'Search',
+                          onTap: controller.isSearching.value
+                              ? null
+                              : () async => await controller.globalSearch(),
+                          backgroundColor: AppColors.lightPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
       ),
@@ -155,18 +174,17 @@ class GlobalSearch extends GetView<GlobalSearchController> {
     required List items,
     bool isHeight = false,
     bool isDynamic = false,
-    Widget? suffixIcon,
-    bool isPremium = false, // Add premium flag
+    bool isPremium = false,
   }) {
-    return Obx(
-      () => GestureDetector(
-        onTap: isPremium ? _showPremiumDialog : null,
+    return Obx(() {
+      final isLocked = controller.isFilterLocked(title);
+
+      return GestureDetector(
+        onTap: isLocked ? _showPremiumDialog : null,
         child: AbsorbPointer(
-          absorbing:
-              isPremium &&
-              !controller.isSearching.value, // Disable if premium locked
+          absorbing: isLocked, // Disable if premium locked
           child: Opacity(
-            opacity: isPremium && !controller.isSearching.value ? 0.6 : 1.0,
+            opacity: isLocked ? 0.6 : 1.0,
             child: Stack(
               children: [
                 AppDropdownField(
@@ -178,20 +196,16 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                   validator: AppValidators.required,
                   isHeight: isHeight,
                   isDynamic: isDynamic,
-                  suffixIcon:
-                      suffixIcon ??
-                      (isPremium && !controller.isSearching.value
-                          ? _buildPremiumIcon()
-                          : null),
+                  suffixIcon: isLocked ? _buildPremiumIcon() : null,
                   onChanged: (val) {
-                    if (isPremium && !controller.isSearching.value) {
+                    if (isLocked) {
                       _showPremiumDialog();
                       return;
                     }
                     value.value = val;
                   },
                 ),
-                if (isPremium && !controller.isSearching.value)
+                if (isLocked)
                   Positioned.fill(
                     child: Material(
                       color: Colors.transparent,
@@ -205,8 +219,8 @@ class GlobalSearch extends GetView<GlobalSearchController> {
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildPremiumIcon() {
@@ -218,29 +232,49 @@ class GlobalSearch extends GetView<GlobalSearchController> {
       ),
     );
   }
-  // Widget _dropdownField({
-  //   required String title,
-  //   required Rxn<String> value,
-  //   required List items,
-  //   bool isHeight = false,
-  //   bool isDynamic = false,
-  //   Widget? suffixIcon,
-  // }) {
-  //   return Obx(
-  //     () => AppDropdownField(
-  //       isRequired: false,
-  //       title: title,
-  //       value: value.value,
-  //       items: items,
-  //       hintText: "Select",
-  //       validator: AppValidators.required,
-  //       isHeight: isHeight,
-  //       isDynamic: isDynamic,
-  //       suffixIcon: suffixIcon,
-  //       onChanged: (val) => value.value = val, // ✅ correct update
-  //     ),
-  //   );
-  // }
+
+  Widget _searchDropdownField({
+    required String title,
+    required Rxn<String> value,
+    required List<String> items,
+  }) {
+    return Obx(() {
+      final isLocked = controller.isFilterLocked(title);
+
+      return GestureDetector(
+        onTap: isLocked ? _showPremiumDialog : null,
+        child: AbsorbPointer(
+          absorbing: isLocked,
+          child: Opacity(
+            opacity: isLocked ? 0.6 : 1.0,
+            child: Stack(
+              children: [
+                AppDropdownSearch<String>(
+                  title: title,
+                  isRequired: false,
+                  value: value.value,
+                  items: items,
+                  hintText: title,
+                  showSearchBox: true,
+                  searchHintText: "",
+                  validator: AppValidators.required,
+                  suffixIcon: isLocked ? _buildPremiumIcon() : null,
+                  onChanged: (val) {
+                    if (isLocked) {
+                      _showPremiumDialog();
+                      return;
+                    }
+
+                    value.value = val;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
 
   void _showPremiumDialog() {
     Get.dialog(

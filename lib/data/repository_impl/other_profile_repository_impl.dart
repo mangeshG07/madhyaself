@@ -27,4 +27,14 @@ class OtherProfileRepositoryImpl extends OtherUserRepository {
       request.reason,
     );
   }
+
+  @override
+  Future<dynamic> viewContact(OtherUserRequest request) async {
+    return await _apiService.viewContact(request.userId, request.otherUserId);
+  }
+
+  @override
+  Future<dynamic> whatsappConnect(UserRequest request) async {
+    return await _apiService.whatsappConnect(request.userId);
+  }
 }

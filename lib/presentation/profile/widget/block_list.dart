@@ -68,7 +68,7 @@ class _BlockUserListState extends State<BlockUserList> {
                 ListView.separated(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  separatorBuilder: (_, index) => const SizedBox(height: 0),
+                  separatorBuilder: (_, index) => const SizedBox(height: 8),
                   itemCount: controller.items.length,
                   itemBuilder: (_, index) {
                     final blockUser = controller.items[index];
@@ -124,7 +124,9 @@ class _BlockUserListState extends State<BlockUserList> {
               child: FadeInImage(
                 placeholder: const AssetImage(AppAssets.defaultImage),
                 image: (imageUrl.toString().isNotEmpty)
-                    ? NetworkImage(imageUrl)
+                    ? NetworkImage(
+                        blockUser['hide_photos'] == '0' ? imageUrl : '',
+                      )
                     : const AssetImage(AppAssets.defaultImage) as ImageProvider,
                 fit: BoxFit.cover,
                 width: 55.w,

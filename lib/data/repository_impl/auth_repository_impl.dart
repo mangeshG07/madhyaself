@@ -27,6 +27,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<dynamic> register(RegisterRequest request) async {
+    print(request.birthdate);
+    print(request.birthdate);
     return await _api.registerUser(
       request.name,
       request.phone,

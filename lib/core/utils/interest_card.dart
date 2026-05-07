@@ -141,6 +141,7 @@ class _InterestContent extends StatelessWidget {
 // ================= VIEW MODEL =================
 class _InterestViewModel {
   final String name;
+  final String username;
   final String id;
   final String interestId;
   final String message;
@@ -152,6 +153,7 @@ class _InterestViewModel {
 
   _InterestViewModel({
     required this.name,
+    required this.username,
     required this.id,
     required this.interestId,
     required this.message,
@@ -177,6 +179,12 @@ class _InterestViewModel {
         : data['receiver_name'];
 
     final id = selectedType == 0
+        ? (isSelf ? data['receiver_id'] : data['sender_id'])
+        : selectedType == 1
+        ? data['sender_id']
+        : data['receiver_id'];
+
+    final uName = selectedType == 0
         ? (isSelf ? data['receiver_username'] : data['sender_username'])
         : selectedType == 1
         ? data['sender_username']
@@ -185,6 +193,7 @@ class _InterestViewModel {
     final hasBadges = data['isVerified'] == true || data['isPremium'] == true;
 
     return _InterestViewModel(
+      username: uName ?? '',
       name: name ?? '',
       id: id?.toString() ?? '',
       interestId: data['id']?.toString() ?? '',
@@ -234,7 +243,7 @@ class _IdText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppText(
-      text: viewModel.id,
+      text: viewModel.username,
       fontSize: 11.sp,
       color: colorScheme.onSurface.withValues(alpha: 0.6),
     );
@@ -422,7 +431,11 @@ class _LoadingButton extends StatelessWidget {
           alignment: Alignment.center,
           padding: EdgeInsets.symmetric(vertical: 6.h),
           decoration: BoxDecoration(
-            color: isPrimary ? AppColors.lightPrimary : Colors.white,
+            color: isPrimary
+                ? AppColors.lightPrimary
+                : Get.isDarkMode
+                ? AppColors.grey800
+                : Colors.white,
             borderRadius: BorderRadius.circular(10.r),
             border: Border.all(color: Colors.grey.shade300),
           ),

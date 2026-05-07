@@ -101,12 +101,12 @@ class AllDialogs {
           content: Text('Are you sure you want to change\n+91 $number'),
           actions: [
             TextButton(
-              onPressed: () => Get.back(),
+              onPressed: () => Navigator.pop(Get.context!),
               child: const Text('No', style: TextStyle(color: Colors.red)),
             ),
             TextButton(
               onPressed: () {
-                getIt<LoginController>().numberController.clear();
+                Get.find<LoginController>().numberController.clear();
                 Get.offAllNamed(Routes.login);
               },
               child: const Text('Yes'),

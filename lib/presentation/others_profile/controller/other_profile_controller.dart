@@ -4,10 +4,14 @@ class OtherProfileController extends GetxController {
   final OtherProfileUsecase usecase;
   final BlockUserUsecase _blockUserUsecase;
   final ReportProfileUsecase _reportProfileUsecase;
+  final ViewContactUsecase _viewContactUsecase;
+  final WhatsappConnectUsecase _whatsappConnectUsecase;
   OtherProfileController(
     this.usecase,
     this._blockUserUsecase,
     this._reportProfileUsecase,
+    this._viewContactUsecase,
+    this._whatsappConnectUsecase,
   );
 
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
@@ -36,6 +40,8 @@ class OtherProfileController extends GetxController {
   ///==============================Other Profile Details======================
   final isLoading = false.obs;
   final isReportLoading = false.obs;
+  final isWhatsappLoading = false.obs;
+  final isViewLoading = false.obs;
   final profileDetails = {}.obs;
   final chipsData = [].obs;
 
@@ -78,7 +84,10 @@ class OtherProfileController extends GetxController {
       },
       {'title': data['caste'] ?? '', 'icon': HugeIcons.strokeRoundedStar},
       {
-        'title': data['height_in_ft'] ?? '',
+        'title': [
+          if (data['height_in_ft'] != null) data['height_in_ft'],
+          if (data['height'] != null) '${data['height'] ?? '-'} cm',
+        ].join(' '),
         'icon': HugeIcons.strokeRoundedRuler,
       },
       {
@@ -131,6 +140,62 @@ class OtherProfileController extends GetxController {
     } catch (_) {
     } finally {
       isReportLoading(false);
+    }
+  }
+
+  /// ================= WHATSAPP CONNECT =================
+  Future<void> whatsappConnect() async {
+    try {
+      isWhatsappLoading(true);
+      final userid = await SecureStorageService.read('user_id') ?? '';
+      final res = await _whatsappConnectUsecase.call(UserRequest(userid));
+
+      if (res['common']['status'] == true) {
+        openWhatsApp(profileDetails['wp_no']?.toString() ?? '', '');
+      } else {
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.warning,
+        );
+      }
+    } catch (_) {
+    } finally {
+      isWhatsappLoading(false);
+    }
+  }
+
+  /// ================= VIEW CONTACT =================
+  Future<void> viewContact(ThemeData theme) async {
+    try {
+      isViewLoading(true);
+      final userid = await SecureStorageService.read('user_id') ?? '';
+      final res = await _viewContactUsecase.call(
+        OtherUserRequest(userid, profileDetails['id']?.toString() ?? ''),
+      );
+
+      if (res['common']['status'] == true) {
+        AppBottomSheet.show(
+          context: Get.context!,
+          showCloseButton: false,
+          height: Get.height * 0.4.h,
+          backgroundColor: theme.scaffoldBackgroundColor,
+          child: ContactBottomsheet(
+            isUnlocked: true,
+            contactNumber: profileDetails['mobile_no']?.toString() ?? '',
+            whatsappNumber: profileDetails['alternate_no']?.toString() ?? '',
+          ),
+        );
+      } else {
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.warning,
+        );
+      }
+    } catch (_) {
+    } finally {
+      isViewLoading(false);
     }
   }
 }

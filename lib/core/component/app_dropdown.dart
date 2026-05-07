@@ -14,6 +14,7 @@ class AppDropdownSearch<T> extends StatelessWidget {
   final ValueChanged<T?> onChanged;
   final String? Function(T?)? validator;
   final String Function(T)? itemAsString;
+  final Widget? suffixIcon;
 
   const AppDropdownSearch({
     super.key,
@@ -29,6 +30,7 @@ class AppDropdownSearch<T> extends StatelessWidget {
     this.showTitle = true,
     this.validator,
     this.itemAsString,
+    this.suffixIcon,
   });
 
   @override
@@ -60,6 +62,11 @@ class AppDropdownSearch<T> extends StatelessWidget {
               hintText: hintText,
               filled: true,
               isDense: true,
+              prefixIcon: suffixIcon,
+              prefixIconConstraints: BoxConstraints(
+                minWidth: 50.w,
+                minHeight: 50.h,
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 10,

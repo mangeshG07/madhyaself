@@ -132,7 +132,7 @@ class RegisterScreen extends GetView<RegisterController> {
       fillColor: theme.cardColor,
       hintStyle: theme.textTheme.labelMedium!.copyWith(color: Colors.grey),
       onTap: () async {
-        final DateTime? picked = await showDatePicker(
+        final DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
           firstDate: DateTime(1900),
@@ -150,9 +150,9 @@ class RegisterScreen extends GetView<RegisterController> {
             );
           },
         );
-        if (picked != null) {
+        if (pickedDate != null) {
           controller.dobController.text =
-              "${picked.day}/${picked.month}/${picked.year}";
+              "${pickedDate.year}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.day.toString().padLeft(2, '0')}";
         }
       },
       validator: AppValidators.required,
@@ -173,10 +173,10 @@ class RegisterScreen extends GetView<RegisterController> {
     return Obx(
       () => AppDropdownField(
         isRequired: true,
-        isDynamic: true,
+        // isDynamic: true,
         title: "Select Your Age",
         value: controller.selectedAge.value,
-        items: controller.ageList,
+        items: controller.ageList.map((e) => e['name']).toList(),
         hintText: 'Select your Age',
         validator: AppValidators.required,
         onChanged: (val) => controller.selectedAge.value = val,
@@ -323,12 +323,14 @@ class RegisterScreen extends GetView<RegisterController> {
 
   Widget _buildRegisterButton() {
     return Obx(
-      () => AppButton(
-        text: 'Continue',
-        onTap: controller.isLoading.value ? null : _validateAndSubmit,
-        backgroundColor: AppColors.lightPrimary,
-        type: AppButtonType.secondary,
-        textColor: Colors.white,
+      () => SafeArea(
+        child: AppButton(
+          text: 'Continue',
+          onTap: controller.isLoading.value ? null : _validateAndSubmit,
+          backgroundColor: AppColors.lightPrimary,
+          type: AppButtonType.secondary,
+          textColor: Colors.white,
+        ),
       ),
     );
   }

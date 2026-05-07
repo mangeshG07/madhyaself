@@ -71,19 +71,18 @@ class InterestController extends GetxController with PaginationMixin {
       );
       if (response['common']['status'] == true) {
         isSuccess(true);
-        Get.snackbar(
-          'Success',
-          response['common']['message'],
-          backgroundColor: Colors.white,
-          colorText: Colors.black,
+
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
+          type: SnackbarType.success,
         );
       } else {
         Get.back();
-        Get.snackbar(
-          'Failed',
-          response['common']['message'],
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
+          type: SnackbarType.error,
         );
       }
     } catch (e) {
@@ -104,10 +103,18 @@ class InterestController extends GetxController with PaginationMixin {
         InterestRequested(userid, interestId),
       );
       if (response['common']['status'] == true) {
-        Get.snackbar('Success', response['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
+          type: SnackbarType.success,
+        );
         await getInterestList(isRefresh: true);
       } else {
-        Get.snackbar('Failed', response['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
+          type: SnackbarType.error,
+        );
       }
     } catch (e) {
       debugPrint("Error: $e");
@@ -128,10 +135,19 @@ class InterestController extends GetxController with PaginationMixin {
         InterestRequested(userid, interestId, status: status),
       );
       if (response['common']['status'] == true) {
-        Get.snackbar('Success', response['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
+          type: SnackbarType.success,
+        );
+        // Get.snackbar('Success', response['common']['message']);
         await getInterestList(isRefresh: true);
       } else {
-        Get.snackbar('Failed', response['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
+          type: SnackbarType.error,
+        );
       }
     } catch (e) {
       debugPrint("Error: $e");

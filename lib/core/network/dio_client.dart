@@ -14,6 +14,7 @@ class DioClient {
         receiveTimeout: ApiConstants.receiveTimeout,
       ),
     );
+
     /// 🔥 Order matters
     dio.interceptors.addAll([
       AuthInterceptor(), // 1. Add token
