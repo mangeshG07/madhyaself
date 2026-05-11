@@ -3,6 +3,7 @@ import '../../core/exporters/app_export.dart';
 class RegisterRequest {
   final String name;
   final String phone;
+  final String whatsappNumber;
   final String gender;
   final String birthdate;
   final String age;
@@ -14,6 +15,7 @@ class RegisterRequest {
 
   RegisterRequest({
     required this.phone,
+    required this.whatsappNumber,
     required this.name,
     required this.gender,
     required this.birthdate,

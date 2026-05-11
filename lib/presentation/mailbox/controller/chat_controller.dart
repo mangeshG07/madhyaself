@@ -21,8 +21,8 @@ class ChatController extends GetxController {
   );
 
   final msgController = TextEditingController();
-
-  ///===============================CHAT LIST====================================///
+  final searchController = TextEditingController();
+  final searchText = ''.obs;
 
   final chatListPagination = PaginationState<dynamic>();
   final chatDetailsPagination = PaginationState<dynamic>();
@@ -31,6 +31,31 @@ class ChatController extends GetxController {
   final nextCursor = RxnString();
   final isCreating = false.obs;
   RxString creatingChatId = ''.obs;
+
+  ///===============================SEARCH CHAT ====================================///
+  final debouncer = Debouncer(milliseconds: 500);
+
+  void updateSearchText(String value) {
+    searchText.value = value;
+  }
+
+  void onSearchChanged(String text) {
+    updateSearchText(text);
+    if (text.trim().isEmpty) {
+      _clearSearch();
+      return;
+    }
+
+    debouncer.run(() {
+      getChatList(isRefresh: true);
+    });
+  }
+
+  void _clearSearch() {
+    searchController.clear();
+  }
+
+  ///===============================CREATE CHAT ====================================///
 
   Future<void> createChat(String partTwoId) async {
     final userId = await SecureStorageService.read('user_id') ?? '';
@@ -59,6 +84,7 @@ class ChatController extends GetxController {
     }
   }
 
+  ///===============================CHAT LIST====================================///
   Future<void> getChatList({
     bool isRefresh = false,
     bool showLoading = true,
@@ -72,7 +98,13 @@ class ChatController extends GetxController {
     final userId = await SecureStorageService.read('user_id') ?? '';
 
     try {
-      final response = await usecase.call(UserRequest(userId));
+      final response = await usecase.call(
+        UserRequest(
+          userId,
+          type: searchController.text.trim(),
+          pageNo: chatListPagination.currentPage.toString(),
+        ),
+      );
 
       if (response['common']['status'] == true) {
         final List list = response['data'] ?? [];
@@ -86,6 +118,7 @@ class ChatController extends GetxController {
     }
   }
 
+  ///===============================CHAT DETAILS====================================///
   Future<void> getChatDetails(
     String convId, {
     bool isRefresh = false,
@@ -151,6 +184,7 @@ class ChatController extends GetxController {
     };
 
     socket_service.onEvent = (event, data) {
+      print('event2=========>$event');
       switch (event) {
         /// ================= MESSAGE =================
         case 'message.sent':
@@ -173,10 +207,21 @@ class ChatController extends GetxController {
 
   void _handleIncomingMessage(Map data) async {
     final userId = await SecureStorageService.read('user_id') ?? '';
+    print('_handleIncomingMessage');
+    print(data);
+    print('userId=====>${userId.runtimeType}');
+    print('sender_id=====>${data['sender_id'].runtimeType}');
+    print('comparison => ${data['sender_id'].toString() != userId.toString()}');
 
     /// ✅ mark delivered only for received msg
-    if (data['receiver_id'].toString() == userId) {
-      await msgDelivered(data['conversation_id'].toString());
+    if (data['sender_id'].toString() != userId.toString()) {
+      try {
+        print('Calling delivered API...');
+        await msgDelivered(data['conversation_id'].toString());
+        print('Delivered API success');
+      } catch (e) {
+        print('Delivered API error: $e');
+      }
     }
 
     /// IGNORE OWN MESSAGE
@@ -188,7 +233,8 @@ class ChatController extends GetxController {
   void _handleStatusUpdate(Map data) async {
     final newStatus = data['status'].toString();
     bool updated = false;
-
+    print('_handleStatusUpdate');
+    print(data);
     dynamic rawMessages = data['messages'];
 
     /// ✅ CASE 1: messages list available
@@ -205,6 +251,8 @@ class ChatController extends GetxController {
         }
       }
     }
+    print('chatDetailsPagination.items');
+    print(chatDetailsPagination.items);
 
     /// ✅ refresh only once
     if (updated) {
@@ -226,13 +274,18 @@ class ChatController extends GetxController {
   }
 
   void _addMessageIfNotExists(dynamic msg) {
-    final msgId = (msg['id'] ?? msg['message_id'] ?? '').toString();
+    final msgId = (msg['id']?.toString() ?? msg['message_id']?.toString() ?? '')
+        .toString();
 
     final exists = chatDetailsPagination.items.any(
-      (e) => (e['id'] ?? e['message_id'] ?? '').toString() == msgId,
+      (e) =>
+          (e['id']?.toString() ?? e['message_id']?.toString() ?? '')
+              .toString() ==
+          msgId,
     );
 
     if (!exists) {
+      print('inexists');
       chatDetailsPagination.items.insert(0, msg);
       chatDetailsPagination.items.refresh();
     }
@@ -289,9 +342,14 @@ class ChatController extends GetxController {
 
   Future<void> msgDelivered(String convId) async {
     try {
+      print('in deleiveyre');
       final userId = await SecureStorageService.read('user_id') ?? '';
       isDeliverLoading(true);
-      await msgDeliveredUsecase.call(ChatDetailsRequest(userId, convId));
+      final res = await msgDeliveredUsecase.call(
+        ChatDetailsRequest(userId, convId),
+      );
+      print('msgDelivered');
+      print(res);
     } catch (_) {
     } finally {
       isDeliverLoading(false);
@@ -336,18 +394,28 @@ class ChatController extends GetxController {
   final Map<String, Timer> _typingTimers = {};
 
   void onTypingEvent(Map data) async {
+    print('onTypingEvent');
+    print(data);
     final convId = data['conversation_id']?.toString();
     final senderId = data['user_id']?.toString();
-    if (convId == null) return;
+    if (convId == null || senderId == null) return;
+
+
+    print(typingUsers);
     final userId = await SecureStorageService.read('user_id') ?? '';
+
+    print('typingUsers========>$typingUsers');
+    if (senderId.toString() == userId.toString()) return;
+
     typingUsers[convId] = true;
 
-    if (senderId == userId) return;
     _typingTimers[convId]?.cancel();
 
     /// optional: auto remove after few seconds (safety)
     _typingTimers[convId] = Timer(const Duration(seconds: 2), () {
       typingUsers[convId] = false;
+      typingUsers.refresh();
     });
+    typingUsers.refresh();
   }
 }

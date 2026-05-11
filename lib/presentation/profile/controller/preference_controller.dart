@@ -5,12 +5,16 @@ class PreferenceController extends GetxController {
   final CommonDataUsecase commonDataUsecase;
   final LocationDataUsecase _locationDataUsecase;
   final UpdatePrefsUsecase _updateUsecase;
+  final CasteByRelUsecase casteUsecase;
+  final SubCasteByCasteUsecase subCasteUsecase;
 
   PreferenceController(
     this.getPartPrefUsecase,
     this.commonDataUsecase,
     this._locationDataUsecase,
     this._updateUsecase,
+    this.casteUsecase,
+    this.subCasteUsecase,
   );
 
   @override
@@ -23,6 +27,8 @@ class PreferenceController extends GetxController {
   /// ================= STATE =================
   final isLoading = false.obs;
   final isUpdating = false.obs;
+  final isCasteLoading = false.obs;
+  final isSubCasteLoading = false.obs;
 
   final preferenceDetails = {}.obs;
 
@@ -95,6 +101,12 @@ class PreferenceController extends GetxController {
     selectedCountry.value = _val(data['country']);
     selectedState.value = _val(data['state']);
     selectedCity.value = _val(data['city']);
+    getInitialValues();
+  }
+
+  void getInitialValues() async {
+    await fetchCaste(selectedReligion.value.toString());
+    await fetchSubCaste(selectedCaste.value.toString());
   }
 
   String? _val(dynamic v) {
@@ -114,8 +126,47 @@ class PreferenceController extends GetxController {
     educationCategoryList.assignAll(data['education_category'] ?? []);
     jobCategoryList.assignAll(data['job_category'] ?? []);
     annualIncomeList.assignAll(data['annual_income'] ?? []);
-    casteList.assignAll(data['caste'] ?? []);
-    subCasteList.assignAll(data['sub_caste'] ?? []);
+    // casteList.assignAll(data['caste'] ?? []);
+    // subCasteList.assignAll(data['sub_caste'] ?? []);
+  }
+
+  /// ------------------ CASTE ------------------ ///
+  Future<void> fetchCaste(String religionId) async {
+    try {
+      isCasteLoading(true);
+      // selectedCaste.value = null;
+      // selectedSubCaste.value = null;
+      casteList.clear();
+      subCasteList.clear();
+
+      final res = await casteUsecase.call(CasteRequest(religionId));
+
+      if (res['common']['status'] == true) {
+        final data = res['data'];
+        casteList.value = data['caste'] ?? [];
+      }
+    } finally {
+      isCasteLoading(false);
+    }
+  }
+
+  /// ------------------ SUB CASTE ------------------ ///
+  Future<void> fetchSubCaste(String casteId) async {
+    try {
+      isSubCasteLoading(true);
+      // selectedSubCaste.value = null;
+      subCasteList.clear();
+      final res = await subCasteUsecase.call(SubCasteRequest(casteId));
+
+      if (res['common']['status'] == true) {
+        final data = res['data'];
+
+        subCasteList.value = data['sub_caste'] ?? [];
+      }
+    } catch (_) {
+    } finally {
+      isSubCasteLoading(false);
+    }
   }
 
   /// ================= Location DATA =================

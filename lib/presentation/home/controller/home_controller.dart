@@ -80,11 +80,12 @@ class HomeController extends GetxController {
     setStatsData(data);
 
     sliderList.assignAll(
-      (data['slider'] ?? [])
-          .map((e) => e['image'] ?? '')
-          .where((e) => e.toString().isNotEmpty)
-          .map((e) => e.toString())
-          .toList(),
+      (data['slider'] ?? []).map((e) {
+        return {
+          "image": (e['image'] ?? '').toString(),
+          "video": (e['video'] ?? '').toString(),
+        };
+      }).toList(),
     );
   }
 
@@ -180,9 +181,17 @@ class HomeController extends GetxController {
         "icon": HugeIcons.strokeRoundedBriefcase01,
         'onTap': () async {
           searchController.resetFilters();
-          searchController.selectedJob.value =
-              data['user_profession']?.toString() ?? '';
-          await searchController.globalSearch();
+          if (hasAdvancedFilter.value) {
+            searchController.selectedJob.value =
+                data['user_profession']?.toString() ?? '';
+            await searchController.globalSearch(isRefresh: true);
+          } else {
+            CustomSnackbar.show(
+              context: Get.context!,
+              message: 'Please upgrade your plan to apply filter',
+              type: SnackbarType.warning,
+            );
+          }
         },
       },
       {
@@ -192,9 +201,17 @@ class HomeController extends GetxController {
         "icon": HugeIcons.strokeRoundedMortarboard02,
         'onTap': () async {
           searchController.resetFilters();
-          searchController.selectedEducation.value =
-              data['user_education']?.toString() ?? '';
-          await searchController.globalSearch();
+          if (hasAdvancedFilter.value) {
+            searchController.selectedEducation.value =
+                data['user_education']?.toString() ?? '';
+            await searchController.globalSearch(isRefresh: true);
+          } else {
+            CustomSnackbar.show(
+              context: Get.context!,
+              message: 'Please upgrade your plan to apply filter',
+              type: SnackbarType.warning,
+            );
+          }
         },
       },
       {
@@ -203,9 +220,17 @@ class HomeController extends GetxController {
         "icon": HugeIcons.strokeRoundedStar,
         'onTap': () async {
           searchController.resetFilters();
-          searchController.selectedCaste.value =
-              data['user_caste']?.toString() ?? '';
-          await searchController.globalSearch();
+          if (hasBasicFilter.value || hasAdvancedFilter.value) {
+            searchController.selectedCaste.value =
+                data['user_caste']?.toString() ?? '';
+            await searchController.globalSearch(isRefresh: true);
+          } else {
+            CustomSnackbar.show(
+              context: Get.context!,
+              message: 'Please upgrade your plan to apply filter',
+              type: SnackbarType.warning,
+            );
+          }
         },
       },
       {
@@ -215,9 +240,17 @@ class HomeController extends GetxController {
         "icon": HugeIcons.strokeRoundedStar,
         'onTap': () async {
           searchController.resetFilters();
-          searchController.selectedSubCaste.value =
-              data['user_sub_caste']?.toString() ?? '';
-          await searchController.globalSearch();
+          if (hasBasicFilter.value || hasAdvancedFilter.value) {
+            searchController.selectedSubCaste.value =
+                data['user_sub_caste']?.toString() ?? '';
+            await searchController.globalSearch(isRefresh: true);
+          } else {
+            CustomSnackbar.show(
+              context: Get.context!,
+              message: 'Please upgrade your plan to apply filter',
+              type: SnackbarType.warning,
+            );
+          }
         },
       },
       {
@@ -226,9 +259,17 @@ class HomeController extends GetxController {
         "icon": HugeIcons.strokeRoundedLocation04,
         'onTap': () async {
           searchController.resetFilters();
-          searchController.selectedCity.value =
-              data['user_city']?.toString() ?? '';
-          await searchController.globalSearch();
+          if (hasBasicFilter.value || hasAdvancedFilter.value) {
+            searchController.selectedCity.value =
+                data['user_city']?.toString() ?? '';
+            await searchController.globalSearch(isRefresh: true);
+          } else {
+            CustomSnackbar.show(
+              context: Get.context!,
+              message: 'Please upgrade your plan to apply filter',
+              type: SnackbarType.warning,
+            );
+          }
         },
       },
       {
@@ -237,9 +278,17 @@ class HomeController extends GetxController {
         "icon": HugeIcons.strokeRoundedRotateLeft04,
         'onTap': () async {
           searchController.resetFilters();
-          searchController.selectedReligion.value =
-              data['user_religion']?.toString() ?? '';
-          await searchController.globalSearch();
+          if (hasBasicFilter.value || hasAdvancedFilter.value) {
+            searchController.selectedReligion.value =
+                data['user_religion']?.toString() ?? '';
+            await searchController.globalSearch(isRefresh: true);
+          } else {
+            CustomSnackbar.show(
+              context: Get.context!,
+              message: 'Please upgrade your plan to apply filter',
+              type: SnackbarType.warning,
+            );
+          }
         },
       },
     ].obs;

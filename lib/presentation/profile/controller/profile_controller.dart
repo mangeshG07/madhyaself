@@ -7,6 +7,7 @@ class ProfileController extends GetxController {
   final UpdateProfileUsecase _updateProfileUsecase;
   final GetPageDetailsUsecase _getPageDetailsUsecase;
   final GetPageUsecase _getPageUsecase;
+  final SubCasteByCasteUsecase _subCasteUsecase;
 
   ProfileController(
     this.usecase,
@@ -15,6 +16,7 @@ class ProfileController extends GetxController {
     this._locationDataUsecase,
     this._getPageDetailsUsecase,
     this._getPageUsecase,
+    this._subCasteUsecase,
   );
 
   @override
@@ -31,6 +33,7 @@ class ProfileController extends GetxController {
   final isPageLoading = false.obs;
   final isPageDetailsLoading = false.obs;
   final isHide = false.obs;
+  final isSubCasteLoading = false.obs;
 
   /// Form Controllers
   final whatsappNoController = TextEditingController();
@@ -274,7 +277,7 @@ class ProfileController extends GetxController {
   final documentList = <dynamic>[].obs;
 
   /// ================= SET INITIAL DETAILS=================
-  void _setInitialValues() {
+  void _setInitialValues() async {
     isHide.value = profileDetails['hide_photos'] == '0' ? false : true;
     whatsappNoController.text = profileDetails['wp_no'] ?? '';
     alternateNoController.text = profileDetails['alternate_no'] ?? '';
@@ -336,6 +339,7 @@ class ProfileController extends GetxController {
     selectedCaste.value = (caste.isNotEmpty) ? caste : null;
 
     selectedSubCaste.value = (subCaste.isNotEmpty) ? subCaste : null;
+    await fetchSubCaste(selectedCaste.value.toString());
   }
 
   /// ================= COMMON DATA =================
@@ -349,8 +353,27 @@ class ProfileController extends GetxController {
     jobCategoryList.assignAll(data['job_category'] ?? []);
     annualIncomeList.assignAll(data['annual_income'] ?? []);
     casteList.assignAll(data['caste'] ?? []);
-    subCasteList.assignAll(data['sub_caste'] ?? []);
+    // subCasteList.assignAll(data['sub_caste'] ?? []);
     rashiList.assignAll(data['rasi'] ?? []);
+  }
+
+  /// ------------------ SUB CASTE ------------------ ///
+  Future<void> fetchSubCaste(String casteId) async {
+    try {
+      isSubCasteLoading(true);
+      // selectedSubCaste.value = null;
+      // subCasteList.clear();
+      final res = await _subCasteUsecase.call(SubCasteRequest(casteId));
+
+      if (res['common']['status'] == true) {
+        final data = res['data'];
+
+        subCasteList.value = data['sub_caste'] ?? [];
+      }
+    } catch (_) {
+    } finally {
+      isSubCasteLoading(false);
+    }
   }
 
   /// ================= COMMON DATA =================

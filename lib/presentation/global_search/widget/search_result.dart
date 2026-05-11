@@ -27,63 +27,105 @@ class _SearchResultState extends State<SearchResult> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16.h,
-        children: [
-          Obx(
-            () => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: AppText(
-                text: '${controller.searchList.length} search results found!',
-                fontSize: 14.sp,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16.h,
+          children: [
+            Obx(
+              () => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: AppText(
+                  text: '${controller.items.length} search results found!',
+                  fontSize: 14.sp,
+                ),
               ),
             ),
-          ),
-          Expanded(child: _buildTopMatchList()),
-        ],
+            Expanded(child: _buildTopMatchList(theme)),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTopMatchList() {
+  Widget _buildTopMatchList(ThemeData theme) {
     return Obx(() {
       if (controller.isLoading.value) {
-        return Center(child: AppLoader.circular(color: AppColors.lightPrimary));
+        return CustomShimmerWidget.grid(
+          baseColor: theme.brightness == Brightness.light
+              ? Colors.grey.shade300
+              : Colors.grey.shade800,
+          highlightColor: theme.brightness == Brightness.light
+              ? Colors.grey.shade100
+              : Colors.grey.shade700,
+          itemCount: 4,
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          width: double.infinity,
+          childAspectRatio: 0.6,
+        );
       }
 
-      if (controller.searchList.isEmpty) {
+      if (controller.items.isEmpty) {
         return _emptyState();
       }
 
-      return MasonryGridView.count(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 4,
-        itemCount: controller.searchList.length,
-        itemBuilder: (context, index) {
-          final match = controller.searchList[index];
-
-          return CompactCard(
-            details: {
-              'username': match['username'] ?? '',
-              'name': match['name'] ?? '',
-              'id': match['id'] ?? '',
-              'age': getAgeJob(match),
-              'address': getAddress(match),
-              'image': match['profile_image']?.toString() ?? '',
-              'isVerified': match['isVerified'] ?? false,
-              'isPremium': match['isPremium'] ?? false,
-              'isHide': match['hide_photos'] != '0',
-              'matchPercent': match['match_percentage'] ?? 0,
-            },
-            onTap: () => Get.toNamed(
-              Routes.othersProfile,
-              arguments: {'id': match['id']?.toString() ?? ''},
-            ),
-          );
+      return NotificationListener<ScrollNotification>(
+        onNotification: (scroll) {
+          if (scroll is ScrollEndNotification &&
+              scroll.metrics.pixels >= scroll.metrics.maxScrollExtent - 50 &&
+              controller.hasMore &&
+              !controller.isLoadMore.value &&
+              !controller.isLoading.value) {
+            controller.globalSearch(showLoading: false);
+          }
+          return false;
         },
+        child: Column(
+          children: [
+            Expanded(
+              child: MasonryGridView.count(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                crossAxisCount: 2,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 4,
+                itemCount: controller.items.length,
+                itemBuilder: (context, index) {
+                  final match = controller.items[index];
+
+                  return CompactCard(
+                    details: {
+                      'username': match['username'] ?? '',
+                      'name': match['name'] ?? '',
+                      'id': match['id'] ?? '',
+                      'age': getAgeJob(match),
+                      'address': getAddress(match),
+                      'image': match['profile_image']?.toString() ?? '',
+                      'isVerified': match['isVerified'] ?? false,
+                      'isPremium': match['isPremium'] ?? false,
+                      'isHide': match['hide_photos'] != '0',
+                      'matchPercent': match['match_percentage'] ?? 0,
+                    },
+                    onTap: () => Get.toNamed(
+                      Routes.othersProfile,
+                      arguments: {'id': match['id']?.toString() ?? ''},
+                    ),
+                  );
+                },
+              ),
+            ),
+            Obx(() {
+              if (controller.isLoadMore.value) {
+                // Still loading next page
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  child: AppLoader.circular(color: AppColors.lightPrimary),
+                );
+              } else {
+                return const SizedBox();
+              }
+            }),
+          ],
+        ),
       );
 
       //

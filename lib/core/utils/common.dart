@@ -404,7 +404,7 @@ Widget buildContentOverlay(dynamic details, bool isDetails) {
   return Positioned(
     left: 12.w,
     right: 12.w,
-    bottom: isDetails ? 50.h : 12.h,
+    bottom: isDetails ? Get.height * 0.09 : 12.h,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -521,5 +521,18 @@ Future<void> openWhatsApp(String number, String msg) async {
       'WhatsApp not installed',
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+}
+
+Color getStatusColor(String status) {
+  switch (status) {
+    case 'Pending':
+      return Colors.orange;
+    case 'Approved':
+      return Colors.green;
+    case 'Rejected':
+      return Colors.red;
+    default:
+      return Colors.grey;
   }
 }

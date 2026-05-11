@@ -1,9 +1,6 @@
-import 'dart:io';
-
-import 'package:injectable/injectable.dart';
-import 'package:madhya/core/constants/api_constants.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:dio/dio.dart';
+
+import '../exporters/app_export.dart';
 
 part 'api_service.g.dart';
 
@@ -35,6 +32,7 @@ abstract class ApiService {
   Future<dynamic> registerUser(
     @Part(name: "name") String name,
     @Part(name: "mobile_no") String mobileNumber,
+    @Part(name: "wp_no") String whatsappNumber,
     @Part(name: "gender") String gender,
     @Part(name: "birth_date") String birthDate,
     @Part(name: "age") String age,
@@ -70,7 +68,11 @@ abstract class ApiService {
   );
 
   @POST(ApiConstants.getChatList)
-  Future<dynamic> getChatList(@Part(name: "user_id") String userId);
+  Future<dynamic> getChatList(
+    @Part(name: "user_id") String userId,
+    @Part(name: "search") String search,
+    @Part(name: "page_no") String pageNo,
+  );
 
   @POST(ApiConstants.createChat)
   Future<dynamic> createChat(

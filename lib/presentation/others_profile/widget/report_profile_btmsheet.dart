@@ -23,7 +23,6 @@ class ReportProfileList extends StatelessWidget {
       () => RadioGroup<int>(
         groupValue: selectedValue,
         onChanged: onChanged,
-
         child: _buildBefore(theme),
       ),
     );
@@ -43,12 +42,14 @@ class ReportProfileList extends StatelessWidget {
                     strokeWidth: 2.5,
                     size: 22.r,
                   )
-                : AppButton(
-                    text: 'Submit',
-                    onTap: selectedValue == null ? null : onSubmit,
-                    backgroundColor: selectedValue == null
-                        ? AppColors.grey300
-                        : AppColors.lightPrimary,
+                : SafeArea(
+                    child: AppButton(
+                      text: 'Submit',
+                      onTap: selectedValue == null ? null : onSubmit,
+                      backgroundColor: selectedValue == null
+                          ? AppColors.grey300
+                          : AppColors.lightPrimary,
+                    ),
                   ),
           ),
         ],

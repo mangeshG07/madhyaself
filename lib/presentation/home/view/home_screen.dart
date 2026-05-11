@@ -14,7 +14,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    controller.getHome();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getHome();
+      checkInternetAndShowPopup();
+    });
   }
 
   @override
@@ -119,11 +122,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSlider() {
     return Obx(
-      () => AppCarouselSlider(
+      () => AppCarouselImageVideoSlider(
         margin: const EdgeInsets.only(bottom: 8),
         activeIndicatorColor: AppColors.lightPrimary,
-        imageUrls: List<String>.from(controller.sliderList),
-        height: Get.height * 0.23.h,
+        sliderItems: List<Map<String, dynamic>>.from(controller.sliderList),
+        height: Get.height * 0.23,
         placeholder: Image.asset(AppAssets.defaultImage, width: 0.4.sw),
       ),
     );

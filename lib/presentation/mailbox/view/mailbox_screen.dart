@@ -47,13 +47,38 @@ class _MailboxScreenState extends State<MailboxScreen> {
     return AppTextField(
       label: 'Search',
       showLabel: false,
+      focusedBorder: theme.inputDecorationTheme.focusedBorder,
+      enabledBorder: theme.inputDecorationTheme.enabledBorder,
       hint: 'Search',
+
+      controller: controller.searchController,
       contentPadding: EdgeInsets.symmetric(vertical: 14.h),
       fillColor: theme.inputDecorationTheme.fillColor,
       prefixIcon: Padding(
         padding: EdgeInsets.only(left: 10.w, right: 6.w),
         child: Icon(Icons.search, color: Colors.grey, size: 20.sp),
       ),
+      suffixIcon: Obx(
+        () => controller.searchText.value.isNotEmpty
+            ? GestureDetector(
+                onTap: () async {
+                  controller.searchController.clear();
+                  controller.searchText.value = '';
+                  await controller.getChatList(isRefresh: true);
+                },
+                child: Container(
+                  margin: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(),
+                  child: Icon(
+                    Icons.close,
+                    size: 20,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              )
+            : SizedBox(),
+      ),
+      onChanged: controller.onSearchChanged,
     );
   }
 
@@ -71,21 +96,7 @@ class _MailboxScreenState extends State<MailboxScreen> {
             final chatList = controller.chatListPagination;
 
             if (chatList.isLoading.value) {
-              return CustomShimmerWidget.list(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                itemCount: 4,
-                baseColor: theme.brightness == Brightness.light
-                    ? Colors.grey.shade300
-                    : Colors.grey.shade800,
-                highlightColor: theme.brightness == Brightness.light
-                    ? Colors.grey.shade100
-                    : Colors.grey.shade700,
-                width: double.infinity,
-                height: Get.height * 0.08.h,
-              );
+              return _loader(theme);
             }
 
             if (chatList.items.isEmpty) {
@@ -133,6 +144,24 @@ class _MailboxScreenState extends State<MailboxScreen> {
     );
   }
 
+  CustomShimmerWidget _loader(ThemeData theme) {
+    return CustomShimmerWidget.list(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
+              itemCount: 4,
+              baseColor: theme.brightness == Brightness.light
+                  ? Colors.grey.shade300
+                  : Colors.grey.shade800,
+              highlightColor: theme.brightness == Brightness.light
+                  ? Colors.grey.shade100
+                  : Colors.grey.shade700,
+              width: double.infinity,
+              height: Get.height * 0.08.h,
+            );
+  }
+
   Widget _buildDivider() {
     return Divider(height: 20.h, thickness: 0.6, color: AppColors.grey200);
   }
@@ -140,8 +169,16 @@ class _MailboxScreenState extends State<MailboxScreen> {
   Widget emptyData(ThemeData theme) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: AppText(text: 'No chat Found', fontSize: 14.sp),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(AppAssets.noMatchFound, width: Get.width * 0.35.w),
+            // Icon(Icons.favorite_border, size: 50.r, color: Colors.grey),
+            SizedBox(height: 10.h),
+            AppText(text: 'No chat Found', fontSize: 14.sp),
+          ],
+        ),
       ),
     );
   }

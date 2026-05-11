@@ -1,9 +1,18 @@
 import 'core/exporters/app_export.dart';
 
+@pragma('vm:entry-point')
+Future<void> backgroundHandler(RemoteMessage message) async {
+  Map<String, dynamic> data = message.data;
+  NotificationService().handleNotificationNavigation(data, '');
+  await Firebase.initializeApp();
+}
+
 void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      NotificationService().init();
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
       /// Init Dependencies (GetX)

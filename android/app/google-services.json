@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "169670725761",
+    "project_id": "madhyasthi-5ef7c",
+    "storage_bucket": "madhyasthi-5ef7c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169670725761:android:ff21dca5a52efe626c7d80",
+        "android_client_info": {
+          "package_name": "com.madhyasthi.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD41uhCFQXLlZqlm00k-1xvzNAOfqQWXxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

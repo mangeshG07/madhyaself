@@ -196,8 +196,8 @@ class ProfileAdd extends GetView<RegisterController> {
   Widget _buildContinueButton() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Obx(()=>
-        AppButton(
+      child: Obx(
+        () => AppButton(
           text: controller.isLoading.value ? 'Please wait...' : 'Register Free',
           onTap: controller.isLoading.value
               ? null

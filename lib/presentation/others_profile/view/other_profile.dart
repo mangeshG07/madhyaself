@@ -111,41 +111,44 @@ class _OtherProfileState extends State<OtherProfile> {
                       },
                     );
                   } else if (value == 'report') {
-                    controller.selectedReason.value = null;
-                    AppBottomSheet.show(
-                      context: context,
-                      showCloseButton: false,
-                      height: Get.height * 0.7.h,
-                      backgroundColor: theme.scaffoldBackgroundColor,
-                      child: Obx(
-                        () => ReportProfileList(
-                          onSubmit: () async {
-                            final selectedItem = controller.reasonsOptions
-                                .firstWhere(
-                                  (e) =>
-                                      e.id == controller.selectedReason.value,
-                                );
-                            final msg = selectedItem.text;
-                            await controller
-                                .reportProfile(
-                                  controller.profileDetails['id'].toString(),
-                                  msg,
-                                )
-                                .then((v) async {
-                                  await controller.otherProfileDetails(
-                                    controller.profileDetails['id'].toString(),
+                    if (controller.profileDetails['is_reported'] == false) {
+                      controller.selectedReason.value = null;
+                      AppBottomSheet.show(
+                        context: context,
+                        showCloseButton: false,
+                        height: Get.height * 0.7.h,
+                        backgroundColor: theme.scaffoldBackgroundColor,
+                        child: Obx(
+                          () => ReportProfileList(
+                            onSubmit: () async {
+                              final selectedItem = controller.reasonsOptions
+                                  .firstWhere(
+                                    (e) =>
+                                        e.id == controller.selectedReason.value,
                                   );
-                                });
-                          },
-                          controller: controller,
-                          items: controller.reasonsOptions,
-                          selectedValue: controller.selectedReason.value,
-                          onChanged: (val) {
-                            controller.selectedReason.value = val;
-                          },
+                              final msg = selectedItem.text;
+                              await controller
+                                  .reportProfile(
+                                    controller.profileDetails['id'].toString(),
+                                    msg,
+                                  )
+                                  .then((v) async {
+                                    await controller.otherProfileDetails(
+                                      controller.profileDetails['id']
+                                          .toString(),
+                                    );
+                                  });
+                            },
+                            controller: controller,
+                            items: controller.reasonsOptions,
+                            selectedValue: controller.selectedReason.value,
+                            onChanged: (val) {
+                              controller.selectedReason.value = val;
+                            },
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   } else if (value == 'share') {
                     _handleShare();
                   }
@@ -175,7 +178,9 @@ class _OtherProfileState extends State<OtherProfile> {
                     'block',
                   ),
                   _buildPopupMenu(
-                    'Report Profile',
+                    controller.profileDetails['is_reported'] == false
+                        ? 'Report Profile'
+                        : 'Already Reported',
                     HugeIcons.strokeRoundedInformationCircle,
                     'report',
                   ),
@@ -344,42 +349,50 @@ class _OtherProfileState extends State<OtherProfile> {
                     : 'Send\nInterest',
                 HugeIcons.strokeRoundedFavouriteCircle,
                 () {
-                  controller.selectedId.value = null;
-                  interestController.isSuccess.value = false;
-                  AppBottomSheet.show(
-                    context: context,
-                    backgroundColor: theme.scaffoldBackgroundColor,
-                    showCloseButton: false,
-                    height: Get.height * 0.6.h,
-                    child: Obx(() {
-                      return InterestOptionsList(
-                        onSubmit: () async {
-                          final selectedItem = controller.interestOptions
-                              .firstWhere(
-                                (e) => e.id == controller.selectedId.value,
-                              );
-
-                          final msg = selectedItem.text;
-                          await interestController
-                              .sendInterest(
-                                controller.profileDetails['id'].toString(),
-                                msg,
-                              )
-                              .then((v) async {
-                                await controller.otherProfileDetails(
-                                  controller.profileDetails['id'].toString(),
+                  if (controller.profileDetails['is_subscribed'] == true) {
+                    controller.selectedId.value = null;
+                    interestController.isSuccess.value = false;
+                    AppBottomSheet.show(
+                      context: context,
+                      backgroundColor: theme.scaffoldBackgroundColor,
+                      showCloseButton: false,
+                      height: Get.height * 0.6.h,
+                      child: Obx(() {
+                        return InterestOptionsList(
+                          onSubmit: () async {
+                            final selectedItem = controller.interestOptions
+                                .firstWhere(
+                                  (e) => e.id == controller.selectedId.value,
                                 );
-                              });
-                        },
-                        controller: interestController,
-                        items: controller.interestOptions,
-                        selectedValue: controller.selectedId.value,
-                        onChanged: (val) {
-                          controller.selectedId.value = val;
-                        },
-                      );
-                    }),
-                  );
+
+                            final msg = selectedItem.text;
+                            await interestController
+                                .sendInterest(
+                                  controller.profileDetails['id'].toString(),
+                                  msg,
+                                )
+                                .then((v) async {
+                                  await controller.otherProfileDetails(
+                                    controller.profileDetails['id'].toString(),
+                                  );
+                                });
+                          },
+                          controller: interestController,
+                          items: controller.interestOptions,
+                          selectedValue: controller.selectedId.value,
+                          onChanged: (val) {
+                            controller.selectedId.value = val;
+                          },
+                        );
+                      }),
+                    );
+                  } else {
+                    CustomSnackbar.show(
+                      context: context,
+                      message: 'Please upgrade your plan to send interest',
+                      type: SnackbarType.warning,
+                    );
+                  }
                 },
                 theme,
               ),

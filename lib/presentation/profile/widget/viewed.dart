@@ -74,7 +74,6 @@ class _ViewedState extends State<Viewed> {
   Widget _buildViewList(ThemeData theme) {
     return Obx(() {
       if (controller.isLoading.value) {
-        // return const LoadingWidget();
         return CustomShimmerWidget.grid(
           itemCount: 4,
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),

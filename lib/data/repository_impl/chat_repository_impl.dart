@@ -8,7 +8,11 @@ class ChatRepositoryImpl extends ChatRepository {
 
   @override
   Future<dynamic> getChatList(UserRequest request) async {
-    return await _apiService.getChatList(request.userId);
+    return await _apiService.getChatList(
+      request.userId,
+      request.type,
+      request.pageNo,
+    );
   }
 
   @override

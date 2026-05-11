@@ -23,6 +23,7 @@ class RegisterController extends GetxController {
   final registerKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
+  final whatsappNumber = TextEditingController();
   final dobController = TextEditingController();
 
   /// ------------------ SELECTION ------------------ ///
@@ -119,6 +120,7 @@ class RegisterController extends GetxController {
       final res = await registerUsecase.call(
         RegisterRequest(
           phone: phone,
+          whatsappNumber: whatsappNumber.text.trim(),
           name: nameController.text.trim(),
           gender: selectedGender.value == 'Male' ? '0' : '1',
           birthdate: dobController.text.trim(),
@@ -137,6 +139,7 @@ class RegisterController extends GetxController {
           'user_id',
           res['user']['id'].toString(),
         );
+        await LocalStorage.setBool('isOnboarded', true);
         Get.offAllNamed(Routes.mainScreen);
       } else {
         Get.snackbar('Success', res['common']['message']);

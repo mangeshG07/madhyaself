@@ -1,4 +1,3 @@
-
 import 'package:madhya/core/exporters/app_export.dart';
 
 class ChatUserProfile extends StatelessWidget {
@@ -23,7 +22,11 @@ class ChatUserProfile extends StatelessWidget {
               child: ClipOval(
                 child: FadeInImage(
                   placeholder: const AssetImage(AppAssets.defaultImage),
-                  image: NetworkImage(userData['profile_image'] ?? ''),
+                  image: NetworkImage(
+                    userData['hide_photos'].toString() == '0'
+                        ? userData['profile_image'] ?? ''
+                        : '',
+                  ),
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,

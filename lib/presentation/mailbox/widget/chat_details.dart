@@ -70,7 +70,9 @@ class _ChatDetailsState extends State<ChatDetails> {
                   child: FadeInImage(
                     placeholder: const AssetImage(AppAssets.defaultImage),
                     image: NetworkImage(
-                      controller.userDetails['profile_image'] ?? '',
+                      controller.userDetails['hide_photos'].toString() == '0'
+                          ? controller.userDetails['profile_image'] ?? ''
+                          : '',
                     ),
                     fit: BoxFit.cover,
                     width: double.infinity,
@@ -152,103 +154,109 @@ class _ChatDetailsState extends State<ChatDetails> {
             isRefresh: true,
           );
         },
-        child: NotificationListener<ScrollNotification>(
-          onNotification: (scrollInfo) {
-            if (scrollInfo.metrics.pixels >=
-                    scrollInfo.metrics.maxScrollExtent - 50 &&
-                messageList.hasMore &&
-                !messageList.isLoadMore.value &&
-                !messageList.isLoading.value) {
-              controller.getChatDetails(
-                Get.arguments['id']?.toString() ?? '',
-                showLoading: false,
-              );
-            }
-            return false;
-          },
-          child: ListView.builder(
-            reverse: true,
-            padding: const EdgeInsets.all(12),
-            itemCount: messageList.items.length,
-            itemBuilder: (context, index) {
-              final message = messageList.items[index];
-              final isMe = controller.isMe(
-                message['sender_id']?.toString() ?? '',
-              );
+        child: Obx(
+          () => NotificationListener<ScrollNotification>(
+            onNotification: (scrollInfo) {
+              if (scrollInfo.metrics.pixels >=
+                      scrollInfo.metrics.maxScrollExtent - 50 &&
+                  messageList.hasMore &&
+                  !messageList.isLoadMore.value &&
+                  !messageList.isLoading.value) {
+                controller.getChatDetails(
+                  Get.arguments['id']?.toString() ?? '',
+                  showLoading: false,
+                );
+              }
+              return false;
+            },
+            child: ListView.builder(
+              reverse: true,
+              padding: const EdgeInsets.all(12),
+              itemCount: messageList.items.length,
+              itemBuilder: (context, index) {
+                final message = messageList.items[index];
+                final isMe = controller.isMe(
+                  message['sender_id']?.toString() ?? '',
+                );
 
-              return Align(
-                alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: Get.width * 0.75),
-                  child: IntrinsicWidth(
-                    child: Card(
-                      elevation: isMe ? 0 : 1,
-                      color: isMe
-                          ? (isLight ? AppColors.grey100 : AppColors.grey800)
-                          : (isLight ? Colors.white : AppColors.darkSurface),
-                      surfaceTintColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          width: 0.5,
-                          color: isLight || isMe
-                              ? Colors.transparent
-                              : theme.dividerTheme.color!,
+                return Align(
+                  alignment: isMe
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: Get.width * 0.75),
+                    child: IntrinsicWidth(
+                      child: Card(
+                        elevation: isMe ? 0 : 1,
+                        color: isMe
+                            ? (isLight ? AppColors.grey100 : AppColors.grey800)
+                            : (isLight ? Colors.white : AppColors.darkSurface),
+                        surfaceTintColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 0.5,
+                            color: isLight || isMe
+                                ? Colors.transparent
+                                : theme.dividerTheme.color!,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            if ((message['media_url'] ?? []).isNotEmpty)
-                              _buildMedia(message['media_url']),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if ((message['media_url'] ?? []).isNotEmpty)
+                                _buildMedia(message['media_url']),
 
-                            Align(
-                              alignment: isMe
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: AppText(
-                                text: message['message']?.toString() ?? '',
-                                fontSize: 13.sp,
-                                maxLines: 5,
-                                textAlign: TextAlign.start,
-                                style: theme.textTheme.bodySmall,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              spacing: 5.w,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                AppText(
-                                  text: TimestampFormatter().format(
-                                    message['created_at']?.toString() ?? '',
-                                  ),
-                                  fontSize: 10.sp,
-                                  color: Colors.grey,
+                              Align(
+                                alignment: isMe
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: AppText(
+                                  text: message['message']?.toString() ?? '',
+                                  fontSize: 13.sp,
+                                  maxLines: 5,
+                                  textAlign: TextAlign.start,
+                                  style: theme.textTheme.bodySmall,
                                 ),
-                                if (isMe)
-                                  Icon(
-                                    getStatusIcon(message['status']),
-                                    size: 12.r,
-                                    color: message['status'].toString() == '2'
-                                        ? Colors.blue
-                                        : Colors.grey,
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                spacing: 5.w,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AppText(
+                                    text: TimestampFormatter().format(
+                                      DateTime.parse(
+                                        message['created_at']?.toString() ?? '',
+                                      ).toLocal().toString(),
+                                    ),
+                                    fontSize: 10.sp,
+                                    color: Colors.grey,
                                   ),
-                              ],
-                            ),
-                          ],
+                                  if (isMe)
+                                    Icon(
+                                      getStatusIcon(message['status']),
+                                      size: 12.r,
+                                      color: message['status'].toString() == '2'
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -285,29 +293,29 @@ class _ChatDetailsState extends State<ChatDetails> {
             ),
           ),
           SizedBox(width: 12.w),
-          AppIconButton(
-            onPressed: () {
-              AppFilePicker.open(
-                config: const AppFilePickerConfig(
-                  allowMultiImage: true,
-                  allowVideo: false,
-                ),
-                onMultiPicked: (files) {
-                  if (files.isNotEmpty) {
-                    controller.attachments.addAll(files);
-                  }
-                },
-                onPicked: (file) {
-                  if (file.path.isNotEmpty) {
-                    controller.attachments.add(file);
-                  }
-                },
-              );
-            },
-            icon: HugeIcons.strokeRoundedAttachment01,
-            backgroundColor: theme.inputDecorationTheme.fillColor,
-            iconColor: isLight ? AppColors.lightPrimary : Colors.white,
-          ),
+          // AppIconButton(
+          //   onPressed: () {
+          //     AppFilePicker.open(
+          //       config: const AppFilePickerConfig(
+          //         allowMultiImage: true,
+          //         allowVideo: false,
+          //       ),
+          //       onMultiPicked: (files) {
+          //         if (files.isNotEmpty) {
+          //           controller.attachments.addAll(files);
+          //         }
+          //       },
+          //       onPicked: (file) {
+          //         if (file.path.isNotEmpty) {
+          //           controller.attachments.add(file);
+          //         }
+          //       },
+          //     );
+          //   },
+          //   icon: HugeIcons.strokeRoundedAttachment01,
+          //   backgroundColor: theme.inputDecorationTheme.fillColor,
+          //   iconColor: isLight ? AppColors.lightPrimary : Colors.white,
+          // ),
           Obx(
             () => controller.isSendLoading.isTrue
                 ? AppLoader(size: 20.r)

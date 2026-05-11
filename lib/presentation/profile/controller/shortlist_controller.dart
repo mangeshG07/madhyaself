@@ -53,18 +53,16 @@ class ShortlistController extends GetxController with PaginationMixin {
       );
       if (response['common']['status'] == true) {
         isSuccess(true);
-        Get.snackbar(
-          'Success',
-          response['common']['message'],
-          backgroundColor: Colors.white,
-          colorText: Colors.black,
+
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
         );
       } else {
-        Get.snackbar(
-          'Failed',
-          response['common']['message'],
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: response['common']['message'],
+          type: SnackbarType.error,
         );
       }
     } catch (e) {

@@ -272,4 +272,43 @@ class AllDialogs {
       ),
     );
   }
+
+  void showPremiumDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.stars, color: Colors.amber),
+            SizedBox(width: 8),
+            Text("Premium Feature"),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Upgrade to Premium to unlock this feature and more!"),
+            SizedBox(height: 16),
+            // Add premium benefits list
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("Maybe Later"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              // Navigate to premium subscription page
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
+              foregroundColor: Colors.black,
+            ),
+            child: const Text("UPGRADE NOW"),
+          ),
+        ],
+      ),
+    );
+  }
 }

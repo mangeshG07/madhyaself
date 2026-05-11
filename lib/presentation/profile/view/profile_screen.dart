@@ -32,13 +32,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onRefresh: () async => await controller.getProfile(),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    spacing: 12.h,
-                    children: [
-                      _buildProfileHeader(theme),
-                      _buildCompletionCard(theme),
-                      _buildSectionCard(controller.menuList, theme),
-                    ],
+                  child: SafeArea(
+                    child: Column(
+                      // spacing: 12.h,
+                      children: [
+                        _buildProfileHeader(theme),
+                        _buildCompletionCard(theme),
+                        _buildSectionCard(controller.menuList, theme),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -103,7 +105,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // 🔥 PROFILE HEADER
   Widget _buildProfileHeader(ThemeData theme) {
-    final imageUrl = controller.profileDetails['profile_image'];
+    final imageUrl = controller.profileDetails['hide_photos'] == '0'
+        ? controller.profileDetails['profile_image']
+        : '';
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
@@ -276,6 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
+          SizedBox(height: 12.h),
         ],
       ),
     );

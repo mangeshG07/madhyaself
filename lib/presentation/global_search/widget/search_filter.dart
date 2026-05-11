@@ -118,7 +118,7 @@ class _SearchFilterState extends State<SearchFilter> {
                 onTap: () async {
                   controller.resetFilters();
                   Navigator.pop(context);
-                  await controller.globalSearch();
+                  await controller.globalSearch(isRefresh: true);
                 },
               ),
             ),
@@ -132,7 +132,7 @@ class _SearchFilterState extends State<SearchFilter> {
                 onTap: controller.isSearching.value
                     ? null
                     : () async {
-                        await controller.globalSearch();
+                        await controller.globalSearch(isRefresh: true);
                         // Get.back();
                       },
               ),
@@ -296,29 +296,41 @@ class _SearchFilterState extends State<SearchFilter> {
 
         SizedBox(height: 12.h),
 
-        Obx(
-          () => AppDropdownSearch<String>(
-            title: "State",
-            value: controller.selectedState.value,
-            items: controller.stateList.map<String>((e) => e['name']).toList(),
-            onChanged: (val) => controller.selectedState.value = val,
-            hintText: "Select State",
-            searchHintText: "Search State",
-          ),
+        _searchDropdownField(
+          title: "State",
+          value: controller.selectedState,
+          items: controller.stateList.map<String>((e) => e['name']).toList(),
         ),
 
-        SizedBox(height: 12.h),
-
-        Obx(
-          () => AppDropdownSearch<String>(
-            title: "City",
-            value: controller.selectedCity.value,
-            items: controller.cityList.map<String>((e) => e['name']).toList(),
-            onChanged: (val) => controller.selectedCity.value = val,
-            hintText: "Select City",
-            searchHintText: "Search City",
-          ),
+        _searchDropdownField(
+          title: "City",
+          value: controller.selectedCity,
+          items: controller.cityList.map<String>((e) => e['name']).toList(),
         ),
+
+        // Obx(
+        //   () => AppDropdownSearch<String>(
+        //     title: "State",
+        //     value: controller.selectedState.value,
+        //     items: controller.stateList.map<String>((e) => e['name']).toList(),
+        //     onChanged: (val) => controller.selectedState.value = val,
+        //     hintText: "Select State",
+        //     searchHintText: "Search State",
+        //   ),
+        // ),
+        //
+        // SizedBox(height: 12.h),
+        //
+        // Obx(
+        //   () => AppDropdownSearch<String>(
+        //     title: "City",
+        //     value: controller.selectedCity.value,
+        //     items: controller.cityList.map<String>((e) => e['name']).toList(),
+        //     onChanged: (val) => controller.selectedCity.value = val,
+        //     hintText: "Select City",
+        //     searchHintText: "Search City",
+        //   ),
+        // ),
       ],
     );
   }
@@ -329,18 +341,105 @@ class _SearchFilterState extends State<SearchFilter> {
     required List items,
     bool isHeight = false,
     bool isDynamic = false,
+    bool isPremium = false,
   }) {
-    return Obx(
-      () => AppDropdownField(
-        title: title,
-        value: value.value,
-        items: items,
-        hintText: "Select",
-        isRequired: false,
-        isHeight: isHeight,
-        isDynamic: isDynamic,
-        onChanged: (val) => value.value = val,
+    return Obx(() {
+      final isLocked = controller.isFilterLocked(title);
+
+      return GestureDetector(
+        onTap: isLocked ? AllDialogs().showPremiumDialog : null,
+        child: AbsorbPointer(
+          absorbing: isLocked, // Disable if premium locked
+          child: Opacity(
+            opacity: isLocked ? 0.6 : 1.0,
+            child: Stack(
+              children: [
+                AppDropdownField(
+                  isRequired: false,
+                  title: title,
+                  value: value.value,
+                  items: items,
+                  hintText: "Select",
+                  validator: AppValidators.required,
+                  isHeight: isHeight,
+                  isDynamic: isDynamic,
+                  suffixIcon: isLocked ? _buildPremiumIcon() : null,
+                  onChanged: (val) {
+                    if (isLocked) {
+                      AllDialogs().showPremiumDialog();
+                      return;
+                    }
+                    value.value = val;
+                  },
+                ),
+                if (isLocked)
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: AllDialogs().showPremiumDialog,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildPremiumIcon() {
+    return GestureDetector(
+      onTap: AllDialogs().showPremiumDialog,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        child: const Icon(Icons.lock, color: AppColors.lightPrimary, size: 22),
       ),
     );
+  }
+
+  Widget _searchDropdownField({
+    required String title,
+    required Rxn<String> value,
+    required List<String> items,
+  }) {
+    return Obx(() {
+      final isLocked = controller.isFilterLocked(title);
+
+      return GestureDetector(
+        onTap: isLocked ? AllDialogs().showPremiumDialog : null,
+        child: AbsorbPointer(
+          absorbing: isLocked,
+          child: Opacity(
+            opacity: isLocked ? 0.6 : 1.0,
+            child: Stack(
+              children: [
+                AppDropdownSearch<String>(
+                  title: title,
+                  isRequired: false,
+                  value: value.value,
+                  items: items,
+                  hintText: title,
+                  showSearchBox: true,
+                  searchHintText: "",
+                  validator: AppValidators.required,
+                  suffixIcon: isLocked ? _buildPremiumIcon() : null,
+                  onChanged: (val) {
+                    if (isLocked) {
+                      AllDialogs().showPremiumDialog();
+                      return;
+                    }
+
+                    value.value = val;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 }

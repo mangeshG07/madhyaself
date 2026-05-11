@@ -163,10 +163,10 @@ class PlanController extends GetxController {
   }
 
   void handlePaymentErrorResponse(PaymentFailureResponse response) {
-    showAlertDialog(
-      "Payment Failed",
-      "Code: ${response.code}\nDescription: ${response.message}\nMetadata:${response.error.toString()}",
-    );
+    // showAlertDialog(
+    //   "Payment Failed",
+    //   "Code: ${response.code}\nDescription: ${response.message}\nMetadata:${response.error.toString()}",
+    // );
     verifyPayment('', '', selectedPaymentId.value, '', '2');
   }
 
@@ -181,7 +181,7 @@ class PlanController extends GetxController {
   }
 
   void handleExternalWalletSelected(ExternalWalletResponse response) {
-    showAlertDialog("External Wallet Selected", "${response.walletName}");
+    // showAlertDialog("External Wallet Selected", "${response.walletName}");
   }
 
   void showAlertDialog(String title, String message) {

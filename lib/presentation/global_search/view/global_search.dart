@@ -141,14 +141,18 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                       ),
 
                       Obx(
-                        () => AppButton(
-                          text: controller.isSearching.value
-                              ? 'Searching...'
-                              : 'Search',
-                          onTap: controller.isSearching.value
-                              ? null
-                              : () async => await controller.globalSearch(),
-                          backgroundColor: AppColors.lightPrimary,
+                        () => SafeArea(
+                          child: AppButton(
+                            text: controller.isSearching.value
+                                ? 'Searching...'
+                                : 'Search',
+                            onTap: controller.isSearching.value
+                                ? null
+                                : () async => await controller.globalSearch(
+                                    isRefresh: true,
+                                  ),
+                            backgroundColor: AppColors.lightPrimary,
+                          ),
                         ),
                       ),
                     ],
@@ -180,7 +184,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
       final isLocked = controller.isFilterLocked(title);
 
       return GestureDetector(
-        onTap: isLocked ? _showPremiumDialog : null,
+        onTap: isLocked ? AllDialogs().showPremiumDialog : null,
         child: AbsorbPointer(
           absorbing: isLocked, // Disable if premium locked
           child: Opacity(
@@ -199,7 +203,8 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                   suffixIcon: isLocked ? _buildPremiumIcon() : null,
                   onChanged: (val) {
                     if (isLocked) {
-                      _showPremiumDialog();
+                      AllDialogs().showPremiumDialog();
+                      ;
                       return;
                     }
                     value.value = val;
@@ -210,7 +215,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: _showPremiumDialog,
+                        onTap: AllDialogs().showPremiumDialog,
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -225,7 +230,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
 
   Widget _buildPremiumIcon() {
     return GestureDetector(
-      onTap: _showPremiumDialog,
+      onTap: AllDialogs().showPremiumDialog,
       child: Container(
         margin: const EdgeInsets.only(right: 8),
         child: const Icon(Icons.lock, color: AppColors.lightPrimary, size: 22),
@@ -242,7 +247,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
       final isLocked = controller.isFilterLocked(title);
 
       return GestureDetector(
-        onTap: isLocked ? _showPremiumDialog : null,
+        onTap: isLocked ? AllDialogs().showPremiumDialog : null,
         child: AbsorbPointer(
           absorbing: isLocked,
           child: Opacity(
@@ -261,7 +266,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                   suffixIcon: isLocked ? _buildPremiumIcon() : null,
                   onChanged: (val) {
                     if (isLocked) {
-                      _showPremiumDialog();
+                      AllDialogs().showPremiumDialog();
                       return;
                     }
 
@@ -274,45 +279,6 @@ class GlobalSearch extends GetView<GlobalSearchController> {
         ),
       );
     });
-  }
-
-  void _showPremiumDialog() {
-    Get.dialog(
-      AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.stars, color: Colors.amber),
-            SizedBox(width: 8),
-            Text("Premium Feature"),
-          ],
-        ),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("Upgrade to Premium to unlock this feature and more!"),
-            SizedBox(height: 16),
-            // Add premium benefits list
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text("Maybe Later"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              // Navigate to premium subscription page
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber,
-              foregroundColor: Colors.black,
-            ),
-            child: const Text("UPGRADE NOW"),
-          ),
-        ],
-      ),
-    );
   }
 
   /// 🔹 Range Row (From - To)

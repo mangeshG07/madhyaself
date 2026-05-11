@@ -78,6 +78,8 @@ class ManagePhotos extends GetView<ProfileController> {
           ),
           _buildProfileImage(theme, isLight),
           _buildAdditionalImages(theme),
+
+          _hidePhoto(theme),
           Obx(
             () => controller.isUpdateLoading.isTrue
                 ? AppLoader.circular(
@@ -102,7 +104,6 @@ class ManagePhotos extends GetView<ProfileController> {
                     backgroundColor: AppColors.lightPrimary,
                   ),
           ),
-          _hidePhoto(theme),
         ],
       ),
     );
@@ -403,33 +404,40 @@ class ManagePhotos extends GetView<ProfileController> {
       ),
       child: GestureDetector(
         onTap: () {
-          AppFilePicker.open(
-            config: AppFilePickerConfig(
-              allowDocument: true,
-              allowMultiDocument: true,
-            ),
+          if (controller.documentList.length < 3) {
+            AppFilePicker.open(
+              config: AppFilePickerConfig(
+                allowDocument: true,
+                allowMultiDocument: true,
+              ),
 
-            onMultiPicked: (files) {
-              if (files.isNotEmpty) {
-                controller.documentList.addAll(files);
-              }
-            },
-            onPicked: (file) {
-              if (file.path.isNotEmpty) {
-                controller.documentList.add(file);
-              }
-            },
-          );
+              onMultiPicked: (files) {
+                if (files.isNotEmpty) {
+                  controller.documentList.addAll(files);
+                }
+              },
+              onPicked: (file) {
+                if (file.path.isNotEmpty) {
+                  controller.documentList.add(file);
+                }
+              },
+            );
+          } else {
+            CustomSnackbar.show(
+              type: SnackbarType.warning,
+              context: Get.context!,
+              message: 'You can upload only 3 documents.',
+            );
+          }
         },
         child: DottedBorder(
           options: RoundedRectDottedBorderOptions(
-            radius: Radius.circular(12),
+            radius: Radius.circular(12.r),
             dashPattern: [5, 1],
             color: AppColors.lightTextMidColor,
             strokeWidth: 0.5,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
           ),
-
           child: Container(
             width: Get.width,
             padding: const EdgeInsets.all(8),
@@ -458,11 +466,26 @@ class ManagePhotos extends GetView<ProfileController> {
 
   Widget _documentList(dynamic file, int index) {
     String fileName = '';
-    if (file is String) {
-      fileName = Uri.parse(file).pathSegments.last;
+    String filePath = '';
+    String status = '';
+    String reason = '';
+
+    if (file is Map<String, dynamic>) {
+      // API data
+      filePath = file['path'] ?? '';
+      fileName = Uri.parse(filePath).pathSegments.last;
+      status = file['status'] ?? '';
+      reason = file['reason'] ?? '';
+    } else if (file is String) {
+      // String URL
+      filePath = file;
+      fileName = Uri.parse(filePath).pathSegments.last;
     } else if (file is File) {
+      // Local file
+      filePath = file.path;
       fileName = file.path.split('/').last;
     }
+
     return ListTile(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
@@ -479,18 +502,86 @@ class ManagePhotos extends GetView<ProfileController> {
         fontWeight: FontWeight.bold,
         color: AppColors.lightTextMidColor,
       ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (status.isNotEmpty)
+            AppText(
+              text: capitalizeFirst(status),
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: getStatusColor(capitalizeFirst(status)),
+            ),
+          if (reason.isNotEmpty)
+            AppText(
+              text: 'Reason : $reason',
+              fontSize: 12.sp,
+              fontWeight: FontWeight.bold,
+              color: AppColors.lightTextMidColor,
+            ),
+        ],
+      ),
+      // isThreeLine: true,
       trailing: GestureDetector(
-        child: Icon(Icons.delete, color: Colors.red, size: 20.r),
         onTap: () {
           final item = controller.documentList[index];
 
-          if (item is String) {
-            final fileName = Uri.parse(item).pathSegments.last;
+          // For API docs
+          if (item is Map<String, dynamic>) {
+            final fileName = Uri.parse(item['path']).pathSegments.last;
+
             controller.removedDocuments.add(fileName);
           }
+          // For String URLs
+          else if (item is String) {
+            final fileName = Uri.parse(item).pathSegments.last;
+
+            controller.removedDocuments.add(fileName);
+          }
+
           controller.documentList.removeAt(index);
+          controller.documentList.refresh(); // if using RxList
         },
+        child: Icon(Icons.delete, color: Colors.red, size: 20.r),
       ),
     );
   }
+
+  // Widget _documentList(dynamic file, int index) {
+  //   String fileName = '';
+  //   if (file is String) {
+  //     fileName = Uri.parse(file).pathSegments.last;
+  //   } else if (file is File) {
+  //     fileName = file.path.split('/').last;
+  //   }
+  //   return ListTile(
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(12.r),
+  //       side: BorderSide(color: AppColors.lightSecondary, width: 0.5.w),
+  //     ),
+  //     leading: HugeIcon(
+  //       icon: HugeIcons.strokeRoundedPdf01,
+  //       size: 20.r,
+  //       color: Colors.red,
+  //     ),
+  //     title: AppText(
+  //       text: fileName,
+  //       fontSize: 14.sp,
+  //       fontWeight: FontWeight.bold,
+  //       color: AppColors.lightTextMidColor,
+  //     ),
+  //     trailing: GestureDetector(
+  //       child: Icon(Icons.delete, color: Colors.red, size: 20.r),
+  //       onTap: () {
+  //         final item = controller.documentList[index];
+  //
+  //         if (item is String) {
+  //           final fileName = Uri.parse(item).pathSegments.last;
+  //           controller.removedDocuments.add(fileName);
+  //         }
+  //         controller.documentList.removeAt(index);
+  //       },
+  //     ),
+  //   );
+  // }
 }

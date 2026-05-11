@@ -72,8 +72,8 @@ class ApiConstants {
   static const String getPlanDetails = '/plans-details';
   static const String checkout = '/checkout';
   static const String verifyPayment = '/verify-payment';
-
-  /////////////////////Pending////////////////////////
   static const String whatsappConnect = '/whatsapp-connnect';
   static const String viewContact = '/view-contact';
+
+  /////////////////////Pending////////////////////////
 }

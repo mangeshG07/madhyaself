@@ -110,6 +110,7 @@ class _ApiService implements ApiService {
   Future<dynamic> registerUser(
     String name,
     String mobileNumber,
+    String whatsappNumber,
     String gender,
     String birthDate,
     String age,
@@ -126,6 +127,7 @@ class _ApiService implements ApiService {
     final _data = FormData();
     _data.fields.add(MapEntry('name', name));
     _data.fields.add(MapEntry('mobile_no', mobileNumber));
+    _data.fields.add(MapEntry('wp_no', whatsappNumber));
     _data.fields.add(MapEntry('gender', gender));
     _data.fields.add(MapEntry('birth_date', birthDate));
     _data.fields.add(MapEntry('age', age));
@@ -304,12 +306,18 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<dynamic> getChatList(String userId) async {
+  Future<dynamic> getChatList(
+    String userId,
+    String search,
+    String pageNo,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('user_id', userId));
+    _data.fields.add(MapEntry('search', search));
+    _data.fields.add(MapEntry('page_no', pageNo));
     final _options = _setStreamType<dynamic>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(

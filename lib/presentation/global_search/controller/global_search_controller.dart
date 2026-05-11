@@ -1,6 +1,7 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-class GlobalSearchController extends GetxController {
+class GlobalSearchController extends GetxController
+    with PaginationMixin<dynamic> {
   final CommonDataUsecase _commonDataUsecase;
   final LocationDataUsecase _locationDataUsecase;
   final GlobalSearchUsecase _globalSearchUsecase;
@@ -57,7 +58,6 @@ class GlobalSearchController extends GetxController {
     }
   }
 
-  final isLoading = false.obs;
   final isSearching = false.obs;
   final username = TextEditingController();
 
@@ -85,16 +85,22 @@ class GlobalSearchController extends GetxController {
   final countryList = ['India'].obs;
   final stateList = [].obs;
   final cityList = [].obs;
-  final searchList = [].obs;
+  // final searchList = [].obs;
 
   /// ================= COMMON UPDATE HANDLER =================
-  Future<void> globalSearch() async {
-    final userId = await SecureStorageService.read('user_id') ?? '';
-    searchList.clear();
-    try {
-      isSearching(true);
 
-      final res = await _globalSearchUsecase.call(
+  Future<void> globalSearch({
+    bool isRefresh = false,
+    bool showLoading = true,
+  }) async {
+    if (isRefresh) resetPagination();
+
+    startLoading(showLoading: showLoading);
+
+    final userId = await SecureStorageService.read('user_id') ?? '';
+
+    try {
+      final response = await _globalSearchUsecase.call(
         SearchRequest(
           userId: userId,
           partnerAgeFrom: selectedAgeFrom.value,
@@ -111,21 +117,72 @@ class GlobalSearchController extends GetxController {
           state: selectedState.value,
           userName: username.text.trim(),
           subcaste: selectedSubCaste.value,
+          pageNo: currentPage.toString(),
         ),
       );
+      if (response['common']['status'] == true) {
+        final List list = response['data']['matches'] ?? [];
 
-      if (res['common']['status'] == true) {
-        Get.back();
-        searchList.value = res['data']['matches'] ?? [];
-
-        Get.toNamed(Routes.searchResult);
-      } else {
-        Get.snackbar('Error', res['common']['message']);
+        handleSuccess(list);
+        Get.toNamed(
+          Routes.searchResult,
+          arguments: {
+            'hasBasicFilter': Get.find<HomeController>().hasBasicFilter,
+            'hasAdvancedFilter': Get.find<HomeController>().hasAdvancedFilter,
+          },
+        );
       }
+    } catch (e) {
+      debugPrint("Error: $e");
     } finally {
-      isSearching(false);
+      stopLoading();
     }
   }
+
+  // Future<void> globalSearch() async {
+  //   final userId = await SecureStorageService.read('user_id') ?? '';
+  //   searchList.clear();
+  //   try {
+  //     isSearching(true);
+  //
+  //     final res = await _globalSearchUsecase.call(
+  //       SearchRequest(
+  //         userId: userId,
+  //         partnerAgeFrom: selectedAgeFrom.value,
+  //         partnerAgeTo: selectedAgeTo.value,
+  //         partnerHeightFrom: selectedHeightFrom.value,
+  //         partnerHeightTo: selectedHeightTo.value,
+  //         casteId: selectedCaste.value,
+  //         jobCategoryId: selectedJob.value,
+  //         annualIncome: selectedIncome.value,
+  //         city: selectedCity.value,
+  //         country: selectedCountry.value,
+  //         educationCategoryId: selectedEducation.value,
+  //         religionId: selectedReligion.value,
+  //         state: selectedState.value,
+  //         userName: username.text.trim(),
+  //         subcaste: selectedSubCaste.value,
+  //       ),
+  //     );
+  //
+  //     if (res['common']['status'] == true) {
+  //       Get.back();
+  //       searchList.value = res['data']['matches'] ?? [];
+  //
+  //       Get.toNamed(
+  //         Routes.searchResult,
+  //         arguments: {
+  //           'hasBasicFilter': Get.find<HomeController>().hasBasicFilter,
+  //           'hasAdvancedFilter': Get.find<HomeController>().hasAdvancedFilter,
+  //         },
+  //       );
+  //     } else {
+  //       Get.snackbar('Error', res['common']['message']);
+  //     }
+  //   } finally {
+  //     isSearching(false);
+  //   }
+  // }
 
   void resetFilters() {
     username.clear();
@@ -148,16 +205,14 @@ class GlobalSearchController extends GetxController {
     selectedState.value = null;
     selectedCity.value = null;
 
-    searchList.clear();
+    // searchList.clear();
   }
 
-
-
   bool get hasAdvancedFilter =>
-      Get.arguments['hasAdvancedFilter'] == true;
+      Get.find<HomeController>().hasAdvancedFilter.value == true;
 
   bool get hasBasicFilter =>
-      Get.arguments['hasBasicFilter'] == true;
+      Get.find<HomeController>().hasBasicFilter.value == true;
 
   /// Decide if filter should be locked
   bool isFilterLocked(String fieldName) {
@@ -173,11 +228,7 @@ class GlobalSearchController extends GetxController {
 
     // Basic plan → lock only premium fields
     if (hasBasicFilter) {
-      const premiumFields = [
-        "Income",
-        "Education",
-        "Occupation",
-      ];
+      const premiumFields = ["Income", "Education", "Occupation"];
 
       return premiumFields.contains(fieldName);
     }

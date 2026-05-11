@@ -70,23 +70,45 @@ class ReligionDetailsEdit extends GetView<ProfileController> {
       items: controller.casteList,
       hintText: 'Select',
       validator: AppValidators.required,
-      onChanged: (val) => controller.selectedCaste.value = val,
+      onChanged: (val) {
+        controller.selectedCaste.value = val;
+        controller.fetchSubCaste(val.toString());
+      },
     );
   }
 
   // 🔽 SUB CASTE DROPDOWN
   Widget _buildSubCasteDropdown() {
-    return AppDropdownField(
-      isRequired: true,
-      isDynamic: true,
-      title: "Sub Caste",
-      value: controller.selectedSubCaste.value,
-      items: controller.subCasteList,
-      hintText: 'Sub Caste',
-      validator: AppValidators.required,
-      onChanged: (val) => controller.selectedSubCaste.value = val,
-    );
+    return Obx(() {
+      return AppDropdownField(
+        isRequired: true,
+        isDynamic: true,
+        title: "Select Your Subcaste",
+        value: controller.selectedSubCaste.value,
+        items: controller.subCasteList,
+        hintText: controller.isSubCasteLoading.value
+            ? "Loading Subcaste..."
+            : "Select your Subcaste",
+        validator: AppValidators.required,
+        onChanged: controller.isSubCasteLoading.value
+            ? null
+            : (val) => controller.selectedSubCaste.value = val,
+      );
+    });
   }
+
+  // Widget _buildSubCasteDropdown() {
+  //   return AppDropdownField(
+  //     isRequired: true,
+  //     isDynamic: true,
+  //     title: "Sub Caste",
+  //     value: controller.selectedSubCaste.value,
+  //     items: controller.subCasteList,
+  //     hintText: 'Sub Caste',
+  //     validator: AppValidators.required,
+  //     onChanged: (val) => controller.selectedSubCaste.value = val,
+  //   );
+  // }
 
   // 🔽 SUBMIT BUTTON
   Widget _buildSubmitButton() {

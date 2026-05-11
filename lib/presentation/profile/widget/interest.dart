@@ -75,9 +75,28 @@ class _InterestState extends State<Interest> {
                 itemBuilder: (context, index) {
                   final interest = controller.items[index];
 
-                  return InterestCard(
-                    interest: interest,
-                    controller: controller,
+                  return GestureDetector(
+                    onTap: () {
+                      final isSelf = controller.selectedType.value == 0
+                          ? interest['is_sent'] == true
+                          : controller.selectedType.value == 2;
+                      final id = controller.selectedType.value == 0
+                          ? (isSelf
+                                ? interest['receiver_id']
+                                : interest['sender_id'])
+                          : controller.selectedType.value == 1
+                          ? interest['sender_id']
+                          : interest['receiver_id'];
+                      Get.toNamed(
+                        Routes.othersProfile,
+                        arguments: {'id': id?.toString() ?? ''},
+                      );
+                    },
+
+                    child: InterestCard(
+                      interest: interest,
+                      controller: controller,
+                    ),
                   );
                 },
               ),

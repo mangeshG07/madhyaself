@@ -56,33 +56,77 @@ class PartnerReligionDetailsEdit extends GetView<PreferenceController> {
       items: controller.religionList,
       hintText: 'Select',
       validator: AppValidators.required,
-      onChanged: (val) => controller.selectedReligion.value = val,
+      onChanged: (val) {
+        controller.selectedReligion.value = val;
+        controller.fetchCaste(val.toString());
+      },
     );
   }
 
   Widget _buildCasteDropdown() {
-    return AppDropdownField(
-      isRequired: true,
-      isDynamic: true,
-      title: "Caste / Community",
-      value: controller.selectedCaste.value,
-      items: controller.casteList,
-      hintText: 'Select',
-      validator: AppValidators.required,
-      onChanged: (val) => controller.selectedCaste.value = val,
-    );
+    return Obx(() {
+      return AppDropdownField(
+        isRequired: true,
+        isDynamic: true,
+        title: "Select Your Caste",
+        value: controller.selectedCaste.value,
+        items: controller.casteList,
+        hintText: controller.isCasteLoading.value
+            ? "Loading caste..."
+            : "Select your Caste",
+        validator: AppValidators.required,
+        onChanged: controller.isCasteLoading.value
+            ? null
+            : (val) {
+                controller.selectedCaste.value = val;
+                controller.fetchSubCaste(val.toString());
+              },
+      );
+    });
   }
 
   Widget _buildSubCasteDropdown() {
-    return AppDropdownField(
-      isRequired: true,
-      isDynamic: true,
-      title: "Sub Caste",
-      value: controller.selectedSubCaste.value,
-      items: controller.subCasteList,
-      hintText: 'Sub Caste',
-      validator: AppValidators.required,
-      onChanged: (val) => controller.selectedSubCaste.value = val,
-    );
+    return Obx(() {
+      return AppDropdownField(
+        isRequired: true,
+        isDynamic: true,
+        title: "Select Your Subcaste",
+        value: controller.selectedSubCaste.value,
+        items: controller.subCasteList,
+        hintText: controller.isSubCasteLoading.value
+            ? "Loading Subcaste..."
+            : "Select your Subcaste",
+        validator: AppValidators.required,
+        onChanged: controller.isSubCasteLoading.value
+            ? null
+            : (val) => controller.selectedSubCaste.value = val,
+      );
+    });
   }
+
+  // Widget _buildCasteDropdown() {
+  //   return AppDropdownField(
+  //     isRequired: true,
+  //     isDynamic: true,
+  //     title: "Caste / Community",
+  //     value: controller.selectedCaste.value,
+  //     items: controller.casteList,
+  //     hintText: 'Select',
+  //     validator: AppValidators.required,
+  //     onChanged: (val) => controller.selectedCaste.value = val,
+  //   );
+  // }
+  //
+  // Widget _buildSubCasteDropdown() {
+  //   return AppDropdownField(
+  //     isRequired: true,
+  //     isDynamic: true,
+  //     title: "Sub Caste",
+  //     value: controller.selectedSubCaste.value,
+  //     items: controller.subCasteList,
+  //     hintText: 'Sub Caste',
+  //     validator: AppValidators.required,
+  //     onChanged: (val) => controller.selectedSubCaste.value = val,
+  //   );
+  // }
 }

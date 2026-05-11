@@ -1,4 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
+import 'package:madhya/presentation/profile/binding/profile_bindings.dart';
 
 class RegisterScreen extends GetView<RegisterController> {
   const RegisterScreen({super.key});
@@ -40,6 +41,7 @@ class RegisterScreen extends GetView<RegisterController> {
                       theme,
                     ),
                     _buildNameField(theme),
+                    _buildNumberField(theme),
                     _buildGender(theme),
                     _buildDOB(theme, context),
                     _buildAgeDropdown(),
@@ -73,6 +75,28 @@ class RegisterScreen extends GetView<RegisterController> {
       hintStyle: theme.textTheme.labelMedium!.copyWith(color: Colors.grey),
       controller: controller.nameController,
       validator: AppValidators.required,
+    );
+  }
+
+  Widget _buildNumberField(ThemeData theme) {
+    return AppTextField(
+      filled: true,
+      label: 'WhatsApp Number',
+      showLabel: true,
+      hint: 'Enter WhatsApp Number',
+      contentPadding: const EdgeInsets.all(15),
+      focusedBorder: theme.inputDecorationTheme.focusedBorder,
+      enabledBorder: theme.inputDecorationTheme.enabledBorder,
+      textStyle: TextStyle(color: theme.colorScheme.onSurface),
+      validator: AppValidators.phone,
+      labelStyle: theme.textTheme.labelLarge,
+      controller: controller.whatsappNumber,
+      fillColor: theme.cardColor,
+      keyboardType: TextInputType.phone,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(10),
+      ],
     );
   }
 
@@ -226,10 +250,6 @@ class RegisterScreen extends GetView<RegisterController> {
 
   Widget _buildSubCasteDropdown() {
     return Obx(() {
-      // if (controller.isSubCasteLoading.value) {
-      //   return const Center(child: CircularProgressIndicator());
-      // }
-
       return AppDropdownField(
         isRequired: true,
         isDynamic: true,
@@ -239,7 +259,6 @@ class RegisterScreen extends GetView<RegisterController> {
         hintText: controller.isSubCasteLoading.value
             ? "Loading Subcaste..."
             : "Select your Subcaste",
-        // hintText: 'Select your Subcaste',
         validator: AppValidators.required,
         onChanged: controller.isSubCasteLoading.value
             ? null
@@ -293,8 +312,11 @@ class RegisterScreen extends GetView<RegisterController> {
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      /// Navigate to Terms Screen
-                      // Get.toNamed(Routes.terms);
+                      if (!Get.isRegistered<ProfileController>()) {
+                        ProfileBindings().dependencies();
+                      }
+
+                      Get.to(() => PolicyData(slug: 'terms_and_conditions'));
                     },
                 ),
 
@@ -309,8 +331,11 @@ class RegisterScreen extends GetView<RegisterController> {
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      /// Navigate to Privacy Screen
-                      // Get.toNamed(Routes.privacy);
+                      if (!Get.isRegistered<ProfileController>()) {
+                        ProfileBindings().dependencies();
+                      }
+
+                      Get.to(() => PolicyData(slug: 'privacy_policy'));
                     },
                 ),
               ],

@@ -48,7 +48,7 @@ class AppPages {
     GetPage(
       name: Routes.registerScreen,
       page: () => RegisterScreen(),
-      binding: RegisterBindings(),
+      bindings: [RegisterBindings(), ProfileBindings()],
     ),
     GetPage(name: Routes.addProfile, page: () => ProfileAdd()),
     GetPage(
@@ -132,7 +132,11 @@ class AppPages {
         OtherProfileBinding(), // ✅ ADD THIS
       ],
     ),
-    GetPage(name: Routes.reportedUserList, page: () => ReportedList(),binding: ProfileBindings(),),
+    GetPage(
+      name: Routes.reportedUserList,
+      page: () => ReportedList(),
+      binding: ProfileBindings(),
+    ),
     GetPage(
       name: Routes.searchResult,
       page: () => SearchResult(),

@@ -41,15 +41,20 @@ class ChatTile extends StatelessWidget {
                           maxLines: 1,
                         ),
                       ),
-                      Text(
-                        TimestampFormatter().format(chat['last_message_time']),
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: unread > 0
-                              ? AppColors.lightPrimary
-                              : Colors.grey,
+                      if (chat['last_message_time'] != null)
+                        Text(
+                          TimestampFormatter().format(
+                            DateTime.parse(
+                              chat['last_message_time'] ?? '',
+                            ).toLocal().toString(),
+                          ),
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: unread > 0
+                                ? AppColors.lightPrimary
+                                : Colors.grey,
+                          ),
                         ),
-                      ),
                     ],
                   ),
 
@@ -57,12 +62,8 @@ class ChatTile extends StatelessWidget {
 
                   /// MESSAGE + UNREAD
                   Obx(() {
-                    final isTyping =
-                        controller.typingUsers[chat['conversation_id']
-                                ?.toString() ??
-                            ''] ??
-                        false;
-
+                    final convId = chat['conversation_id']?.toString() ?? '';
+                    final isTyping = controller.typingUsers[convId] ?? false;
                     return Row(
                       children: [
                         Expanded(

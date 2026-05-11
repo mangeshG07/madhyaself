@@ -45,7 +45,12 @@ class _AppCustomSliderState extends State<AppCustomSlider> {
             height: widget.height?.h ?? 200.h,
             viewportFraction: 0.75,
             enlargeCenterPage: true,
-            autoPlay: widget.autoPlay,
+            autoPlay: widget.imageUrls.length > 1 ? widget.autoPlay : false,
+            enableInfiniteScroll: widget.imageUrls.length > 1,
+
+            scrollPhysics: widget.imageUrls.length > 1
+                ? null
+                : const NeverScrollableScrollPhysics(),
             autoPlayInterval: widget.autoPlayInterval,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
             autoPlayCurve: Curves.fastOutSlowIn,
