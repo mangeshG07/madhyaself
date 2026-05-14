@@ -87,22 +87,24 @@ class ManagePhotos extends GetView<ProfileController> {
                     strokeWidth: 2.5,
                     size: 22.r,
                   )
-                : AppButton(
-                    text: 'Submit',
-                    onTap: () async {
-                      if (controller.profileImages.length < 3) {
-                        Get.snackbar(
-                          "Minimum Required",
-                          "Please upload at least 3 images",
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
-                        return;
-                      }
-                      await controller.updatePhotosDetails();
-                    },
-                    backgroundColor: AppColors.lightPrimary,
-                  ),
+                : SafeArea(
+                  child: AppButton(
+                      text: 'Submit',
+                      onTap: () async {
+                        if (controller.profileImages.length < 3) {
+                          Get.snackbar(
+                            "Minimum Required",
+                            "Please upload at least 3 images",
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        await controller.updatePhotosDetails();
+                      },
+                      backgroundColor: AppColors.lightPrimary,
+                    ),
+                ),
           ),
         ],
       ),
