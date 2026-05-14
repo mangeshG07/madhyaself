@@ -135,19 +135,19 @@ class ManagePhotos extends GetView<ProfileController> {
                 ),
               ),
             ),
-            child: controller.profileDetails['profile_image'] != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: Image.network(
-                      controller.profileDetails['profile_image'],
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : controller.profileImage.value != null
+            child: controller.profileImage.value != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
                     child: Image.file(
                       controller.profileImage.value!,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : controller.profileDetails['profile_image'] != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: Image.network(
+                      controller.profileDetails['profile_image'],
                       fit: BoxFit.cover,
                     ),
                   )
