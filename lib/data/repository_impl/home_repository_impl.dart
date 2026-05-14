@@ -15,4 +15,19 @@ class HomeRepositoryImpl extends HomeRepository {
   Future<dynamic> globalSearch(SearchRequest request) async {
     return await apiService.globalSearch(request.toJson());
   }
+
+  @override
+  Future<dynamic> updateFirebaseToken(UserRequest request) async {
+    return await apiService.updateFirebaseToken(request.userId, request.view);
+  }
+
+  @override
+  Future<dynamic> getNotification(UserRequest request) async {
+    return await apiService.getNotification(request.userId,request.pageNo);
+  }
+
+  @override
+  Future<dynamic> readNotification(UserRequest request) async {
+    return await apiService.readNotification(request.userId, request.view);
+  }
 }

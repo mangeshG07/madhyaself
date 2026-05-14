@@ -17,11 +17,13 @@ class PlanController extends GetxController {
   final isDetailsLoading = false.obs;
   final isCheckOutLoading = false.obs;
   final selectedType = 0.obs;
-  final planList = [].obs;
+  final onlinePlans = [].obs;
+  final offlinePlans = [].obs;
   final paymentMethods = [].obs;
   final planDetails = {}.obs;
   final selectedPayment = 0.obs;
   final selectedPaymentId = ''.obs;
+
   Future<void> getPlans() async {
     try {
       isLoading(true);
@@ -29,13 +31,26 @@ class PlanController extends GetxController {
       final userid = await SecureStorageService.read('user_id') ?? '';
       final response = await _getPlanUsecase(UserRequest(userid));
       if (response['common']['status'] == true) {
-        planList.value = response['data'] ?? [];
+        final plans = response['data'] ?? [];
+        // planList.value = response['data'] ?? [];
+        onlinePlans.value = plans
+            .where((e) => e['plan_status'] == 'online')
+            .toList();
+
+        offlinePlans.value = plans
+            .where((e) => e['plan_status'] == 'offline')
+            .toList();
       } else {
-        planList.value = [];
+        _clearPlans();
       }
     } finally {
       isLoading(false);
     }
+  }
+
+  void _clearPlans() {
+    onlinePlans.clear();
+    offlinePlans.clear();
   }
 
   Future<void> getPlanDetails(String planId) async {
@@ -120,7 +135,7 @@ class PlanController extends GetxController {
           () {
             Get.back();
           },
-          "",
+          "Order is Failed....",
           response['common']['message'],
         );
       }

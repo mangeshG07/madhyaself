@@ -13,7 +13,11 @@ class _ShortlistState extends State<Shortlist> {
   @override
   void initState() {
     super.initState();
-    controller.getShortList(isRefresh: true);
+    // controller.getShortList(isRefresh: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getShortList(isRefresh: true);
+    });
   }
 
   @override
@@ -79,9 +83,10 @@ class _ShortlistState extends State<Shortlist> {
           itemCount: 4,
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           width: double.infinity,
-          childAspectRatio: 0.6,   baseColor: theme.brightness == Brightness.light
-            ? Colors.grey.shade300
-            : Colors.grey.shade800,
+          childAspectRatio: 0.6,
+          baseColor: theme.brightness == Brightness.light
+              ? Colors.grey.shade300
+              : Colors.grey.shade800,
           highlightColor: theme.brightness == Brightness.light
               ? Colors.grey.shade100
               : Colors.grey.shade700,
@@ -130,8 +135,8 @@ class _ShortlistState extends State<Shortlist> {
                       'age': getAgeJob(match),
                       'address': getAddress(match),
                       'image': match['profile_image']?.toString() ?? '',
-                      'isVerified': match['isVerified'] ?? false,
-                      'isPremium': match['isPremium'] ?? false,
+                      'isVerified': match['is_verified'].toString() != '0',
+                      'isPremium': match['is_premium'].toString() != '0',
                       'isHide': match['hide_photos'] != '0',
                       'username': match['username'] ?? '',
                     },
@@ -141,6 +146,7 @@ class _ShortlistState extends State<Shortlist> {
                         'id': controller.selectedType.value == 1
                             ? match['shortlisted_user_id']?.toString() ?? ''
                             : match['user_id']?.toString() ?? '',
+                        'source':'matches'
                       },
                     ),
                   );

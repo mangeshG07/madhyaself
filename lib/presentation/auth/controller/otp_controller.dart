@@ -61,8 +61,12 @@ class OtpController extends GetxController with CodeAutoFill {
           'user_id',
           response['user']['id'].toString(),
         );
-
-        Get.snackbar('Success', response['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          type: SnackbarType.success,
+          message: response['common']['message'] ?? '',
+        );
+        // Get.snackbar('Success', response['common']['message']);
 
         if (response['user']['is_user_exist'] == true) {
           Get.offAllNamed(Routes.mainScreen);
@@ -70,13 +74,18 @@ class OtpController extends GetxController with CodeAutoFill {
           Get.offAllNamed(Routes.registerScreen);
         }
       } else {
-        Get.snackbar('Failed', response['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          type: SnackbarType.error,
+          message: response['common']['message'] ?? '',
+        );
+        // Get.snackbar('Failed', response['common']['message']);
         if (response['data']['is_user_exist'] == false) {
           Get.toNamed(Routes.registerScreen);
         }
       }
-    } catch (e) {
-      debugPrint(e.toString());
+    } catch (_) {
+      // debugPrint(e.toString());
     } finally {
       isLoading(false);
     }

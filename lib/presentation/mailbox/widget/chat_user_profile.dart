@@ -44,7 +44,7 @@ class ChatUserProfile extends StatelessWidget {
             Divider(),
             Row(
               children: [
-                buildDetailItem(label: 'Phone', value: '+91 12XXX XXX90'),
+                buildDetailItem(label: 'Phone', value: '+91 XXXXX XXXXX'),
               ],
             ),
           ],

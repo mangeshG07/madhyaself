@@ -16,7 +16,7 @@ class BlockController extends GetxController with PaginationMixin<dynamic> {
     final userid = await SecureStorageService.read('user_id') ?? '';
 
     try {
-      final response = await _blockUserUsecase.call(UserRequest(userid));
+      final response = await _blockUserUsecase.call(UserRequest(userid,pageNo: currentPage.toString()));
       if (response['common']['status'] == true) {
         final List list = response['data'] ?? [];
 

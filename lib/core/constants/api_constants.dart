@@ -74,6 +74,11 @@ class ApiConstants {
   static const String verifyPayment = '/verify-payment';
   static const String whatsappConnect = '/whatsapp-connnect';
   static const String viewContact = '/view-contact';
+  static const String deleteAccount = '/delete-account';
+  static const String updateFirebaseToken = '/update-firebase-token';
 
   /////////////////////Pending////////////////////////
+
+  static const String getNotification = '/get-notification';
+  static const String readNotification = '/read-notification';
 }

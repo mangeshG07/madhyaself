@@ -33,9 +33,12 @@ import 'package:madhya/domain/usecase/chat_list_usecase.dart' as _i594;
 import 'package:madhya/domain/usecase/checkout_usecase.dart' as _i331;
 import 'package:madhya/domain/usecase/common_data_usecase.dart' as _i779;
 import 'package:madhya/domain/usecase/create_chat_usecase.dart' as _i359;
+import 'package:madhya/domain/usecase/delete_account_usecase.dart' as _i839;
 import 'package:madhya/domain/usecase/delete_interest_usecase.dart' as _i703;
+import 'package:madhya/domain/usecase/firebase_token_usecase.dart' as _i819;
 import 'package:madhya/domain/usecase/get_interest_usecase.dart' as _i144;
 import 'package:madhya/domain/usecase/get_matches_usecase.dart' as _i332;
+import 'package:madhya/domain/usecase/get_notification_usecase.dart' as _i318;
 import 'package:madhya/domain/usecase/get_page_details_usecase.dart' as _i787;
 import 'package:madhya/domain/usecase/get_page_usecase.dart' as _i562;
 import 'package:madhya/domain/usecase/get_part_pref_usecase.dart' as _i590;
@@ -51,6 +54,7 @@ import 'package:madhya/domain/usecase/msg_delivered_usecase.dart' as _i332;
 import 'package:madhya/domain/usecase/msg_read_usecase.dart' as _i329;
 import 'package:madhya/domain/usecase/other_profile_usecase.dart' as _i737;
 import 'package:madhya/domain/usecase/profile_usecase.dart' as _i285;
+import 'package:madhya/domain/usecase/read_notification.dart' as _i10;
 import 'package:madhya/domain/usecase/register_usecase.dart' as _i92;
 import 'package:madhya/domain/usecase/report_profile_usecase.dart' as _i570;
 import 'package:madhya/domain/usecase/reported_profile_usecase.dart' as _i240;
@@ -68,6 +72,8 @@ import 'package:madhya/domain/usecase/view_contact_usecase.dart' as _i305;
 import 'package:madhya/domain/usecase/whatsapp_connect_usecase.dart' as _i232;
 import 'package:madhya/presentation/auth/controller/onboarding_controller.dart'
     as _i20;
+import 'package:madhya/presentation/home/controller/update_firebase_token.dart'
+    as _i206;
 import 'package:madhya/presentation/navigation/controller/navigation_controller.dart'
     as _i272;
 import 'package:madhya/presentation/splash/controller/splash_controller.dart'
@@ -154,6 +160,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1012.LoginUsecase>(
       () => _i1012.LoginUsecase(gh<_i571.AuthRepository>()),
     );
+    gh.lazySingleton<_i819.FirebaseTokenUsecase>(
+      () => _i819.FirebaseTokenUsecase(gh<_i571.HomeRepository>()),
+    );
+    gh.lazySingleton<_i318.GetNotificationUsecase>(
+      () => _i318.GetNotificationUsecase(gh<_i571.HomeRepository>()),
+    );
+    gh.lazySingleton<_i10.ReadNotification>(
+      () => _i10.ReadNotification(gh<_i571.HomeRepository>()),
+    );
     gh.lazySingleton<_i737.OtherProfileUsecase>(
       () => _i737.OtherProfileUsecase(gh<_i571.OtherUserRepository>()),
     );
@@ -162,6 +177,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i331.CheckoutUsecase>(
       () => _i331.CheckoutUsecase(gh<_i571.ProfileRepository>()),
+    );
+    gh.lazySingleton<_i839.DeleteAccountUsecase>(
+      () => _i839.DeleteAccountUsecase(gh<_i571.ProfileRepository>()),
     );
     gh.lazySingleton<_i753.GetPlanDetailsUsecase>(
       () => _i753.GetPlanDetailsUsecase(gh<_i571.ProfileRepository>()),
@@ -180,6 +198,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i779.CommonDataUsecase>(
       () => _i779.CommonDataUsecase(gh<_i571.AuthRepository>()),
+    );
+    gh.lazySingleton<_i206.FirebaseTokenController>(
+      () => _i206.FirebaseTokenController(gh<_i571.FirebaseTokenUsecase>()),
     );
     gh.lazySingleton<_i703.DeleteInterestUsecase>(
       () => _i703.DeleteInterestUsecase(gh<_i571.ProfileRepository>()),

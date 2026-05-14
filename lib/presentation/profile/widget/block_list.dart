@@ -14,7 +14,10 @@ class _BlockUserListState extends State<BlockUserList> {
   @override
   void initState() {
     super.initState();
-    controller.getBlockList(isRefresh: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getBlockList(isRefresh: true);
+    });
   }
 
   @override

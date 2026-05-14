@@ -4,7 +4,9 @@ import 'package:madhya/core/exporters/app_export.dart';
 class SplashController extends GetxController {
   void checkLogin() async {
     await Future.delayed(const Duration(seconds: 2));
-
+    if (Get.currentRoute == Routes.othersProfile) {
+      return;
+    }
     final isOnboarded = await LocalStorage.getBool('isOnboarded') ?? false;
 
     final token = await SecureStorageService.read('token') ?? '';

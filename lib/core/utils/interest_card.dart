@@ -190,7 +190,11 @@ class _InterestViewModel {
         ? data['sender_username']
         : data['receiver_username'];
 
-    final hasBadges = data['isVerified'] == true || data['isPremium'] == true;
+    final hasBadges = data['is_verified'].toString() == '1'
+        ? true
+        : false || data['is_premium'].toString() == '1'
+        ? true
+        : false;
 
     return _InterestViewModel(
       username: uName ?? '',
@@ -295,13 +299,13 @@ class _Badges extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if (interest['isVerified'] == true)
+        if (interest['is_verified'].toString() == '1')
           badge(
             "Verified",
             AppColors.lightPrimary,
             HugeIcons.strokeRoundedCheckmarkBadge01,
           ),
-        if (interest['isPremium'] == true)
+        if (interest['is_premium'].toString() == '1')
           badge(
             "Premium",
             AppColors.lightSecondary,
@@ -352,30 +356,40 @@ class _ActionButtons extends StatelessWidget {
         );
 
       case ButtonType.pending:
-        return Row(
-          children: [
-            Expanded(
-              child: _LoadingButton(
-                text: "Decline",
-                onTap: () =>
-                    controller.updateInterest(viewModel.interestId, '2'),
-                controller: controller,
-                id: viewModel.interestId,
+        return Obx(() {
+          final isLoading = controller.deletingId.value == viewModel.interestId;
+          if (isLoading) {
+            return AppLoader.circular(
+              color: AppColors.lightPrimary,
+              strokeWidth: 2,
+              size: 20.r,
+            );
+          }
+          return Row(
+            children: [
+              Expanded(
+                child: _LoadingButton(
+                  text: "Decline",
+                  onTap: () =>
+                      controller.updateInterest(viewModel.interestId, '2'),
+                  controller: controller,
+                  id: viewModel.interestId,
+                ),
               ),
-            ),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: _LoadingButton(
-                text: "Accept",
-                onTap: () =>
-                    controller.updateInterest(viewModel.interestId, '1'),
-                controller: controller,
-                id: viewModel.interestId,
-                isPrimary: true,
+              SizedBox(width: 8.w),
+              Expanded(
+                child: _LoadingButton(
+                  text: "Accept",
+                  onTap: () =>
+                      controller.updateInterest(viewModel.interestId, '1'),
+                  controller: controller,
+                  id: viewModel.interestId,
+                  isPrimary: true,
+                ),
               ),
-            ),
-          ],
-        );
+            ],
+          );
+        });
     }
   }
 }

@@ -57,6 +57,7 @@ class ShortlistController extends GetxController with PaginationMixin {
         CustomSnackbar.show(
           context: Get.context!,
           message: response['common']['message'],
+          type: SnackbarType.success
         );
       } else {
         CustomSnackbar.show(

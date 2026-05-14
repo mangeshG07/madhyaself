@@ -13,7 +13,10 @@ class _ReportedListState extends State<ReportedList> {
   @override
   void initState() {
     super.initState();
-    controller.getReportList(isRefresh: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getReportList(isRefresh: true);
+    });
   }
 
   @override

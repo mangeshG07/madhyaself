@@ -13,7 +13,11 @@ class _MatchScreenState extends State<MatchScreen> {
   @override
   void initState() {
     super.initState();
-    controller.getMatchList(isRefresh: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.selectedFilter.value = null;
+      checkInternetAndShowPopup();
+      controller.getMatchList(isRefresh: true);
+    });
   }
 
   @override
@@ -201,14 +205,21 @@ class _MatchScreenState extends State<MatchScreen> {
                       'age': getAgeJob(match),
                       'address': getAddress(match),
                       'image': match['profile_image']?.toString() ?? '',
-                      'isVerified': match['isVerified'] ?? false,
-                      'isPremium': match['isPremium'] ?? false,
+                      'isVerified': match['is_verified'].toString() == '1'
+                          ? true
+                          : false,
+                      'isPremium': match['is_premium'].toString() == '1'
+                          ? true
+                          : false,
                       'isHide': match['hide_photos'] != '0',
                       'matchPercent': match['match_percentage'] ?? 0,
                     },
                     onTap: () => Get.toNamed(
                       Routes.othersProfile,
-                      arguments: {'id': match['id']?.toString() ?? ''},
+                      arguments: {
+                        'id': match['id']?.toString() ?? '',
+                        'source': 'deeplink',
+                      },
                     ),
                   );
                 },

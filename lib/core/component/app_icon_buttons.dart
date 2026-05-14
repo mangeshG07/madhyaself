@@ -19,7 +19,7 @@ class AppIconButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed ?? () {},
       child: Container(
-        padding: EdgeInsets.all(8.w),
+        padding: EdgeInsets.all(10.w),
         margin: EdgeInsets.only(right: 12.w),
         decoration: BoxDecoration(
           color: backgroundColor,

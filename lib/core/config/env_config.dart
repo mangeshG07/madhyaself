@@ -11,23 +11,23 @@ class EnvConfig {
       await dotenv.load(fileName: envFile);
       // AppLogger.info('Environment loaded', 'Using $envFile');
     } catch (e) {
-      AppLogger.error(
-        'Failed to load environment',
-        'Could not load $envFile: $e',
-      );
+      // AppLogger.error(
+      //   'Failed to load environment',
+      //   'Could not load $envFile: $e',
+      // );
 
       if (environment != 'dev') {
         try {
           await dotenv.load(fileName: 'env/.env.dev');
-          AppLogger.warning(
-            'Fallback to dev environment',
-            'Using env/.env.dev',
-          );
+          // AppLogger.warning(
+          //   'Fallback to dev environment',
+          //   'Using env/.env.dev',
+          // );
         } catch (fallbackError) {
-          AppLogger.error(
-            'Fallback failed',
-            'Could not load env/.env.dev: $fallbackError',
-          );
+          // AppLogger.error(
+          //   'Fallback failed',
+          //   'Could not load env/.env.dev: $fallbackError',
+          // );
         }
       }
     }

@@ -13,7 +13,10 @@ class _ViewedState extends State<Viewed> {
   @override
   void initState() {
     super.initState();
-    controller.getViewList(isRefresh: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getViewList(isRefresh: true);
+    });
   }
 
   @override
@@ -130,8 +133,8 @@ class _ViewedState extends State<Viewed> {
                       'age': getAgeJob(match),
                       'address': getAddress(match),
                       'image': match['profile_image']?.toString() ?? '',
-                      'isVerified': match['isVerified'] ?? false,
-                      'isPremium': match['isPremium'] ?? false,
+                      'isVerified': match['is_verified'].toString() != '0',
+                      'isPremium': match['is_premium'].toString() != '0',
                       'isHide': match['hide_photos'] != '0',
                       'username': match['username'] ?? '',
                     },
@@ -141,6 +144,7 @@ class _ViewedState extends State<Viewed> {
                         'id': controller.selectedType.value == 1
                             ? match['viewed_user_id']?.toString() ?? ''
                             : match['viewer_id']?.toString() ?? '',
+                        'source':'matches'
                       },
                     ),
                   );

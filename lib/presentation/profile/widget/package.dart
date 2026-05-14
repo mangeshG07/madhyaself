@@ -16,7 +16,10 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller.getPlans();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getPlans();
+    });
 
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 600),
@@ -54,7 +57,15 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
               _buildCurrentPlanCard(theme),
               _buildToggle(isLight),
               _buildHeader(theme),
-              _buildPackageGrid(theme, isLight),
+              Obx(
+                () => _buildPackageGrid(
+                  theme,
+                  isLight,
+                  controller.selectedType.value == 0
+                      ? controller.onlinePlans
+                      : controller.offlinePlans,
+                ),
+              ),
             ],
           ),
         ),
@@ -208,7 +219,7 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildPackageGrid(ThemeData theme, bool isLight) {
+  Widget _buildPackageGrid(ThemeData theme, bool isLight, RxList planList) {
     return Obx(() {
       if (controller.isLoading.isTrue) {
         return SingleChildScrollView(
@@ -225,7 +236,7 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
           ),
         );
       }
-      if (controller.planList.isEmpty) {
+      if (planList.isEmpty) {
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -248,10 +259,10 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
       return ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: controller.planList.length,
+        itemCount: planList.length,
         itemBuilder: (context, index) {
-          final plan = controller.planList[index];
-          final isPopular = index == 1; // Mark middle plan as popular
+          final plan = planList[index];
+          final isPopular = index == 1;
           return Padding(
             padding: EdgeInsets.only(bottom: 16.h),
             child: _buildPackageCard(theme, plan, isPopular, isLight),
@@ -279,7 +290,7 @@ class _PackageState extends State<Package> with SingleTickerProviderStateMixin {
           ),
         ],
         border: isPopular
-            ? Border.all(color: AppColors.lightPrimary, width: 2)
+            ? Border.all(color: AppColors.lightPrimary, width: 1)
             : Border.all(color: theme.dividerTheme.color!, width: 1),
       ),
       child: Column(

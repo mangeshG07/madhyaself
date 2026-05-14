@@ -14,6 +14,7 @@ class _MailboxScreenState extends State<MailboxScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
       controller.getChatList(isRefresh: true);
     });
   }
@@ -146,20 +147,17 @@ class _MailboxScreenState extends State<MailboxScreen> {
 
   CustomShimmerWidget _loader(ThemeData theme) {
     return CustomShimmerWidget.list(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
-              itemCount: 4,
-              baseColor: theme.brightness == Brightness.light
-                  ? Colors.grey.shade300
-                  : Colors.grey.shade800,
-              highlightColor: theme.brightness == Brightness.light
-                  ? Colors.grey.shade100
-                  : Colors.grey.shade700,
-              width: double.infinity,
-              height: Get.height * 0.08.h,
-            );
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      itemCount: 4,
+      baseColor: theme.brightness == Brightness.light
+          ? Colors.grey.shade300
+          : Colors.grey.shade800,
+      highlightColor: theme.brightness == Brightness.light
+          ? Colors.grey.shade100
+          : Colors.grey.shade700,
+      width: double.infinity,
+      height: Get.height * 0.08.h,
+    );
   }
 
   Widget _buildDivider() {

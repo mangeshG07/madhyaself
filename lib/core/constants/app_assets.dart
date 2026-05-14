@@ -31,4 +31,5 @@ class AppAssets {
   static const String flag = '$_iconsPath/ic_flag.png';
   static const String navIcon = '$_iconsPath/ic_nav.png';
   static const String noInternet = '$_iconsPath/ic_no_internet.png';
+  static const String notification = '$_iconsPath/ic_notification.png';
 }

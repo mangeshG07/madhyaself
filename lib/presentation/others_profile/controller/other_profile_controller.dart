@@ -73,6 +73,13 @@ class OtherProfileController extends GetxController {
   }
 
   void setChipsData(dynamic data) {
+    final heightText = [
+      if ((data['height_in_ft'] ?? '').toString().trim().isNotEmpty)
+        data['height_in_ft'],
+
+      if ((data['height'] ?? '').toString().trim().isNotEmpty)
+        '${data['height']} cm',
+    ].join(' ');
     chipsData.value = [
       {
         'title': data['age'] != null ? '${data['age']} yrs' : '',
@@ -83,13 +90,10 @@ class OtherProfileController extends GetxController {
         'icon': HugeIcons.strokeRoundedHandPrayer,
       },
       {'title': data['caste'] ?? '', 'icon': HugeIcons.strokeRoundedStar},
-      {
-        'title': [
-          if (data['height_in_ft'] != null) data['height_in_ft'],
-          if (data['height'] != null) '${data['height'] ?? '-'} cm',
-        ].join(' '),
-        'icon': HugeIcons.strokeRoundedRuler,
-      },
+
+      /// Height chip
+      if (heightText.isNotEmpty)
+        {'title': heightText, 'icon': HugeIcons.strokeRoundedRuler},
       {
         'title': data['job_details'] ?? '',
         'icon': HugeIcons.strokeRoundedBook01,
@@ -151,7 +155,7 @@ class OtherProfileController extends GetxController {
       final res = await _whatsappConnectUsecase.call(UserRequest(userid));
 
       if (res['common']['status'] == true) {
-        openWhatsApp(profileDetails['wp_no']?.toString() ?? '', '');
+        await openWhatsApp(profileDetails['wp_no']?.toString() ?? '', '');
       } else {
         CustomSnackbar.show(
           context: Get.context!,

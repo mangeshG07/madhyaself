@@ -13,7 +13,10 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
   @override
   void initState() {
     super.initState();
-    _controller.getPages();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      _controller.getPages();
+    });
   }
 
   @override

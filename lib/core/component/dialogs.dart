@@ -299,7 +299,7 @@ class AllDialogs {
           ElevatedButton(
             onPressed: () {
               Get.back();
-              // Navigate to premium subscription page
+              Get.toNamed(Routes.packageScreen);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber,

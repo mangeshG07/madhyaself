@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
       controller.getHome();
       checkInternetAndShowPopup();
     });
+    getIt<FirebaseTokenController>().updateToken();
   }
 
   @override
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildTodayMatch(theme),
                     _buildTopMatch(theme),
                     _buildDiscoverMatch(theme),
+                    _buildOnlineUsers(theme),
                   ],
                 ),
               ),
@@ -111,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: theme.inputDecorationTheme.fillColor,
         ),
         AppIconButton(
-          onPressed: () {},
+          onPressed: () => Get.toNamed(Routes.notificationScreen),
           icon: HugeIcons.strokeRoundedNotification02,
           iconColor: Colors.grey,
           backgroundColor: theme.inputDecorationTheme.fillColor,
@@ -240,106 +242,210 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildStats(ThemeData theme) {
     return Obx(
-      () => GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: controller.statsData.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.4,
-        ),
-        itemBuilder: (context, index) {
-          final item = controller.statsData[index];
-
-          return GestureDetector(
-            onTap: item['onTap'],
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    spacing: 12.w,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: theme.brightness == Brightness.light
-                              ? AppColors.lightPrimary.withValues(alpha: 0.1)
-                              : AppColors.lightLowPrimary.withValues(
-                                  alpha: 0.1,
-                                ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: HugeIcon(
-                          icon: item["icon"] as List<List<dynamic>>,
-                          color: AppColors.lightPrimary,
-                          size: 20.r,
-                        ),
-                      ),
-                      AppText(
-                        text: item["value"]?.toString() ?? '',
-                        fontSize: 12.sp,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: AppColors.lightTextLowColor,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: AppText(
-                          text: item["title"]?.toString() ?? '',
-                          fontSize: 16.sp,
-                          maxLines: 2,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.lightTextLowColor,
+      () => Wrap(
+        spacing: 8.w, // horizontal spacing
+        runSpacing: 8.h, // vertical spacing
+        children: controller.statsData.map((item) {
+          return SizedBox(
+            width: (Get.width - 50.w) / 2,
+            child: GestureDetector(
+              onTap: item['onTap'],
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.cardColor,
+                  borderRadius: BorderRadius.circular(16.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: theme.brightness == Brightness.light
+                                ? AppColors.lightPrimary.withValues(alpha: 0.1)
+                                : AppColors.lightLowPrimary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: HugeIcon(
+                            icon: item["icon"] as List<List<dynamic>>,
+                            color: AppColors.lightPrimary,
+                            size: 20.r,
                           ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          color: theme.brightness == Brightness.light
-                              ? theme.primaryColor.withValues(alpha: 0.05)
-                              : AppColors.lightLowPrimary.withValues(
-                                  alpha: 0.1,
-                                ),
-                          borderRadius: BorderRadius.circular(100),
+
+                        SizedBox(width: 12.w),
+
+                        Expanded(
+                          child: AppText(
+                            text: item["value"]?.toString() ?? '',
+                            fontSize: 12.sp,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: AppColors.lightTextLowColor,
+                            ),
+                          ),
                         ),
-                        child: HugeIcon(
-                          icon: HugeIcons.strokeRoundedArrowUpRight03,
-                          color: AppColors.lightTextLowColor,
-                          size: 20.r,
+                      ],
+                    ),
+
+                    SizedBox(height: 12.h),
+
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: AppText(
+                            text: item["title"]?.toString() ?? '',
+                            fontSize: 16.sp,
+                            maxLines: 2,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.lightTextLowColor,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+
+                        Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: theme.brightness == Brightness.light
+                                ? theme.primaryColor.withValues(alpha: 0.05)
+                                : AppColors.lightLowPrimary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: HugeIcon(
+                            icon: HugeIcons.strokeRoundedArrowUpRight03,
+                            color: AppColors.lightTextLowColor,
+                            size: 20.r,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
+
+  // Widget _buildStats(ThemeData theme) {
+  //   return Obx(
+  //     () => GridView.builder(
+  //       shrinkWrap: true,
+  //       physics: const NeverScrollableScrollPhysics(),
+  //       itemCount: controller.statsData.length,
+  //       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+  //         crossAxisCount: 2,
+  //         mainAxisSpacing: 12,
+  //         crossAxisSpacing: 12,
+  //         childAspectRatio: 1.4,
+  //       ),
+  //       itemBuilder: (context, index) {
+  //         final item = controller.statsData[index];
+  //
+  //         return GestureDetector(
+  //           onTap: item['onTap'],
+  //           child: Container(
+  //             padding: const EdgeInsets.all(14),
+  //             decoration: BoxDecoration(
+  //               color: theme.cardColor,
+  //               borderRadius: BorderRadius.circular(16),
+  //               boxShadow: [
+  //                 BoxShadow(
+  //                   color: Colors.black.withValues(alpha: 0.05),
+  //                   blurRadius: 8,
+  //                   offset: const Offset(0, 4),
+  //                 ),
+  //               ],
+  //             ),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 Row(
+  //                   spacing: 12.w,
+  //                   children: [
+  //                     Container(
+  //                       padding: const EdgeInsets.all(6),
+  //                       decoration: BoxDecoration(
+  //                         color: theme.brightness == Brightness.light
+  //                             ? AppColors.lightPrimary.withValues(alpha: 0.1)
+  //                             : AppColors.lightLowPrimary.withValues(
+  //                                 alpha: 0.1,
+  //                               ),
+  //                         borderRadius: BorderRadius.circular(10),
+  //                       ),
+  //                       child: HugeIcon(
+  //                         icon: item["icon"] as List<List<dynamic>>,
+  //                         color: AppColors.lightPrimary,
+  //                         size: 20.r,
+  //                       ),
+  //                     ),
+  //                     AppText(
+  //                       text: item["value"]?.toString() ?? '',
+  //                       fontSize: 12.sp,
+  //                       style: theme.textTheme.titleLarge?.copyWith(
+  //                         color: AppColors.lightTextLowColor,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //
+  //                 Row(
+  //                   crossAxisAlignment: CrossAxisAlignment.end,
+  //                   children: [
+  //                     Expanded(
+  //                       child: AppText(
+  //                         text: item["title"]?.toString() ?? '',
+  //                         fontSize: 16.sp,
+  //                         maxLines: 2,
+  //                         style: theme.textTheme.bodyMedium?.copyWith(
+  //                           color: AppColors.lightTextLowColor,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     Container(
+  //                       padding: const EdgeInsets.all(3),
+  //                       decoration: BoxDecoration(
+  //                         color: theme.brightness == Brightness.light
+  //                             ? theme.primaryColor.withValues(alpha: 0.05)
+  //                             : AppColors.lightLowPrimary.withValues(
+  //                                 alpha: 0.1,
+  //                               ),
+  //                         borderRadius: BorderRadius.circular(100),
+  //                       ),
+  //                       child: HugeIcon(
+  //                         icon: HugeIcons.strokeRoundedArrowUpRight03,
+  //                         color: AppColors.lightTextLowColor,
+  //                         size: 20.r,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildTodayMatch(ThemeData theme) {
     return Obx(() {
@@ -394,14 +500,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       'age': getAgeJob(match),
                       'address': getAddress(match),
                       'image': match['profile_image']?.toString() ?? '',
-                      'isVerified': match['is_verified'] != '0',
-                      'isPremium': match['isPremium'] ?? false,
-                      'isHide': match['hide_photos'] != '0',
+                      'isVerified': match['is_verified'].toString() != '0',
+                      'isPremium': match['is_premium'].toString() != '0',
+                      'isHide': match['hide_photos'].toString() != '0',
                       'username': match['username'] ?? '',
                     },
                     onTap: () => Get.toNamed(
                       Routes.othersProfile,
-                      arguments: {'id': match['id']?.toString() ?? ''},
+                      arguments: {'id': match['id']?.toString() ?? '','source':'matches'},
                     ),
                   ),
                 );
@@ -455,12 +561,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Obx(
           () => MasonryGridView.count(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            // padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 4,
+            crossAxisSpacing: 12,
             itemCount: controller.discStatData.length,
             itemBuilder: (context, index) {
               final item = controller.discStatData[index];
@@ -476,6 +582,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(16.r),
                   ),
                   child: Column(
+                    spacing: 8.h,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -542,99 +649,144 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-
-          //     GridView.builder(
-          //   shrinkWrap: true,
-          //   physics: const NeverScrollableScrollPhysics(),
-          //   itemCount: controller.discStatData.length,
-          //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //     crossAxisCount: 2,
-          //     mainAxisSpacing: 12,
-          //     crossAxisSpacing: 12,
-          //     childAspectRatio: 1.4,
-          //   ),
-          //   itemBuilder: (context, index) {
-          //     final item = controller.discStatData[index];
-          //
-          //     return GestureDetector(
-          //       onTap: item['onTap'],
-          //       child: Container(
-          //         padding: const EdgeInsets.all(14),
-          //         decoration: BoxDecoration(
-          //           color: theme.brightness == Brightness.light
-          //               ? AppColors.lightCardPink
-          //               : theme.cardColor,
-          //           borderRadius: BorderRadius.circular(16.r),
-          //         ),
-          //         child: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //           children: [
-          //             Row(
-          //               spacing: 12.w,
-          //               children: [
-          //                 Container(
-          //                   padding: const EdgeInsets.all(6),
-          //                   decoration: BoxDecoration(
-          //                     color: theme.brightness == Brightness.light
-          //                         ? Colors.white
-          //                         : theme.inputDecorationTheme.fillColor,
-          //                     borderRadius: BorderRadius.circular(10),
-          //                   ),
-          //                   child: HugeIcon(
-          //                     icon: item["icon"] as List<List<dynamic>>,
-          //                     color: theme.primaryColor,
-          //                     size: 20.r,
-          //                   ),
-          //                 ),
-          //                 AppText(
-          //                   text: item["value"]?.toString() ?? '',
-          //                   fontSize: 12.sp,
-          //                   style: theme.textTheme.titleLarge?.copyWith(
-          //                     color: AppColors.lightTextLowColor,
-          //                     fontSize: 14.sp,
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //
-          //             Row(
-          //               crossAxisAlignment: CrossAxisAlignment.end,
-          //               children: [
-          //                 Expanded(
-          //                   child: AppText(
-          //                     text: item["title"]?.toString() ?? '',
-          //                     fontSize: 14.sp,
-          //                     maxLines: 2,
-          //                     style: theme.textTheme.bodyMedium?.copyWith(
-          //                       color: AppColors.lightTextLowColor,
-          //                     ),
-          //                   ),
-          //                 ),
-          //                 Container(
-          //                   padding: const EdgeInsets.all(3),
-          //                   decoration: BoxDecoration(
-          //                     color: theme.brightness == Brightness.light
-          //                         ? Colors.white
-          //                         : theme.inputDecorationTheme.fillColor,
-          //                     borderRadius: BorderRadius.circular(100),
-          //                   ),
-          //                   child: HugeIcon(
-          //                     icon: HugeIcons.strokeRoundedArrowUpRight03,
-          //                     color: AppColors.lightTextLowColor,
-          //                     size: 20.r,
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
         ),
       ],
+    );
+  }
+
+  Widget _buildOnlineUsers(ThemeData theme) {
+    return Obx(() {
+      if (controller.onlineUserList.isEmpty) {
+        return SizedBox.shrink();
+      }
+      return Column(
+        spacing: 12.h,
+        children: [
+          buildHeadingWithButton(
+            title: "Online Users",
+            rightText: 'View All',
+            onTap: () {},
+            showRight: false,
+            theme: theme,
+          ),
+
+          ListView.separated(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            separatorBuilder: (_, index) => const SizedBox(height: 8),
+            itemCount: controller.onlineUserList.length,
+            itemBuilder: (_, index) {
+              final user = controller.onlineUserList[index];
+              return GestureDetector(
+                onTap: () => Get.toNamed(
+                  Routes.othersProfile,
+                  arguments: {'id': user['id']?.toString() ?? '','source':'matches'},
+                ),
+                child: _buildOnlineTile(theme, user),
+              );
+            },
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildOnlineTile(ThemeData theme, user) {
+    final imageUrl = user['profile_image']?.toString() ?? '';
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.grey.withValues(alpha: 0.3),
+          width: .5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(10.w),
+        child: Row(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 0.5, color: AppColors.grey300),
+                    borderRadius: BorderRadius.circular(100.r),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100.r),
+                    child: FadeInImage(
+                      placeholder: const AssetImage(AppAssets.defaultImage),
+                      image: imageUrl.toString().isNotEmpty
+                          ? NetworkImage(imageUrl)
+                          : const AssetImage(AppAssets.defaultImage)
+                                as ImageProvider,
+                      fit: BoxFit.cover,
+                      width: 55.w,
+                      height: 55.h,
+                      fadeInDuration: const Duration(milliseconds: 300),
+                      imageErrorBuilder: (_, __, ___) {
+                        return Image.asset(
+                          AppAssets.defaultImage,
+                          fit: BoxFit.cover,
+                          width: 55.w,
+                          height: 55.h,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                /// Online indicator
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 12.w,
+                    height: 12.h,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    text: user['name']?.toString() ?? '',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    textAlign: TextAlign.start,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  if (user['username']!.toString().isNotEmpty)
+                    AppText(
+                      text: "@${user['username'] ?? ''}",
+                      fontSize: 12.sp,
+                      style: theme.textTheme.bodySmall!.copyWith(
+                        color: Colors.grey,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

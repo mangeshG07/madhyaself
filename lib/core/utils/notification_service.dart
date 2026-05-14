@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:madhya/core/exporters/app_export.dart';
 
 class NotificationService {
@@ -19,31 +18,42 @@ class NotificationService {
         importance: Importance.max,
       );
 
-  /// Initialize Firebase Messaging and Local Notifications
+  /// ===========================================
+  /// Init
+  /// ===========================================
   Future<void> init() async {
     await _requestNotificationPermissions();
     await _initPushNotifications();
     await _initLocalNotifications();
   }
 
-  /// Request notification permissions
+  /// ===========================================
+  /// Permission
+  /// ===========================================
+
   Future<void> _requestNotificationPermissions() async {
-    await _firebaseMessaging.requestPermission();
+    await _firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
     await _firebaseMessaging.getToken();
-    // print('FCM Token: $token');
   }
 
-  /// Initialize push notifications
+  /// ===========================================
+  /// Firebase Listeners
+  /// ===========================================
   Future<void> _initPushNotifications() async {
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
     );
-    _firebaseMessaging.subscribeToTopic("cnpTeam");
-    // Handle initial message (app launched from terminated state)
+
+    /// App killed state
     final RemoteMessage? initialMessage = await _firebaseMessaging
         .getInitialMessage();
+
     if (initialMessage != null) {
       handleNotificationNavigation(initialMessage.data, 'terminate');
     }
@@ -56,35 +66,41 @@ class NotificationService {
     FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
   }
 
-  /// Initialize local notifications
+  /// ===========================================
+  /// Local Notification Init
+  /// ===========================================
   Future<void> _initLocalNotifications() async {
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@drawable/logo');
-    const DarwinInitializationSettings iosSettings =
-        DarwinInitializationSettings();
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: androidSettings, iOS: iosSettings);
+    const androidSettings = AndroidInitializationSettings('@drawable/logo');
+
+    const iosSettings = DarwinInitializationSettings();
+
+    const settings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
 
     await _localNotificationsPlugin.initialize(
-      settings: initializationSettings,
+      settings: settings,
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
 
     // Create notification channel for Android
-    final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
-        _localNotificationsPlugin
-            .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >();
+    final androidPlugin = _localNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
     await androidPlugin?.createNotificationChannel(_androidChannel);
   }
 
-  /// Handle foreground messages
+  /// ===========================================
+  /// Foreground Message
+  /// ===========================================
   void _handleForegroundMessage(RemoteMessage message) {
     if (message.notification != null) {
       _showLocalNotification(
-        title: message.notification!.title,
-        body: message.notification!.body,
+        title: message.notification!.title ?? 'Notification',
+        body: message.notification!.body ?? '',
         payload: jsonEncode(message.data),
       );
     }
@@ -95,37 +111,36 @@ class NotificationService {
     handleNotificationNavigation(message.data, 'background');
   }
 
-  /// Handle notification taps
+  /// ===========================================
+  /// Notification Tap
+  /// ===========================================
   void _onNotificationTap(NotificationResponse response) {
+    if (response.payload == null) return;
     final Map<String, dynamic> data = jsonDecode(response.payload!);
     handleNotificationNavigation(data, 'local');
   }
 
-  /// Show a local notification
+  /// ===========================================
+  /// Show Notification
+  /// ===========================================
   Future<void> _showLocalNotification({
     required String? title,
     required String? body,
     required String payload,
   }) async {
-    // print('title=>$title');
-    // print('body=>$body');
-    // print('payload=>$payload');
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          _androidChannelId,
-          _androidChannelName,
-          channelDescription: _androidChannelDescription,
-          importance: Importance.max,
-          priority: Priority.high,
-          playSound: true,
-        );
-
-    const NotificationDetails platformDetails = NotificationDetails(
-      android: androidDetails,
+    const androidDetails = AndroidNotificationDetails(
+      _androidChannelId,
+      _androidChannelName,
+      channelDescription: _androidChannelDescription,
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
     );
 
+    const platformDetails = NotificationDetails(android: androidDetails);
+
     await _localNotificationsPlugin.show(
-      id: Random().nextInt(1000),
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title: title ?? 'Notification',
       body: body ?? 'New notification',
       notificationDetails: platformDetails,
@@ -133,12 +148,42 @@ class NotificationService {
     );
   }
 
-  /// Handle navigation based on notification data
+  /// ===========================================
+  /// Navigation Logic
+  /// ===========================================
   void handleNotificationNavigation(Map<String, dynamic> data, String from) {
-    // final String? clickAction = data['click_action'];
-    // Get.toNamed(
-    //   Routes.complaintDetails,
-    //   arguments: {'id': data['id'].toString()},
-    // );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final action = data['action']?.toString();
+
+      switch (action) {
+        case 'external_url':
+          final url = data['url']?.toString();
+
+          if (url != null && url.isNotEmpty) {
+            launchInBrowser(Uri.parse(url));
+          }
+          break;
+
+        case 'open_chat':
+          final id = data['conversation_id']?.toString();
+
+          if (id != null && id.isNotEmpty) {
+            Get.toNamed(Routes.chatDetails, arguments: {'id': id});
+          }
+          break;
+
+        case 'document_verification':
+          Get.toNamed(Routes.managePhotos);
+          break;
+
+        case 'interest_received':
+        case 'interest_accepted':
+          Get.toNamed(Routes.interest);
+          break;
+
+        default:
+          // debugPrint('Unknown action => $action');
+      }
+    });
   }
 }

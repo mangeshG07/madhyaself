@@ -14,6 +14,7 @@ class HomeController extends GetxController {
   final statsData = [].obs;
   final discStatData = [].obs;
   final todayMatchList = [].obs;
+  final onlineUserList = [].obs;
   final topMatchList = [].obs;
   final homeData = {}.obs;
   final profileCompletion = 0.obs;
@@ -22,6 +23,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     connectSocket();
+
     // getHome();
   }
 
@@ -65,8 +67,8 @@ class HomeController extends GetxController {
 
       /// Update after maintenance check
       await handleUpdate(platformData);
-    } catch (e) {
-      debugPrint('Home API error: $e');
+    } catch (_) {
+      // debugPrint('Home API error: $e');
     } finally {
       isLoading(false);
     }
@@ -75,6 +77,7 @@ class HomeController extends GetxController {
   void _setHomeData(dynamic data) {
     topMatchList.value = data['top_matches'] ?? [];
     todayMatchList.value = data['today_matches'] ?? [];
+    onlineUserList.value = data['OnlineUsers'] ?? [];
     profileCompletion.value = data['profile_completion'] ?? 0;
 
     setStatsData(data);
@@ -149,7 +152,7 @@ class HomeController extends GetxController {
         'onTap': () => Get.toNamed(Routes.viewed),
       },
       {
-        "title": "Interest Received",
+        "title": "Interest\nReceived",
         "value": data['interests_received']?.toString() ?? '0',
         "icon": HugeIcons.strokeRoundedDownload05,
         'onTap': () {
@@ -158,7 +161,7 @@ class HomeController extends GetxController {
         },
       },
       {
-        "title": "Interest Accepted",
+        "title": "Interest\nAccepted",
         "value": data['interests_accepted']?.toString() ?? '0',
         "icon": HugeIcons.strokeRoundedThumbsUp,
         'onTap': () {

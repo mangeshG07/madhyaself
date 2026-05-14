@@ -1,6 +1,10 @@
 import '../exporters/app_export.dart' hide DateFormat;
 import 'package:intl/intl.dart';
 
+launchURL(String url) async {
+  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+}
+
 Future<void> launchInBrowser(Uri url) async {
   if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
     throw Exception('Could not launch $url');
@@ -400,7 +404,7 @@ Widget buildGradientOverlay() {
 }
 
 Widget buildContentOverlay(dynamic details, bool isDetails) {
-  final isVerified = details['is_verified'] == '0' ? false : true;
+  final isVerified = details['is_verified'].toString() == '0' ? false : true;
   return Positioned(
     left: 12.w,
     right: 12.w,
@@ -410,7 +414,7 @@ Widget buildContentOverlay(dynamic details, bool isDetails) {
       children: [
         if (isVerified)
           SizedBox(
-            width: Get.width * 0.2,
+            width: Get.width * 0.2.w,
             child: badge(
               bgColor: Colors.white,
               isBgWhite: true,

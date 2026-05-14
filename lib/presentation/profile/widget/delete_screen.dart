@@ -72,7 +72,7 @@ class DeleteScreen extends GetView<ProfileController> {
         ),
       ),
       bottomNavigationBar: Obx(
-        () => controller.isUpdateLoading.isTrue
+        () => controller.isDeleteLoading.isTrue
             ? AppLoader.circular(
                 color: AppColors.lightPrimary,
                 strokeWidth: 2.5,
@@ -83,10 +83,18 @@ class DeleteScreen extends GetView<ProfileController> {
                   padding: const EdgeInsets.all(16.0),
                   child: AppButton(
                     text: 'Submit & Delete Profile',
+                    loading: controller.isDeleteLoading.value,
                     onTap: () async {
-                      if (controller.aboutMeDetailsFormKey.currentState!
-                          .validate()) {
-                        // await controller.updateAboutMeDetails();
+                      if (controller.selectedDeleteReason.value!
+                          .trim()
+                          .isNotEmpty) {
+                        await controller.deleteAccount();
+                      } else {
+                        CustomSnackbar.show(
+                          context: context,
+                          message: 'Please select a reason',
+                          type: SnackbarType.warning,
+                        );
                       }
                     },
                     backgroundColor: AppColors.lightPrimary,

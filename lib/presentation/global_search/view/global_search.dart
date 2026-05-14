@@ -18,29 +18,14 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                   child: Column(
                     spacing: 12.h,
                     children: [
-                      AppTextField(
-                        filled: true,
-                        label: 'Search by Madhyasthi Id',
-                        showLabel: true,
-                        minLines: 1,
-                        hint: 'Madhyasthi Id',
-                        contentPadding: const EdgeInsets.all(8),
-                        focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                        enabledBorder: theme.inputDecorationTheme.enabledBorder,
-                        textStyle: TextStyle(
-                          color: theme.colorScheme.onSurface,
-                          fontSize: 14.sp,
-                        ),
-                        labelStyle: theme.textTheme.labelMedium,
-                        controller: controller.username,
-                        fillColor: theme.cardColor,
-                      ),
+                      _searchUsername(theme),
 
                       _dropdownField(
                         isDynamic: true,
                         title: "Religion",
                         value: controller.selectedReligion,
                         items: controller.religionList,
+                        isCaste: true,
                       ),
 
                       _dropdownField(
@@ -48,6 +33,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                         title: "Caste",
                         value: controller.selectedCaste,
                         items: controller.casteList,
+                        isSelectCaste: true,
                       ),
 
                       _buildRangeRow(
@@ -163,6 +149,23 @@ class GlobalSearch extends GetView<GlobalSearchController> {
     );
   }
 
+  Widget _searchUsername(ThemeData theme) {
+    return AppTextField(
+      filled: true,
+      label: 'Search by Madhyasthi Id',
+      showLabel: true,
+      minLines: 1,
+      hint: 'Madhyasthi Id',
+      contentPadding: const EdgeInsets.all(8),
+      focusedBorder: theme.inputDecorationTheme.focusedBorder,
+      enabledBorder: theme.inputDecorationTheme.enabledBorder,
+      textStyle: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14.sp),
+      labelStyle: theme.textTheme.labelMedium,
+      controller: controller.username,
+      fillColor: theme.cardColor,
+    );
+  }
+
   Widget _buildToWord() {
     return Padding(
       padding: EdgeInsets.only(top: 16.w),
@@ -179,6 +182,8 @@ class GlobalSearch extends GetView<GlobalSearchController> {
     bool isHeight = false,
     bool isDynamic = false,
     bool isPremium = false,
+    bool isCaste = false,
+    bool isSelectCaste = false,
   }) {
     return Obx(() {
       final isLocked = controller.isFilterLocked(title);
@@ -196,15 +201,21 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                   title: title,
                   value: value.value,
                   items: items,
-                  hintText: "Select",
+                  hintText: !isSelectCaste
+                      ? "Select"
+                      : controller.isCasteLoading.value
+                      ? "Loading caste..."
+                      : "Select",
                   validator: AppValidators.required,
                   isHeight: isHeight,
                   isDynamic: isDynamic,
                   suffixIcon: isLocked ? _buildPremiumIcon() : null,
                   onChanged: (val) {
+                    if (isCaste) {
+                      controller.fetchCaste(val.toString());
+                    }
                     if (isLocked) {
                       AllDialogs().showPremiumDialog();
-                      ;
                       return;
                     }
                     value.value = val;

@@ -10,6 +10,17 @@ class HomeBindings extends Bindings {
         Get.find<GlobalSearchController>(),
       ),
     );
+
+    Get.lazyPut<FirebaseTokenController>(
+      () => FirebaseTokenController(getIt<FirebaseTokenUsecase>()),
+    );
+
+    Get.lazyPut<NotificationController>(
+      () => NotificationController(
+        getIt<GetNotificationUsecase>(),
+        getIt<ReadNotification>(),
+      ),
+    );
     // Get.lazyPut(() => HomeUsecase(Get.find()));
     //
     // Get.lazyPut(() => HomeController(Get.find()));

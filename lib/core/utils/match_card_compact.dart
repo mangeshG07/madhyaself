@@ -86,6 +86,8 @@ class CompactCard extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: 4.h),
                     child: badge(
+                      bgColor: Colors.white,
+                      isBgWhite: true,
                       "Verified",
                       AppColors.lightPrimary,
                       HugeIcons.strokeRoundedCheckmarkBadge01,
@@ -93,6 +95,8 @@ class CompactCard extends StatelessWidget {
                   ),
                 if (isPremium)
                   badge(
+                    bgColor: Colors.white,
+                    isBgWhite: true,
                     "Premium",
                     AppColors.lightSecondary,
                     HugeIcons.strokeRoundedCrown02,

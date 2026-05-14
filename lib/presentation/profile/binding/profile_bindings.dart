@@ -36,6 +36,7 @@ class ProfileBindings extends Bindings {
         getIt<GetPageDetailsUsecase>(),
         getIt<GetPageUsecase>(),
         getIt<SubCasteByCasteUsecase>(),
+        getIt<DeleteAccountUsecase>(),
       ),
     );
     Get.lazyPut<ViewedController>(

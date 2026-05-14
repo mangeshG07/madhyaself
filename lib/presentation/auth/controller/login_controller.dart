@@ -10,7 +10,7 @@ class LoginController extends GetxController {
 
   final isLoading = false.obs;
 
-  void login() async {
+  Future<void> login() async {
     if (!loginKey.currentState!.validate()) return;
 
     try {
@@ -21,11 +21,21 @@ class LoginController extends GetxController {
       );
 
       if (response['common']['status'] == true) {
-        Get.snackbar('Success', response['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          type: SnackbarType.success,
+          message: response['common']['message'] ?? '',
+        );
         Get.toNamed(Routes.verifyOTP);
+      } else {
+        CustomSnackbar.show(
+          context: Get.context!,
+          type: SnackbarType.error,
+          message: response['common']['message'] ?? '',
+        );
       }
     } catch (e) {
-      AppLogger.error(e);
+      // AppLogger.error(e);
     } finally {
       isLoading.value = false;
     }

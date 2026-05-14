@@ -15,7 +15,7 @@ class MatchCardOverlay extends StatelessWidget {
     return GestureDetector(
       onTap: () => Get.toNamed(
         Routes.othersProfile,
-        arguments: {'id': details['id']?.toString() ?? ''},
+        arguments: {'id': details['id']?.toString() ?? '','source':'matches'},
       ),
       child: Container(
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.r)),

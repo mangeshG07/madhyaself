@@ -13,7 +13,10 @@ class _InterestState extends State<Interest> {
   @override
   void initState() {
     super.initState();
-    controller.getInterestList(isRefresh: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getInterestList(isRefresh: true);
+    });
   }
 
   @override
@@ -33,20 +36,7 @@ class _InterestState extends State<Interest> {
   Widget _buildInterestList(ThemeData theme) {
     return Obx(() {
       if (controller.isLoading.value) {
-        return SingleChildScrollView(
-          child: CustomShimmerWidget.list(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            itemCount: 4,
-            baseColor: theme.brightness == Brightness.light
-                ? Colors.grey.shade300
-                : Colors.grey.shade800,
-            highlightColor: theme.brightness == Brightness.light
-                ? Colors.grey.shade100
-                : Colors.grey.shade700,
-            width: double.infinity,
-            height: Get.height * 0.2.h,
-          ),
-        );
+        return _buildLoader(theme);
       }
 
       if (controller.items.isEmpty) {
@@ -64,58 +54,80 @@ class _InterestState extends State<Interest> {
           }
           return false;
         },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                itemCount: controller.items.length,
-                itemBuilder: (context, index) {
-                  final interest = controller.items[index];
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 8.h,
+                  ),
+                  itemCount: controller.items.length,
+                  itemBuilder: (context, index) {
+                    final interest = controller.items[index];
 
-                  return GestureDetector(
-                    onTap: () {
-                      final isSelf = controller.selectedType.value == 0
-                          ? interest['is_sent'] == true
-                          : controller.selectedType.value == 2;
-                      final id = controller.selectedType.value == 0
-                          ? (isSelf
-                                ? interest['receiver_id']
-                                : interest['sender_id'])
-                          : controller.selectedType.value == 1
-                          ? interest['sender_id']
-                          : interest['receiver_id'];
-                      Get.toNamed(
-                        Routes.othersProfile,
-                        arguments: {'id': id?.toString() ?? ''},
-                      );
-                    },
+                    return GestureDetector(
+                      onTap: () {
+                        final isSelf = controller.selectedType.value == 0
+                            ? interest['is_sent'] == true
+                            : controller.selectedType.value == 2;
+                        final id = controller.selectedType.value == 0
+                            ? (isSelf
+                                  ? interest['receiver_id']
+                                  : interest['sender_id'])
+                            : controller.selectedType.value == 1
+                            ? interest['sender_id']
+                            : interest['receiver_id'];
+                        Get.toNamed(
+                          Routes.othersProfile,
+                          arguments: {'id': id?.toString() ?? '','source':'matches'},
+                        );
+                      },
 
-                    child: InterestCard(
-                      interest: interest,
-                      controller: controller,
-                    ),
-                  );
-                },
-              ),
+                      child: InterestCard(
+                        interest: interest,
+                        controller: controller,
+                      ),
+                    );
+                  },
+                ),
 
-              Obx(() {
-                if (controller.isLoadMore.value) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
-                    child: AppLoader.circular(color: AppColors.lightPrimary),
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              }),
-            ],
+                Obx(() {
+                  if (controller.isLoadMore.value) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      child: AppLoader.circular(color: AppColors.lightPrimary),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                }),
+              ],
+            ),
           ),
         ),
       );
     });
+  }
+
+  Widget _buildLoader(ThemeData theme) {
+    return SingleChildScrollView(
+      child: CustomShimmerWidget.list(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        itemCount: 4,
+        baseColor: theme.brightness == Brightness.light
+            ? Colors.grey.shade300
+            : Colors.grey.shade800,
+        highlightColor: theme.brightness == Brightness.light
+            ? Colors.grey.shade100
+            : Colors.grey.shade700,
+        width: double.infinity,
+        height: Get.height * 0.2.h,
+      ),
+    );
   }
 
   Widget _emptyState() {

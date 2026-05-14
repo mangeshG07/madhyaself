@@ -111,8 +111,8 @@ class ChatController extends GetxController {
 
         chatListPagination.handleSuccess(list);
       }
-    } catch (e) {
-      debugPrint("Error: $e");
+    } catch (_) {
+
     } finally {
       chatListPagination.stopLoading();
     }
@@ -156,8 +156,8 @@ class ChatController extends GetxController {
         }
         chatDetailsPagination.handleSuccess(list);
       }
-    } catch (e) {
-      debugPrint("Error: $e");
+    } catch (_) {
+
     } finally {
       chatDetailsPagination.stopLoading();
     }
@@ -184,7 +184,6 @@ class ChatController extends GetxController {
     };
 
     socket_service.onEvent = (event, data) {
-      print('event2=========>$event');
       switch (event) {
         /// ================= MESSAGE =================
         case 'message.sent':
@@ -207,20 +206,14 @@ class ChatController extends GetxController {
 
   void _handleIncomingMessage(Map data) async {
     final userId = await SecureStorageService.read('user_id') ?? '';
-    print('_handleIncomingMessage');
-    print(data);
-    print('userId=====>${userId.runtimeType}');
-    print('sender_id=====>${data['sender_id'].runtimeType}');
-    print('comparison => ${data['sender_id'].toString() != userId.toString()}');
+
 
     /// ✅ mark delivered only for received msg
     if (data['sender_id'].toString() != userId.toString()) {
       try {
-        print('Calling delivered API...');
         await msgDelivered(data['conversation_id'].toString());
-        print('Delivered API success');
-      } catch (e) {
-        print('Delivered API error: $e');
+      } catch (_) {
+
       }
     }
 
@@ -233,15 +226,14 @@ class ChatController extends GetxController {
   void _handleStatusUpdate(Map data) async {
     final newStatus = data['status'].toString();
     bool updated = false;
-    print('_handleStatusUpdate');
-    print(data);
+
     dynamic rawMessages = data['messages'];
 
     /// ✅ CASE 1: messages list available
     if (rawMessages.isNotEmpty) {
       for (var id in rawMessages) {
         final index = chatDetailsPagination.items.indexWhere(
-          (e) => e['message_id'].toString() == id.toString(),
+          (e) => e['id'].toString() == id.toString(),
         );
         if (index != -1) {
           if (chatDetailsPagination.items[index]['status'] != newStatus) {
@@ -251,8 +243,7 @@ class ChatController extends GetxController {
         }
       }
     }
-    print('chatDetailsPagination.items');
-    print(chatDetailsPagination.items);
+
 
     /// ✅ refresh only once
     if (updated) {
@@ -274,18 +265,17 @@ class ChatController extends GetxController {
   }
 
   void _addMessageIfNotExists(dynamic msg) {
-    final msgId = (msg['id']?.toString() ?? msg['message_id']?.toString() ?? '')
+    final msgId = (msg['id']?.toString() ?? '')
         .toString();
 
     final exists = chatDetailsPagination.items.any(
       (e) =>
-          (e['id']?.toString() ?? e['message_id']?.toString() ?? '')
+          (e['id']?.toString()  ?? '')
               .toString() ==
           msgId,
     );
 
     if (!exists) {
-      print('inexists');
       chatDetailsPagination.items.insert(0, msg);
       chatDetailsPagination.items.refresh();
     }
@@ -315,9 +305,7 @@ class ChatController extends GetxController {
     final message = msgController.text.trim();
     msgController.clear();
     final userId = await SecureStorageService.read('user_id') ?? '';
-    print('userId===========>$userId');
-    print('convId===========>$convId');
-    print('message===========>$message');
+
 
     /// 🔥 OR fallback API
     try {
@@ -342,14 +330,12 @@ class ChatController extends GetxController {
 
   Future<void> msgDelivered(String convId) async {
     try {
-      print('in deleiveyre');
+
       final userId = await SecureStorageService.read('user_id') ?? '';
       isDeliverLoading(true);
-      final res = await msgDeliveredUsecase.call(
+      await msgDeliveredUsecase.call(
         ChatDetailsRequest(userId, convId),
       );
-      print('msgDelivered');
-      print(res);
     } catch (_) {
     } finally {
       isDeliverLoading(false);
@@ -368,7 +354,7 @@ class ChatController extends GetxController {
     }
   }
 
-  final Debouncer typingDebouncer = Debouncer(milliseconds: 2000);
+  final Debouncer typingDebouncer = Debouncer(milliseconds: 300);
 
   void onTyping(String value, String convId) {
     typingDebouncer.run(() {
@@ -394,17 +380,15 @@ class ChatController extends GetxController {
   final Map<String, Timer> _typingTimers = {};
 
   void onTypingEvent(Map data) async {
-    print('onTypingEvent');
-    print(data);
+
     final convId = data['conversation_id']?.toString();
     final senderId = data['user_id']?.toString();
     if (convId == null || senderId == null) return;
 
 
-    print(typingUsers);
     final userId = await SecureStorageService.read('user_id') ?? '';
 
-    print('typingUsers========>$typingUsers');
+
     if (senderId.toString() == userId.toString()) return;
 
     typingUsers[convId] = true;

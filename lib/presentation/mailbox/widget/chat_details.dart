@@ -13,9 +13,13 @@ class _ChatDetailsState extends State<ChatDetails> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+    });
     final chatId = Get.arguments['id']?.toString() ?? '';
     controller.initUser();
     controller.getChatDetails(chatId, isRefresh: true);
+    controller.connectSocket(Get.arguments['id']?.toString() ?? '');
   }
 
   @override

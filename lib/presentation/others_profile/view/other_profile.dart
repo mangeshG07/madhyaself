@@ -13,57 +13,85 @@ class _OtherProfileState extends State<OtherProfile> {
   final interestController = Get.find<InterestController>();
   final shortListController = Get.find<ShortlistController>();
   String get userId => Get.arguments?['id']?.toString() ?? '';
+  String get source => Get.arguments?['source']?.toString() ?? '';
 
   @override
   void initState() {
     super.initState();
-    controller.otherProfileDetails(userId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.otherProfileDetails(userId);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      body: Obx(
-        () => controller.isLoading.isTrue
-            ? AppLoader.circular(color: AppColors.lightPrimary)
-            : Stack(
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        /// 🔥 TOP IMAGE SECTION
-                        _buildTopImageList(theme),
-                        SizedBox(height: 50.h),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
 
-                        /// 🔹 DATA CHIPS
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            spacing: 12.h,
-                            children: [
-                              _buildDataChips(theme),
-                              _buildDivider(),
-                              _buildAboutMe(theme),
-                              _buildBasicDetails(),
-                              _buildProfessionalDetails(),
-                              _buildReligionDetails(),
-                              _buildLocationDetails(),
-                              _buildFamilyDetails(),
-                            ],
+        await _handleBack();
+      },
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        body: Obx(
+          () => controller.isLoading.isTrue
+              ? AppLoader.circular(color: AppColors.lightPrimary)
+              : Stack(
+                  children: [
+                    SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          /// 🔥 TOP IMAGE SECTION
+                          _buildTopImageList(theme),
+                          SizedBox(height: 50.h),
+
+                          /// 🔹 DATA CHIPS
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              spacing: 12.h,
+                              children: [
+                                _buildDataChips(theme),
+                                _buildDivider(),
+                                _buildAboutMe(theme),
+                                _buildBasicDetails(),
+                                _buildProfessionalDetails(),
+                                _buildReligionDetails(),
+                                _buildLocationDetails(),
+                                _buildFamilyDetails(),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  _buildAppbar(theme),
-                ],
-              ),
+                    _buildAppbar(theme),
+                  ],
+                ),
+        ),
       ),
     );
+  }
+
+  Future<bool> _handleBack() async {
+    switch (source) {
+      case "deeplink":
+        Get.offAllNamed(Routes.mainScreen);
+        return false;
+
+      case "matches":
+        Get.back();
+        return false;
+
+      default:
+        Get.back();
+        return false;
+    }
   }
 
   Widget _buildAppbar(ThemeData theme) {
@@ -82,7 +110,7 @@ class _OtherProfileState extends State<OtherProfile> {
             Positioned(
               left: 16.w,
               child: AppIconButton(
-                onPressed: () => Get.back(),
+                onPressed: _handleBack,
                 icon: HugeIcons.strokeRoundedArrowLeft01,
                 iconColor: theme.scaffoldBackgroundColor,
                 backgroundColor: theme.colorScheme.onSurface.withValues(
@@ -429,36 +457,23 @@ class _OtherProfileState extends State<OtherProfile> {
                 HugeIcons.strokeRoundedCall02,
                 () async {
                   await controller.viewContact(theme);
-                  // AppBottomSheet.show(
-                  //   context: context,
-                  //   showCloseButton: false,
-                  //   height: Get.height * 0.4.h,
-                  //   backgroundColor: theme.scaffoldBackgroundColor,
-                  //   child: ContactBottomsheet(
-                  //     isUnlocked: true,
-                  //     contactNumber:
-                  //         controller.profileDetails['mobile_no']?.toString() ?? '',
-                  //     whatsappNumber:
-                  //         controller.profileDetails['alternate_no']?.toString() ??
-                  //         '',
-                  //   ),
-                  // );
                 },
                 theme,
                 isLoading: controller.isViewLoading.value,
               ),
             ),
-            Expanded(
-              child: _buildMenuCard(
-                'WhatsApp',
-                HugeIcons.strokeRoundedWhatsapp,
-                () async {
-                  await controller.whatsappConnect();
-                },
-                theme,
-                isLoading: controller.isWhatsappLoading.value,
+            if (controller.profileDetails['wp_no'].toString().isNotEmpty)
+              Expanded(
+                child: _buildMenuCard(
+                  'WhatsApp',
+                  HugeIcons.strokeRoundedWhatsapp,
+                  () async {
+                    await controller.whatsappConnect();
+                  },
+                  theme,
+                  isLoading: controller.isWhatsappLoading.value,
+                ),
               ),
-            ),
           ],
         ),
       ),

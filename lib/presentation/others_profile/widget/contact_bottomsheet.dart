@@ -50,15 +50,21 @@ class ContactBottomsheet extends StatelessWidget {
         _title(),
         SizedBox(height: 12.h),
         if (contactNumber.isNotEmpty)
-          _contactCard(
-            'Mobile: +91 $contactNumber',
-            HugeIcons.strokeRoundedSmartPhone01,
+          GestureDetector(
+            onTap: () => launchURL('tel:$contactNumber'),
+            child: _contactCard(
+              'Mobile: +91 $contactNumber',
+              HugeIcons.strokeRoundedSmartPhone01,
+            ),
           ),
         SizedBox(height: 10.h),
         if (whatsappNumber.isNotEmpty)
-          _contactCard(
-            'Alternate: +91 $whatsappNumber',
-            HugeIcons.strokeRoundedCall,
+          GestureDetector(
+            onTap: () => launchURL('tel:$whatsappNumber'),
+            child: _contactCard(
+              'Alternate: +91 $whatsappNumber',
+              HugeIcons.strokeRoundedCall,
+            ),
           ),
         SizedBox(height: 20.h),
         AppButton(

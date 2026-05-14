@@ -133,7 +133,11 @@ class RegisterController extends GetxController {
         ),
       );
       if (res['common']['status'] == true) {
-        Get.snackbar('Success', res['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          type: SnackbarType.success,
+          message: res['common']['message'] ?? '',
+        );
         await SecureStorageService.write('token', res['user']['app_auth_key']);
         await SecureStorageService.write(
           'user_id',
@@ -142,7 +146,12 @@ class RegisterController extends GetxController {
         await LocalStorage.setBool('isOnboarded', true);
         Get.offAllNamed(Routes.mainScreen);
       } else {
-        Get.snackbar('Success', res['common']['message']);
+        CustomSnackbar.show(
+          context: Get.context!,
+          type: SnackbarType.error,
+          message: res['common']['message'] ?? '',
+        );
+        // Get.snackbar('Success', res['common']['message']);
       }
     } catch (_) {
     } finally {

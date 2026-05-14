@@ -8,6 +8,7 @@ class GlobalSearchBindings extends Bindings {
         getIt<CommonDataUsecase>(),
         getIt<LocationDataUsecase>(),
         getIt<GlobalSearchUsecase>(),
+        getIt<CasteByRelUsecase>(),
       ),
       fenix: true,
     );

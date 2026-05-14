@@ -16,7 +16,7 @@ class _SearchFilterState extends State<SearchFilter> {
 
     return SafeArea(
       child: Container(
-        height: Get.height * 0.88,
+        height: Get.height * 0.88.h,
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
@@ -234,20 +234,35 @@ class _SearchFilterState extends State<SearchFilter> {
       title: "Religion Details",
       children: [
         _dropdownField(
+          isDynamic: true,
           title: "Religion",
           value: controller.selectedReligion,
           items: controller.religionList,
-          isDynamic: true,
+          isCaste: true,
         ),
-
         SizedBox(height: 12.h),
-
         _dropdownField(
+          isDynamic: true,
           title: "Caste",
           value: controller.selectedCaste,
           items: controller.casteList,
-          isDynamic: true,
+          isSelectCaste: true,
         ),
+        // _dropdownField(
+        //   title: "Religion",
+        //   value: controller.selectedReligion,
+        //   items: controller.religionList,
+        //   isDynamic: true,
+        // ),
+        //
+        // SizedBox(height: 12.h),
+        //
+        // _dropdownField(
+        //   title: "Caste",
+        //   value: controller.selectedCaste,
+        //   items: controller.casteList,
+        //   isDynamic: true,
+        // ),
       ],
     );
   }
@@ -341,7 +356,8 @@ class _SearchFilterState extends State<SearchFilter> {
     required List items,
     bool isHeight = false,
     bool isDynamic = false,
-    bool isPremium = false,
+    bool isCaste = false,
+    bool isSelectCaste = false,
   }) {
     return Obx(() {
       final isLocked = controller.isFilterLocked(title);
@@ -359,12 +375,19 @@ class _SearchFilterState extends State<SearchFilter> {
                   title: title,
                   value: value.value,
                   items: items,
-                  hintText: "Select",
+                  hintText: !isSelectCaste
+                      ? "Select"
+                      : controller.isCasteLoading.value
+                      ? "Loading caste..."
+                      : "Select",
                   validator: AppValidators.required,
                   isHeight: isHeight,
                   isDynamic: isDynamic,
                   suffixIcon: isLocked ? _buildPremiumIcon() : null,
                   onChanged: (val) {
+                    if (isCaste) {
+                      controller.fetchCaste(val.toString());
+                    }
                     if (isLocked) {
                       AllDialogs().showPremiumDialog();
                       return;

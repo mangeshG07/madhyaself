@@ -1,3 +1,4 @@
+import 'package:madhya/core/utils/deeplink_controller.dart';
 import 'core/exporters/app_export.dart';
 
 @pragma('vm:entry-point')
@@ -18,16 +19,17 @@ void main() {
       /// Init Dependencies (GetX)
       await initServices();
       await configureDependencies();
+      Get.put(DeepLinkController());
 
       /// Global Flutter Error
       FlutterError.onError = (details) {
-        AppLogger.error('Flutter Error', details.exception, details.stack);
+        // AppLogger.error('Flutter Error', details.exception, details.stack);
       };
 
       runApp(const MyApp());
     },
     (error, stack) {
-      AppLogger.fatal('Platform Error', error, stack);
+      // AppLogger.fatal('Platform Error', error, stack);
     },
   );
 }
@@ -51,7 +53,6 @@ class MyApp extends StatelessWidget {
         initialBinding: InitialBindings(),
         getPages: AppPages.routes,
         initialRoute: Routes.splash,
-        // initialRoute: Routes.mainScreen,
 
         /// Theme configuration
         theme: AppTheme.lightTheme,

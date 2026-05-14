@@ -5,10 +5,12 @@ class GlobalSearchController extends GetxController
   final CommonDataUsecase _commonDataUsecase;
   final LocationDataUsecase _locationDataUsecase;
   final GlobalSearchUsecase _globalSearchUsecase;
+  final CasteByRelUsecase _casteUsecase;
   GlobalSearchController(
     this._commonDataUsecase,
     this._locationDataUsecase,
     this._globalSearchUsecase,
+    this._casteUsecase,
   );
 
   @override
@@ -37,7 +39,7 @@ class GlobalSearchController extends GetxController
       ageList.assignAll(data['age'] ?? []);
       religionList.assignAll(data['religion'] ?? []);
       heightList.assignAll(data['height'] ?? []);
-      casteList.assignAll(data['caste'] ?? []);
+      // casteList.assignAll(data['caste'] ?? []);
       educationCategoryList.assignAll(data['education_category'] ?? []);
       jobCategoryList.assignAll(data['job_category'] ?? []);
       annualIncomeList.assignAll(data['annual_income'] ?? []);
@@ -58,7 +60,27 @@ class GlobalSearchController extends GetxController
     }
   }
 
+  /// ------------------ CASTE ------------------ ///
+  Future<void> fetchCaste(String religionId) async {
+    try {
+      isCasteLoading(true);
+      selectedCaste.value = null;
+      selectedSubCaste.value = null;
+      casteList.clear();
+
+      final res = await _casteUsecase.call(CasteRequest(religionId));
+
+      if (res['common']['status'] == true) {
+        final data = res['data'];
+        casteList.value = data['caste'] ?? [];
+      }
+    } finally {
+      isCasteLoading(false);
+    }
+  }
+
   final isSearching = false.obs;
+  final isCasteLoading = false.obs;
   final username = TextEditingController();
 
   final selectedReligion = Rxn<String>();
@@ -132,8 +154,8 @@ class GlobalSearchController extends GetxController
           },
         );
       }
-    } catch (e) {
-      debugPrint("Error: $e");
+    } catch (_) {
+      // debugPrint("Error: $e");
     } finally {
       stopLoading();
     }

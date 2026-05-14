@@ -194,7 +194,10 @@ abstract class ApiService {
   );
 
   @POST(ApiConstants.blockUserList)
-  Future<dynamic> blockProfileList(@Part(name: "user_id") String userId);
+  Future<dynamic> blockProfileList(
+    @Part(name: "user_id") String userId,
+    @Part(name: "page_no") String pageNo,
+  );
 
   @POST(ApiConstants.reportProfile)
   Future<dynamic> reportProfile(
@@ -204,13 +207,18 @@ abstract class ApiService {
   );
 
   @POST(ApiConstants.reportProfileList)
-  Future<dynamic> reportProfileList(@Part(name: "user_id") String userId);
+  Future<dynamic> reportProfileList(
+    @Part(name: "user_id") String userId,
+    @Part(name: "page_no") String pageNo,
+  );
 
   @POST(ApiConstants.globalSearch)
   Future<dynamic> globalSearch(@Body() Map<String, dynamic> formData);
 
   @POST(ApiConstants.getPlans)
-  Future<dynamic> getPlans(@Part(name: "user_id") String userId);
+  Future<dynamic> getPlans(
+      @Part(name: "user_id") String userId,
+      );
 
   @POST(ApiConstants.getPlanDetails)
   Future<dynamic> getPlanDetails(
@@ -244,5 +252,29 @@ abstract class ApiService {
   Future<dynamic> viewContact(
     @Part(name: "user_id") String userId,
     @Part(name: "profile_id") String profileId,
+  );
+
+  @POST(ApiConstants.deleteAccount)
+  Future<dynamic> deleteAccount(
+    @Part(name: "user_id") String userId,
+    @Part(name: "reason") String reason,
+  );
+
+  @POST(ApiConstants.updateFirebaseToken)
+  Future<dynamic> updateFirebaseToken(
+    @Part(name: "user_id") String userId,
+    @Part(name: "firebase_token") String token,
+  );
+
+  @POST(ApiConstants.getNotification)
+  Future<dynamic> getNotification(
+    @Part(name: "user_id") String userId,
+    @Part(name: "page_no") String pageNo,
+  );
+
+  @POST(ApiConstants.readNotification)
+  Future<dynamic> readNotification(
+    @Part(name: "user_id") String userId,
+    @Part(name: "notification_id") String notificationId,
   );
 }

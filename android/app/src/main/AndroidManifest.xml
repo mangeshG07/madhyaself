@@ -58,8 +58,7 @@
                 <data
                     android:scheme="https"
                     android:host="beta.madhyasthi.com"
-                    android:pathPrefix="/cl" />
-
+                    android:pathPrefix="/profile-details" />
             </intent-filter>
             <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK"/>

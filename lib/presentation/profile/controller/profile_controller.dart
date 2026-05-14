@@ -8,6 +8,7 @@ class ProfileController extends GetxController {
   final GetPageDetailsUsecase _getPageDetailsUsecase;
   final GetPageUsecase _getPageUsecase;
   final SubCasteByCasteUsecase _subCasteUsecase;
+  final DeleteAccountUsecase _deleteAccountUsecase;
 
   ProfileController(
     this.usecase,
@@ -17,6 +18,7 @@ class ProfileController extends GetxController {
     this._getPageDetailsUsecase,
     this._getPageUsecase,
     this._subCasteUsecase,
+    this._deleteAccountUsecase,
   );
 
   @override
@@ -30,6 +32,7 @@ class ProfileController extends GetxController {
   /// UI State
   final isLoading = false.obs;
   final isUpdateLoading = false.obs;
+  final isDeleteLoading = false.obs;
   final isPageLoading = false.obs;
   final isPageDetailsLoading = false.obs;
   final isHide = false.obs;
@@ -874,9 +877,50 @@ class ProfileController extends GetxController {
         );
       }
     } catch (e) {
-      AppLogger.error(e.toString());
+      // AppLogger.error(e.toString());
     } finally {
       isUpdateLoading(false);
+    }
+  }
+
+  /// ================= DELETE ACCOUNT =================
+  Future<void> deleteAccount() async {
+    try {
+      final userid = await SecureStorageService.read('user_id') ?? '';
+      // Validation
+      if (selectedDeleteReason.value!.isEmpty) {
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: "Please select delete reason",
+          type: SnackbarType.error,
+        );
+        return;
+      }
+
+      isDeleteLoading(true);
+
+      final res = await _deleteAccountUsecase.call(
+        UserRequest(userid, view: selectedDeleteReason.value.toString()),
+      );
+
+      if (res['common']['status'] == true) {
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.success,
+        );
+        await SecureStorageService.clear();
+        await LocalStorage.clear();
+        Get.offAllNamed(Routes.login);
+      } else {
+        CustomSnackbar.show(
+          context: Get.context!,
+          message: res['common']['message'],
+          type: SnackbarType.error,
+        );
+      }
+    } finally {
+      isDeleteLoading(false);
     }
   }
 }

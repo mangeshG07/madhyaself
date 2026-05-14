@@ -13,7 +13,11 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
   @override
   void initState() {
     super.initState();
-    controller.getPreference();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getPreference();
+    });
   }
 
   @override

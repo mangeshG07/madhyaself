@@ -5,6 +5,7 @@ import 'package:madhya/presentation/global_search/bindings/global_search_binding
 import 'package:madhya/presentation/global_search/view/global_search.dart';
 import 'package:madhya/presentation/global_search/widget/search_result.dart';
 import 'package:madhya/presentation/home/bindings/home_bindings.dart';
+import 'package:madhya/presentation/home/widget/notification_screen.dart';
 import 'package:madhya/presentation/mailbox/bindings/chat_binding.dart';
 import 'package:madhya/presentation/matches/bindings/match_binding.dart';
 import 'package:madhya/presentation/others_profile/binding/other_profile_binding.dart';
@@ -167,5 +168,6 @@ class AppPages {
       name: Routes.partnerLocationDetailsEdit,
       page: () => PartnerLocationDetailsEdit(),
     ),
+    GetPage(name: Routes.notificationScreen, page: () => NotificationList(),binding: HomeBindings()),
   ];
 }

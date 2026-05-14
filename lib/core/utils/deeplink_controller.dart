@@ -1,5 +1,4 @@
 import 'package:app_links/app_links.dart';
-
 import '../exporters/app_export.dart';
 
 class DeepLinkController extends GetxController {
@@ -24,12 +23,25 @@ class DeepLinkController extends GetxController {
     }, onError: (_) {});
   }
 
-  void _handleDeepLink(Uri uri) {
-    if (uri.pathSegments.length < 3) return;
+  void _handleDeepLink(Uri uri) async {
+    final token = await SecureStorageService.read('token') ?? '';
 
-    final type = uri.pathSegments[1];
-    final id = uri.pathSegments[2];
+    if (uri.pathSegments.length < 2) return;
+    final routeType = uri.pathSegments[0];
+    final slug = uri.pathSegments[1];
 
-    Get.toNamed(Routes.othersProfile, arguments: {'id': id});
+    if (routeType == "profile-details") {
+      final id = slug.replaceAll(RegExp(r'[^0-9]'), '');
+      if (token.isEmpty) {
+        Get.offAllNamed(Routes.login);
+      } else {
+        if (id.isNotEmpty) {
+          Get.toNamed(
+            Routes.othersProfile,
+            arguments: {'id': id, 'source': 'deeplink'},
+          );
+        }
+      }
+    }
   }
 }

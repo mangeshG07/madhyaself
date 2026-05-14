@@ -107,7 +107,7 @@ class _SearchResultState extends State<SearchResult> {
                     },
                     onTap: () => Get.toNamed(
                       Routes.othersProfile,
-                      arguments: {'id': match['id']?.toString() ?? ''},
+                      arguments: {'id': match['id']?.toString() ?? '','source':'matches'},
                     ),
                   );
                 },

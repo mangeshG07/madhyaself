@@ -16,7 +16,9 @@ class ReportedController extends GetxController with PaginationMixin {
     final userid = await SecureStorageService.read('user_id') ?? '';
 
     try {
-      final response = await _reportedProfileUsecase.call(UserRequest(userid));
+      final response = await _reportedProfileUsecase.call(
+        UserRequest(userid, pageNo: currentPage.toString()),
+      );
       if (response['common']['status'] == true) {
         final List list = response['data'] ?? [];
 

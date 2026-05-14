@@ -17,18 +17,17 @@ void connect(String convId, {bool isGlobal = false}) {
   _currentConvId = convId;
 
   final wsUrl =
-      "ws://beta.madhyasthi.com/app/${AppConstants.chatApiKey}?protocol=7&client=flutter&version=1.0";
+      "wss://beta.madhyasthi.com/app/${AppConstants.chatApiKey}?protocol=7&client=flutter&version=1.0";
   _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
 
   _channel!.stream.listen(
     (event) {
       final decoded = jsonDecode(event);
-      print('event=========>${decoded['event']}');
+
 
       /// ✅ HANDLE PING → SEND PONG
       if (decoded['event'] == 'pusher:ping') {
-        _channel?.sink.add(jsonEncode({"event": "pusher:pong"}));
-
+        _channel?.sink.add(jsonEncode({"event": "pusher:pong", "data": {}}));
         return;
       }
 

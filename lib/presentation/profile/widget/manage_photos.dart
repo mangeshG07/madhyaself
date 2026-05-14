@@ -373,7 +373,7 @@ class ManagePhotos extends GetView<ProfileController> {
             itemBuilder: (context, index) {
               final file = controller.documentList[index];
 
-              return _documentList(file, index);
+              return _documentList(file, index, theme, isLight);
             },
           ),
           Obx(
@@ -464,7 +464,7 @@ class ManagePhotos extends GetView<ProfileController> {
     );
   }
 
-  Widget _documentList(dynamic file, int index) {
+  Widget _documentList(dynamic file, int index, ThemeData theme, bool isLight) {
     String fileName = '';
     String filePath = '';
     String status = '';
@@ -489,7 +489,10 @@ class ManagePhotos extends GetView<ProfileController> {
     return ListTile(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
-        side: BorderSide(color: AppColors.lightSecondary, width: 0.5.w),
+        side: BorderSide(
+          color: isLight ? AppColors.lightSecondary : theme.dividerTheme.color!,
+          width: 0.5.w,
+        ),
       ),
       leading: HugeIcon(
         icon: HugeIcons.strokeRoundedPdf01,
@@ -500,7 +503,7 @@ class ManagePhotos extends GetView<ProfileController> {
         text: fileName,
         fontSize: 14.sp,
         fontWeight: FontWeight.bold,
-        color: AppColors.lightTextMidColor,
+        color: isLight ? AppColors.lightTextMidColor : AppColors.grey300,
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

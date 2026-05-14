@@ -9,18 +9,12 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<dynamic> getLocationData() async {
     final res = await _apiService.getLocationData();
-
-    // final decoded = jsonDecode(res.toString());
-
     return res;
   }
 
   @override
   Future<dynamic> getPages() async {
     final res = await _apiService.getPages();
-
-    // final decoded = jsonDecode(res.toString());
-
     return res;
   }
 
@@ -179,12 +173,12 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
   @override
   Future<dynamic> getBlockUserList(UserRequest request) async {
-    return await _apiService.blockProfileList(request.userId);
+    return await _apiService.blockProfileList(request.userId, request.pageNo);
   }
 
   @override
   Future<dynamic> getReportedUserList(UserRequest request) async {
-    return await _apiService.reportProfileList(request.userId);
+    return await _apiService.reportProfileList(request.userId, request.pageNo);
   }
 
   @override
@@ -218,5 +212,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
       request.razorpaySignature,
       request.status,
     );
+  }
+
+  @override
+  Future<dynamic> deleteAccount(UserRequest request) async {
+    return await _apiService.deleteAccount(request.userId, request.view);
   }
 }

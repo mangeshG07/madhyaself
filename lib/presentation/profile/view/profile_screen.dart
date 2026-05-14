@@ -13,7 +13,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    controller.getProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkInternetAndShowPopup();
+      controller.getProfile();
+    });
   }
 
   @override
@@ -30,16 +33,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? _buildShimmerLoader(theme)
             : RefreshIndicator(
                 onRefresh: () async => await controller.getProfile(),
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: SafeArea(
-                    child: Column(
-                      // spacing: 12.h,
-                      children: [
-                        _buildProfileHeader(theme),
-                        _buildCompletionCard(theme),
-                        _buildSectionCard(controller.menuList, theme),
-                      ],
+                child: SafeArea(
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SafeArea(
+                      child: Column(
+                        // spacing: 12.h,
+                        children: [
+                          _buildProfileHeader(theme),
+                          _buildCompletionCard(theme),
+                          _buildSectionCard(controller.menuList, theme),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -344,32 +349,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // 📦 SECTION CARD
   Widget _buildSectionCard(List<dynamic> list, ThemeData theme) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8),
-        ],
-      ),
-      child: Column(
-        children: List.generate(list.length, (index) {
-          final menu = list[index];
-          return Column(
-            children: [
-              _menuItem(menu, theme),
-              if (index != list.length - 1)
-                Divider(
-                  height: 0,
-                  thickness: 0.6,
-                  indent: 50.w,
-                  endIndent: 12.w,
-                  color: theme.dividerTheme.color,
-                ),
-            ],
-          );
-        }),
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w).copyWith(bottom: 16),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: Column(
+          children: List.generate(list.length, (index) {
+            final menu = list[index];
+            return Column(
+              children: [
+                _menuItem(menu, theme),
+                if (index != list.length - 1)
+                  Divider(
+                    height: 0,
+                    thickness: 0.6,
+                    indent: 50.w,
+                    endIndent: 12.w,
+                    color: theme.dividerTheme.color,
+                  ),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }

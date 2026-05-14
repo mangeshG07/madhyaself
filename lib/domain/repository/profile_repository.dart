@@ -7,6 +7,8 @@ abstract class ProfileRepository {
 
   Future<dynamic> getPageDetails(UserRequest request);
 
+  Future<dynamic> deleteAccount(UserRequest request);
+
   Future<dynamic> getProfile(UserRequest request);
 
   Future<dynamic> getView(UserRequest request);
