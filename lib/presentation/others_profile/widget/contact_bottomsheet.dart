@@ -36,7 +36,10 @@ class ContactBottomsheet extends StatelessWidget {
         SizedBox(height: 20.h),
         AppButton(
           text: 'Upgrade',
-          onTap: () {},
+          onTap: () {
+            Get.back();
+            Get.toNamed(Routes.packageScreen);
+          },
           backgroundColor: AppColors.lightPrimary,
         ),
       ],

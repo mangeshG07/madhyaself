@@ -14,6 +14,7 @@ class AppAssets {
   static const String appLogo = '$_imagesPath/app_logo_mar.png';
   static const String appLogoHorizontal = '$_imagesPath/app_logo_mar.png';
   static const String appLogoEnglish = '$_imagesPath/app_logo_eng.png';
+  static const String appLogoWhite = '$_imagesPath/app_logo_white.png';
   static const String bgImage = '$_imagesPath/bg_img.png';
   static const String bgImageDark = '$_imagesPath/bg_img_dark.png';
   static const String noMatchFound = '$_imagesPath/no_match_found.png';
@@ -32,4 +33,6 @@ class AppAssets {
   static const String navIcon = '$_iconsPath/ic_nav.png';
   static const String noInternet = '$_iconsPath/ic_no_internet.png';
   static const String notification = '$_iconsPath/ic_notification.png';
+  static const String emptyNotification =
+      '$_iconsPath/ic_empty_notification.svg';
 }

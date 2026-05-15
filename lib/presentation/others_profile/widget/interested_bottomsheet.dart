@@ -6,6 +6,7 @@ class InterestOptionsList extends StatelessWidget {
   final List items;
   final InterestController controller;
   final dynamic onSubmit;
+  final bool isUnlocked;
 
   const InterestOptionsList({
     super.key,
@@ -14,6 +15,7 @@ class InterestOptionsList extends StatelessWidget {
     required this.items,
     required this.controller,
     required this.onSubmit,
+    this.isUnlocked = false,
   });
 
   @override
@@ -24,9 +26,11 @@ class InterestOptionsList extends StatelessWidget {
         groupValue: selectedValue,
         onChanged: onChanged,
 
-        child: controller.isSuccess.value
-            ? _buildSuccess() // ✅ after success
-            : _buildBefore(theme),
+        child: controller.isPremium.value ? _buildBefore(theme) : _locked(),
+
+        // controller.isSuccess.value
+        //     ? _buildSuccess() // ✅ after success
+        //     : _buildBefore(theme),
       ),
     );
   }
@@ -187,6 +191,32 @@ class InterestOptionsList extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  ///==========================LOCKED==========================///
+  Widget _locked() {
+    return Column(
+      children: [
+        BottomSheetHeader(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedSquareUnlock02,
+            size: 60.r,
+            color: AppColors.lightPrimary,
+          ),
+          title: 'Unlock Send Interest',
+          subtitle: 'Upgrade your membership to send interest this profile.',
+        ),
+        SizedBox(height: 20.h),
+        AppButton(
+          text: 'Upgrade',
+          onTap: () {
+            Get.back();
+            Get.toNamed(Routes.packageScreen);
+          },
+          backgroundColor: AppColors.lightPrimary,
+        ),
+      ],
     );
   }
 }

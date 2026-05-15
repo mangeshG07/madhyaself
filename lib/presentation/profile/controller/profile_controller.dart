@@ -41,6 +41,7 @@ class ProfileController extends GetxController {
   /// Form Controllers
   final whatsappNoController = TextEditingController();
   final alternateNoController = TextEditingController();
+  final addressController = TextEditingController();
   final aboutMeController = TextEditingController();
   final educationDetailsController = TextEditingController();
   final jobDetailsController = TextEditingController();
@@ -283,6 +284,7 @@ class ProfileController extends GetxController {
   void _setInitialValues() async {
     isHide.value = profileDetails['hide_photos'] == '0' ? false : true;
     whatsappNoController.text = profileDetails['wp_no'] ?? '';
+    addressController.text = profileDetails['address'] ?? '';
     alternateNoController.text = profileDetails['alternate_no'] ?? '';
     aboutMeController.text = profileDetails['about'] ?? '';
     educationDetailsController.text = profileDetails['education_details'] ?? '';
@@ -589,6 +591,7 @@ class ProfileController extends GetxController {
         country: selectedCountry.value,
         state: selectedState.value,
         city: selectedCity.value,
+        address: addressController.text.trim(),
       ),
     );
 

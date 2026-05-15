@@ -89,13 +89,13 @@ class _AppCarouselImageVideoSliderState
       margin: widget.margin ?? EdgeInsets.symmetric(horizontal: 4.w),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(widget.borderRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withValues(alpha: 0.1),
+        //     blurRadius: 8,
+        //     offset: const Offset(0, 4),
+        //   ),
+        // ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -182,11 +182,17 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     if (!controller.value.isInitialized) {
-      return AppLoader.circular(
-        color: AppColors.lightPrimary,
-        size: 20.r,
-        strokeWidth: 2,
+      return CustomShimmerWidget.single(
+        width: double.infinity,
+        baseColor: theme.brightness == Brightness.light
+            ? Colors.grey.shade300
+            : Colors.grey.shade800,
+        highlightColor: theme.brightness == Brightness.light
+            ? Colors.grey.shade100
+            : Colors.grey.shade700,
+        height: Get.height * 0.23.h,
       );
     }
 

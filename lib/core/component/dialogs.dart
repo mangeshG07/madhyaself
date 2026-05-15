@@ -199,7 +199,7 @@ class AllDialogs {
                   children: [
                     ElevatedButton(
                       onPressed: () => Get.back(),
-                      child: const Text('Cancel'),
+                      child: const Text('Cancel',style: TextStyle(color: Colors.grey),),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(

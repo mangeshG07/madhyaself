@@ -58,6 +58,7 @@ class InterestController extends GetxController with PaginationMixin {
 
   RxString deletingId = ''.obs;
   RxBool isSuccess = false.obs;
+  RxBool isPremium = false.obs;
 
   Future<void> sendInterest(String receiverId, String msg) async {
     isSending(true);

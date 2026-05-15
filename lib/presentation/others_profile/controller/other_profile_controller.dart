@@ -148,7 +148,7 @@ class OtherProfileController extends GetxController {
   }
 
   /// ================= WHATSAPP CONNECT =================
-  Future<void> whatsappConnect() async {
+  Future<void> whatsappConnect(ThemeData theme) async {
     try {
       isWhatsappLoading(true);
       final userid = await SecureStorageService.read('user_id') ?? '';
@@ -157,11 +157,22 @@ class OtherProfileController extends GetxController {
       if (res['common']['status'] == true) {
         await openWhatsApp(profileDetails['wp_no']?.toString() ?? '', '');
       } else {
-        CustomSnackbar.show(
+        AppBottomSheet.show(
           context: Get.context!,
-          message: res['common']['message'],
-          type: SnackbarType.warning,
+          showCloseButton: false,
+          height: Get.height * 0.35.h,
+          backgroundColor: theme.scaffoldBackgroundColor,
+          child: ContactBottomsheet(
+            isUnlocked: false,
+            contactNumber: profileDetails['mobile_no']?.toString() ?? '',
+            whatsappNumber: profileDetails['alternate_no']?.toString() ?? '',
+          ),
         );
+        // CustomSnackbar.show(
+        //   context: Get.context!,
+        //   message: res['common']['message'],
+        //   type: SnackbarType.warning,
+        // );
       }
     } catch (_) {
     } finally {
@@ -191,10 +202,16 @@ class OtherProfileController extends GetxController {
           ),
         );
       } else {
-        CustomSnackbar.show(
+        AppBottomSheet.show(
           context: Get.context!,
-          message: res['common']['message'],
-          type: SnackbarType.warning,
+          showCloseButton: false,
+          height: Get.height * 0.35.h,
+          backgroundColor: theme.scaffoldBackgroundColor,
+          child: ContactBottomsheet(
+            isUnlocked: false,
+            contactNumber: profileDetails['mobile_no']?.toString() ?? '',
+            whatsappNumber: profileDetails['alternate_no']?.toString() ?? '',
+          ),
         );
       }
     } catch (_) {

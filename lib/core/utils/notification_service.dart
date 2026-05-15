@@ -171,7 +171,15 @@ class NotificationService {
             Get.toNamed(Routes.chatDetails, arguments: {'id': id});
           }
           break;
-
+        case 'open_profile':
+          final id = data['profile_id']?.toString();
+          if (id != null && id.isNotEmpty) {
+            Get.toNamed(
+              Routes.othersProfile,
+              arguments: {'id': id, 'source': 'deeplink'},
+            );
+          }
+          break;
         case 'document_verification':
           Get.toNamed(Routes.managePhotos);
           break;
@@ -182,7 +190,7 @@ class NotificationService {
           break;
 
         default:
-          // debugPrint('Unknown action => $action');
+        // debugPrint('Unknown action => $action');
       }
     });
   }

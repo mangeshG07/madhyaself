@@ -61,14 +61,15 @@ class OtpController extends GetxController with CodeAutoFill {
           'user_id',
           response['user']['id'].toString(),
         );
+        await LocalStorage.setBool('isOnboarded', true);
         CustomSnackbar.show(
           context: Get.context!,
           type: SnackbarType.success,
           message: response['common']['message'] ?? '',
         );
-        // Get.snackbar('Success', response['common']['message']);
 
         if (response['user']['is_user_exist'] == true) {
+          getIt<NavigationController>().currentIndex.value = 0;
           Get.offAllNamed(Routes.mainScreen);
         } else {
           Get.offAllNamed(Routes.registerScreen);

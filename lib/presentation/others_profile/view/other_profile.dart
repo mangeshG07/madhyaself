@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:madhya/core/component/app_share.dart';
 import 'package:madhya/core/exporters/app_export.dart';
 
@@ -12,7 +14,9 @@ class _OtherProfileState extends State<OtherProfile> {
   final controller = Get.find<OtherProfileController>();
   final interestController = Get.find<InterestController>();
   final shortListController = Get.find<ShortlistController>();
+
   String get userId => Get.arguments?['id']?.toString() ?? '';
+
   String get source => Get.arguments?['source']?.toString() ?? '';
 
   @override
@@ -64,6 +68,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                 _buildReligionDetails(),
                                 _buildLocationDetails(),
                                 _buildFamilyDetails(),
+                                _buildHoroscopeDetails(),
                               ],
                             ),
                           ),
@@ -240,11 +245,19 @@ class _OtherProfileState extends State<OtherProfile> {
   }
 
   Widget _buildTopImageList(ThemeData theme) {
-    final images = controller.profileDetails['photos'] ?? [];
+    final profileImage =
+        controller.profileDetails['profile_image']?.toString() ?? '';
+
+    final images = List<String>.from(controller.profileDetails['photos'] ?? []);
+
+    /// Add profile image at first
+    if (profileImage.isNotEmpty && !images.contains(profileImage)) {
+      images.insert(0, profileImage);
+    }
     final isHide = controller.profileDetails['hide_photos'] != '0'
         ? true
         : false;
-
+    final topInset = MediaQuery.of(context).padding.top;
     // // 👉 EMPTY CASE
     if (images.isEmpty || isHide) {
       return SizedBox(
@@ -287,27 +300,47 @@ class _OtherProfileState extends State<OtherProfile> {
               controller.currentIndex.value = index;
             },
             itemBuilder: (_, index) {
+              final imageUrl = images[index] ?? '';
               return Stack(
+                fit: StackFit.expand,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: FadeInImage(
-                      placeholderFit: BoxFit.cover,
-                      placeholder: AssetImage(AppAssets.defaultImage),
-                      image: NetworkImage(images[index] ?? ''),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                      imageErrorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade100,
-                          child: Center(
-                            child: Image.asset(AppAssets.defaultImage),
-                          ),
-                        );
-                      },
+                  Positioned.fill(
+                    child: ImageFiltered(
+                      imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Image.network(imageUrl, fit: BoxFit.cover),
                     ),
                   ),
+
+                  /// Optional dark overlay for blur background
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.15),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: topInset),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: FadeInImage(
+                        placeholderFit: BoxFit.cover,
+                        placeholder: AssetImage(AppAssets.defaultImage),
+                        image: NetworkImage(imageUrl),
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                        height: double.infinity,
+                        imageErrorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade100,
+                            child: Center(
+                              child: Image.asset(AppAssets.defaultImage),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
                   buildGradientOverlay(),
                 ],
               );
@@ -377,50 +410,95 @@ class _OtherProfileState extends State<OtherProfile> {
                     : 'Send\nInterest',
                 HugeIcons.strokeRoundedFavouriteCircle,
                 () {
-                  if (controller.profileDetails['is_subscribed'] == true) {
-                    controller.selectedId.value = null;
-                    interestController.isSuccess.value = false;
-                    AppBottomSheet.show(
-                      context: context,
-                      backgroundColor: theme.scaffoldBackgroundColor,
-                      showCloseButton: false,
-                      height: Get.height * 0.6.h,
-                      child: Obx(() {
-                        return InterestOptionsList(
-                          onSubmit: () async {
-                            final selectedItem = controller.interestOptions
-                                .firstWhere(
-                                  (e) => e.id == controller.selectedId.value,
-                                );
-
-                            final msg = selectedItem.text;
-                            await interestController
-                                .sendInterest(
-                                  controller.profileDetails['id'].toString(),
-                                  msg,
-                                )
-                                .then((v) async {
-                                  await controller.otherProfileDetails(
-                                    controller.profileDetails['id'].toString(),
-                                  );
-                                });
-                          },
-                          controller: interestController,
-                          items: controller.interestOptions,
-                          selectedValue: controller.selectedId.value,
-                          onChanged: (val) {
-                            controller.selectedId.value = val;
-                          },
-                        );
-                      }),
-                    );
-                  } else {
-                    CustomSnackbar.show(
-                      context: context,
-                      message: 'Please upgrade your plan to send interest',
-                      type: SnackbarType.warning,
-                    );
+                  if (controller.profileDetails['is_interest_sent'] == true) {
+                    return;
                   }
+                  controller.selectedId.value = null;
+                  interestController.isPremium.value =
+                      controller.profileDetails['is_subscribed'] == true;
+                  AppBottomSheet.show(
+                    context: context,
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    showCloseButton: false,
+                    height: interestController.isPremium.value
+                        ? Get.height * 0.6.h
+                        : Get.height * 0.35.h,
+                    child: Obx(() {
+                      return InterestOptionsList(
+                        isUnlocked:
+                            controller.profileDetails['is_subscribed'] == true,
+                        onSubmit: () async {
+                          final selectedItem = controller.interestOptions
+                              .firstWhere(
+                                (e) => e.id == controller.selectedId.value,
+                              );
+
+                          final msg = selectedItem.text;
+                          await interestController
+                              .sendInterest(
+                                controller.profileDetails['id'].toString(),
+                                msg,
+                              )
+                              .then((v) async {
+                                await controller.otherProfileDetails(
+                                  controller.profileDetails['id'].toString(),
+                                );
+                              });
+                        },
+                        controller: interestController,
+                        items: controller.interestOptions,
+                        selectedValue: controller.selectedId.value,
+                        onChanged: (val) {
+                          controller.selectedId.value = val;
+                        },
+                      );
+                    }),
+                  );
+                  // if (controller.profileDetails['is_subscribed'] == true) {
+                  //   controller.selectedId.value = null;
+                  //   interestController.isSuccess.value =
+                  //       controller.profileDetails['is_subscribed'] == true;
+                  //   AppBottomSheet.show(
+                  //     context: context,
+                  //     backgroundColor: theme.scaffoldBackgroundColor,
+                  //     showCloseButton: false,
+                  //     height: Get.height * 0.6.h,
+                  //     child: Obx(() {
+                  //       return InterestOptionsList(
+                  //         onSubmit: () async {
+                  //           final selectedItem = controller.interestOptions
+                  //               .firstWhere(
+                  //                 (e) => e.id == controller.selectedId.value,
+                  //               );
+                  //
+                  //           final msg = selectedItem.text;
+                  //           await interestController
+                  //               .sendInterest(
+                  //                 controller.profileDetails['id'].toString(),
+                  //                 msg,
+                  //               )
+                  //               .then((v) async {
+                  //                 await controller.otherProfileDetails(
+                  //                   controller.profileDetails['id'].toString(),
+                  //                 );
+                  //               });
+                  //         },
+                  //         controller: interestController,
+                  //         items: controller.interestOptions,
+                  //         selectedValue: controller.selectedId.value,
+                  //         onChanged: (val) {
+                  //           controller.selectedId.value = val;
+                  //         },
+                  //       );
+                  //     }),
+                  //   );
+                  // } else {
+                  //   CustomSnackbar.show(
+                  //     context: context,
+                  //     message: 'Please upgrade your plan to send interest',
+                  //     type: SnackbarType.warning,
+                  //   );
+                  // }
                 },
                 theme,
               ),
@@ -468,7 +546,7 @@ class _OtherProfileState extends State<OtherProfile> {
                   'WhatsApp',
                   HugeIcons.strokeRoundedWhatsapp,
                   () async {
-                    await controller.whatsappConnect();
+                    await controller.whatsappConnect(theme);
                   },
                   theme,
                   isLoading: controller.isWhatsappLoading.value,
@@ -559,7 +637,7 @@ class _OtherProfileState extends State<OtherProfile> {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: isLight ? AppColors.catBgColor : AppColors.grey700,
+              color: isLight ? AppColors.catBgColor : theme.cardColor,
               borderRadius: BorderRadius.circular(30.r),
               border: Border.all(
                 color: AppColors.lightTextLowColor.withValues(alpha: 0.2),
@@ -852,6 +930,59 @@ class _OtherProfileState extends State<OtherProfile> {
             ),
           ],
         ),
+        _buildDivider(),
+      ],
+    );
+  }
+
+  /// 🔹 HOROSCOPE DETAILS
+  Widget _buildHoroscopeDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        buildSectionHeader(
+          'Horoscope Details',
+          HugeIcons.strokeRoundedUserGroup02,
+        ),
+
+        Row(
+          spacing: 16.w,
+          children: [
+            buildDetailItem(
+              label: "Rashi",
+              value: controller.profileDetails['rasi'] ?? '-',
+            ),
+            buildDetailItem(
+              label: "Birthday Date",
+              value: controller.profileDetails['birth_date'] ?? '-',
+            ),
+          ],
+        ),
+        Row(
+          spacing: 16.w,
+          children: [
+            if (controller.profileDetails['birthtime'].toString().isNotEmpty &&
+                controller.profileDetails['birthtime'] != null)
+              buildDetailItem(
+                label: "Birth Time",
+                value: convertToLocalTime(
+                  controller.profileDetails['birthtime'] ?? '',
+                ),
+              ),
+          ],
+        ),
+        if (controller.profileDetails['horoscope_photo'].toString().isNotEmpty)
+          TextButton(
+            onPressed: () =>
+                downloadFile(controller.profileDetails['horoscope_photo']),
+            child: AppText(
+              text: 'Download Horoscope',
+              fontSize: 14.sp,
+              color: AppColors.lightPrimary,
+            ),
+          ),
+
         const SizedBox(height: 16),
       ],
     );

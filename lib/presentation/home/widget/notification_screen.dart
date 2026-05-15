@@ -1,5 +1,4 @@
 import '../../../core/exporters/app_export.dart' hide DateFormat;
-import 'package:intl/intl.dart';
 
 class NotificationList extends StatefulWidget {
   const NotificationList({super.key});
@@ -32,7 +31,7 @@ class _NotificationListState extends State<NotificationList> {
         }
 
         if (controller.items.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyState(theme);
         }
         return NotificationListener<ScrollNotification>(
           onNotification: (scrollNotification) {
@@ -78,6 +77,16 @@ class _NotificationListState extends State<NotificationList> {
                                 final url = data['url']?.toString();
                                 if (url != null && url.isNotEmpty) {
                                   launchInBrowser(Uri.parse(url));
+                                }
+                                break;
+
+                              case 'open_profile':
+                                final id = data['profile_id']?.toString();
+                                if (id != null && id.isNotEmpty) {
+                                  Get.toNamed(
+                                    Routes.othersProfile,
+                                    arguments: {'id': id, 'source': 'matches'},
+                                  );
                                 }
                                 break;
 
@@ -144,19 +153,22 @@ class _NotificationListState extends State<NotificationList> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(AppAssets.notification, width: Get.width * 0.35),
+          CustomImage(
+            image: AppAssets.emptyNotification,
+            width: Get.width * 0.4,
+          ),
           SizedBox(height: 16.sp),
-          const Text(
+          Text(
             'No Notifications!',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           SizedBox(height: 8.sp),
@@ -396,10 +408,5 @@ class NotificationTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String formatTime(String date) {
-    DateTime dateTime = DateTime.parse(date).toLocal();
-    return DateFormat('hh:mm a').format(dateTime);
   }
 }

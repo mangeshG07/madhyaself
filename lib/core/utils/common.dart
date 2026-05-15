@@ -1,3 +1,6 @@
+import 'package:background_downloader/background_downloader.dart';
+import 'package:open_filex/open_filex.dart';
+
 import '../exporters/app_export.dart' hide DateFormat;
 import 'package:intl/intl.dart';
 
@@ -9,6 +12,16 @@ Future<void> launchInBrowser(Uri url) async {
   if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
     throw Exception('Could not launch $url');
   }
+}
+
+String formatTime(String date) {
+  DateTime dateTime = DateTime.parse(date).toLocal();
+  return DateFormat('hh:mm a').format(dateTime);
+}
+
+String convertToLocalTime(String time) {
+  final parsedTime = DateFormat("HH:mm:ss").parse(time);
+  return DateFormat("hh:mm a").format(parsedTime);
 }
 
 Widget buildBackgroundImage(ThemeData theme) {
@@ -215,7 +228,7 @@ Widget buildDetailItem({
           decoration: BoxDecoration(
             color: isFill
                 ? Get.isDarkMode
-                      ? AppColors.grey700
+                      ? theme.cardColor
                       : AppColors.grey100
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12.r),
@@ -538,5 +551,33 @@ Color getStatusColor(String status) {
       return Colors.red;
     default:
       return Colors.grey;
+  }
+}
+
+Future<void> downloadFile(String url) async {
+  final fileName = Uri.parse(url).pathSegments.last;
+
+  final task = DownloadTask(
+    url: url,
+    filename: fileName,
+    directory: 'downloads',
+  );
+
+  final result = await FileDownloader().download(
+    task,
+    onProgress: (progress) {
+      // print('Progress: ${(progress * 100).toStringAsFixed(0)}%');
+    },
+  );
+
+  if (result.status == TaskStatus.complete) {
+    final path = await task.filePath();
+    await OpenFilex.open(path);
+  } else {
+    Get.snackbar(
+      "Download Failed",
+      fileName,
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
 }

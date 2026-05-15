@@ -27,110 +27,138 @@ class _PaymentMethodState extends State<PaymentMethod> {
         () => controller.isDetailsLoading.isTrue
             ? AppLoader.circular()
             : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  spacing: 12,
-                  children: [
-                    AppText(
-                      text: 'Plan : ${controller.planDetails['name']}',
-                      fontSize: 18.sp,
-                      textAlign: TextAlign.start,
-                      fontWeight: FontWeight.w600,
-                    ),
-
-                    AppText(
-                      text: 'Price : ${controller.planDetails['final_price']}',
-                      fontSize: 18.sp,
-                      textAlign: TextAlign.start,
-                      fontWeight: FontWeight.w500,
-                    ),
-
-                    /// Feature Header
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppText(
-                            text: "Features",
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(
-                              Get.context!,
-                            ).textTheme.titleLarge!.color,
-                          ),
-                          AppText(
-                            text: "Limit",
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(
-                              Get.context!,
-                            ).textTheme.bodyMedium!.color,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Divider(
-                      thickness: 1,
-                      color: Colors.grey.withValues(alpha: 0.3),
-                      height: 15.h,
-                    ),
-
-                    /// Feature List
-                    ...controller.planDetails['features'].map(
-                      (feature) => Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.check_circle,
-                                    color: Theme.of(Get.context!).dividerColor,
-                                    size: 18.sp,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Expanded(
-                                    child: AppText(
-                                      text: feature['name'] ?? '',
-                                      fontSize: 14.sp,
-                                      color: Theme.of(
-                                        Get.context!,
-                                      ).textTheme.titleLarge!.color,
-                                      textAlign: TextAlign.start,
-                                      maxLines: 3,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            AppText(
-                              text: feature['limit']?.toString() ?? '-',
-                              fontSize: 14.sp,
-                              color: Theme.of(
-                                Get.context!,
-                              ).textTheme.titleLarge!.color,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ],
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                child: Card(
+                  surfaceTintColor: Colors.white,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 12,
+                      children: [
+                        AppText(
+                          text: 'Plan : ${controller.planDetails['name']}',
+                          fontSize: 18.sp,
+                          textAlign: TextAlign.start,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                    ),
 
-                    Divider(
-                      thickness: 1,
-                      color: Colors.grey.withValues(alpha: 0.3),
-                      height: 15.h,
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Price : ',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              TextSpan(
+                                text: controller.planDetails['final_price']
+                                    .toString(),
+                                style: theme.textTheme.bodyLarge!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // AppText(
+                        //   text:
+                        //       'Price : ${controller.planDetails['final_price']}',
+                        //   fontSize: 18.sp,
+                        //   textAlign: TextAlign.start,
+                        //   fontWeight: FontWeight.w500,
+                        // ),
+
+                        /// Feature Header
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              AppText(
+                                text: "Features",
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(
+                                  Get.context!,
+                                ).textTheme.titleLarge!.color,
+                              ),
+                              AppText(
+                                text: "Limit",
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(
+                                  Get.context!,
+                                ).textTheme.bodyMedium!.color,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Divider(
+                          thickness: 1,
+                          color: Colors.grey.withValues(alpha: 0.3),
+                          height: 15.h,
+                        ),
+
+                        /// Feature List
+                        ...controller.planDetails['features'].map(
+                          (feature) => Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6.h),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        color: Theme.of(
+                                          Get.context!,
+                                        ).dividerColor,
+                                        size: 18.sp,
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Expanded(
+                                        child: AppText(
+                                          text: feature['name'] ?? '',
+                                          fontSize: 14.sp,
+                                          color: Theme.of(
+                                            Get.context!,
+                                          ).textTheme.titleLarge!.color,
+                                          textAlign: TextAlign.start,
+                                          maxLines: 3,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                AppText(
+                                  text: feature['limit']?.toString() ?? '-',
+                                  fontSize: 14.sp,
+                                  color: Theme.of(
+                                    Get.context!,
+                                  ).textTheme.titleLarge!.color,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        Divider(
+                          thickness: 1,
+                          color: Colors.grey.withValues(alpha: 0.3),
+                          height: 15.h,
+                        ),
+                        SizedBox(height: 8.h),
+                        _buildPayMethod(theme),
+                        _buildPayNowButton(),
+                      ],
                     ),
-                    SizedBox(height: 8.h),
-                    _buildPayMethod(theme),
-                    _buildPayNowButton(),
-                  ],
+                  ),
                 ),
               ),
       ),

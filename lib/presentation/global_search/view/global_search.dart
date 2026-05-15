@@ -125,26 +125,24 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                         value: controller.selectedJob,
                         items: controller.jobCategoryList,
                       ),
-
-                      Obx(
-                        () => SafeArea(
-                          child: AppButton(
-                            text: controller.isSearching.value
-                                ? 'Searching...'
-                                : 'Search',
-                            onTap: controller.isSearching.value
-                                ? null
-                                : () async => await controller.globalSearch(
-                                    isRefresh: true,
-                                  ),
-                            backgroundColor: AppColors.lightPrimary,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
+      ),
+      bottomNavigationBar: Obx(
+        () => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: AppButton(
+              text: controller.isSearching.value ? 'Searching...' : 'Search',
+              onTap: controller.isSearching.value
+                  ? null
+                  : () async => await controller.globalSearch(isRefresh: true),
+              backgroundColor: AppColors.lightPrimary,
+            ),
+          ),
+        ),
       ),
     );
   }

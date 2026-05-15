@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // AppLoader.circular()
               _shimmerLoader(theme)
             : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: Column(
                   spacing: 12.h,
                   children: [
@@ -98,7 +98,12 @@ class _HomeScreenState extends State<HomeScreen> {
       surfaceTintColor: theme.scaffoldBackgroundColor,
       backgroundColor: theme.scaffoldBackgroundColor,
       centerTitle: false,
-      title: Image.asset(AppAssets.appLogoEnglish, width: 0.4.sw),
+      title: Image.asset(
+        theme.brightness == Brightness.light
+            ? AppAssets.appLogoEnglish
+            : AppAssets.appLogoWhite,
+        width: 0.4.sw,
+      ),
       actions: [
         AppIconButton(
           onPressed: () => Get.toNamed(
@@ -141,6 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return SizedBox();
     }
     return Container(
+      alignment: Alignment.center,
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         border: Border.all(
@@ -201,9 +207,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Expanded(
-            flex: 1,
+            // flex: 1,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 GestureDetector(
                   onTap: () => Get.toNamed(Routes.editProfile),
@@ -293,7 +300,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             text: item["value"]?.toString() ?? '',
                             fontSize: 12.sp,
                             style: theme.textTheme.titleLarge?.copyWith(
-                              color: AppColors.lightTextLowColor,
+                              color: theme.brightness == Brightness.light
+                                  ? AppColors.lightTextLowColor
+                                  : Colors.white,
                             ),
                           ),
                         ),
@@ -311,7 +320,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             fontSize: 16.sp,
                             maxLines: 2,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.lightTextLowColor,
+                              color: theme.brightness == Brightness.light
+                                  ? AppColors.lightTextLowColor
+                                  : Colors.white,
                             ),
                           ),
                         ),
@@ -343,109 +354,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  // Widget _buildStats(ThemeData theme) {
-  //   return Obx(
-  //     () => GridView.builder(
-  //       shrinkWrap: true,
-  //       physics: const NeverScrollableScrollPhysics(),
-  //       itemCount: controller.statsData.length,
-  //       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-  //         crossAxisCount: 2,
-  //         mainAxisSpacing: 12,
-  //         crossAxisSpacing: 12,
-  //         childAspectRatio: 1.4,
-  //       ),
-  //       itemBuilder: (context, index) {
-  //         final item = controller.statsData[index];
-  //
-  //         return GestureDetector(
-  //           onTap: item['onTap'],
-  //           child: Container(
-  //             padding: const EdgeInsets.all(14),
-  //             decoration: BoxDecoration(
-  //               color: theme.cardColor,
-  //               borderRadius: BorderRadius.circular(16),
-  //               boxShadow: [
-  //                 BoxShadow(
-  //                   color: Colors.black.withValues(alpha: 0.05),
-  //                   blurRadius: 8,
-  //                   offset: const Offset(0, 4),
-  //                 ),
-  //               ],
-  //             ),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 Row(
-  //                   spacing: 12.w,
-  //                   children: [
-  //                     Container(
-  //                       padding: const EdgeInsets.all(6),
-  //                       decoration: BoxDecoration(
-  //                         color: theme.brightness == Brightness.light
-  //                             ? AppColors.lightPrimary.withValues(alpha: 0.1)
-  //                             : AppColors.lightLowPrimary.withValues(
-  //                                 alpha: 0.1,
-  //                               ),
-  //                         borderRadius: BorderRadius.circular(10),
-  //                       ),
-  //                       child: HugeIcon(
-  //                         icon: item["icon"] as List<List<dynamic>>,
-  //                         color: AppColors.lightPrimary,
-  //                         size: 20.r,
-  //                       ),
-  //                     ),
-  //                     AppText(
-  //                       text: item["value"]?.toString() ?? '',
-  //                       fontSize: 12.sp,
-  //                       style: theme.textTheme.titleLarge?.copyWith(
-  //                         color: AppColors.lightTextLowColor,
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //
-  //                 Row(
-  //                   crossAxisAlignment: CrossAxisAlignment.end,
-  //                   children: [
-  //                     Expanded(
-  //                       child: AppText(
-  //                         text: item["title"]?.toString() ?? '',
-  //                         fontSize: 16.sp,
-  //                         maxLines: 2,
-  //                         style: theme.textTheme.bodyMedium?.copyWith(
-  //                           color: AppColors.lightTextLowColor,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     Container(
-  //                       padding: const EdgeInsets.all(3),
-  //                       decoration: BoxDecoration(
-  //                         color: theme.brightness == Brightness.light
-  //                             ? theme.primaryColor.withValues(alpha: 0.05)
-  //                             : AppColors.lightLowPrimary.withValues(
-  //                                 alpha: 0.1,
-  //                               ),
-  //                         borderRadius: BorderRadius.circular(100),
-  //                       ),
-  //                       child: HugeIcon(
-  //                         icon: HugeIcons.strokeRoundedArrowUpRight03,
-  //                         color: AppColors.lightTextLowColor,
-  //                         size: 20.r,
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 
   Widget _buildTodayMatch(ThemeData theme) {
     return Obx(() {
@@ -507,7 +415,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     onTap: () => Get.toNamed(
                       Routes.othersProfile,
-                      arguments: {'id': match['id']?.toString() ?? '','source':'matches'},
+                      arguments: {
+                        'id': match['id']?.toString() ?? '',
+                        'source': 'matches',
+                      },
                     ),
                   ),
                 );
@@ -561,7 +472,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Obx(
           () => MasonryGridView.count(
-            // padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             shrinkWrap: true,
@@ -599,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: HugeIcon(
                               icon: item["icon"] as List<List<dynamic>>,
-                              color: theme.primaryColor,
+                              color: AppColors.lightPrimary,
                               size: 20.r,
                             ),
                           ),
@@ -607,7 +517,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             text: item["value"]?.toString() ?? '',
                             fontSize: 12.sp,
                             style: theme.textTheme.titleLarge?.copyWith(
-                              color: AppColors.lightTextLowColor,
+                              color: theme.brightness == Brightness.light
+                                  ? AppColors.lightTextLowColor
+                                  : Colors.white,
                               fontSize: 14.sp,
                             ),
                           ),
@@ -623,7 +535,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 14.sp,
                               maxLines: 2,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.lightTextLowColor,
+                                color: theme.brightness == Brightness.light
+                                    ? AppColors.lightTextLowColor
+                                    : Colors.white,
                               ),
                             ),
                           ),
@@ -680,7 +594,10 @@ class _HomeScreenState extends State<HomeScreen> {
               return GestureDetector(
                 onTap: () => Get.toNamed(
                   Routes.othersProfile,
-                  arguments: {'id': user['id']?.toString() ?? '','source':'matches'},
+                  arguments: {
+                    'id': user['id']?.toString() ?? '',
+                    'source': 'matches',
+                  },
                 ),
                 child: _buildOnlineTile(theme, user),
               );

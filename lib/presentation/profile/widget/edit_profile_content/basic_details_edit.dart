@@ -42,6 +42,7 @@ class BasicDetailsEdit extends GetView<ProfileController> {
                   theme,
                   label: 'Alternative Number',
                   controller: controller.alternateNoController,
+                  isValidation: false,
                 ),
                 Row(
                   spacing: 16.w,
@@ -166,15 +167,14 @@ class BasicDetailsEdit extends GetView<ProfileController> {
     ThemeData theme, {
     required String label,
     required TextEditingController controller,
-    bool enabled = true,
+    bool isValidation = true,
   }) {
     return AppTextField(
       filled: true,
       label: label,
       showLabel: true,
       controller: controller,
-      enabled: enabled,
-      validator: enabled ? AppValidators.phone : null,
+      validator: isValidation ? AppValidators.phone : null,
       hint: label,
       focusedBorder: theme.inputDecorationTheme.focusedBorder,
       enabledBorder: theme.inputDecorationTheme.enabledBorder,

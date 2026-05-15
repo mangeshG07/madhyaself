@@ -54,7 +54,7 @@ class _MailboxScreenState extends State<MailboxScreen> {
 
       controller: controller.searchController,
       contentPadding: EdgeInsets.symmetric(vertical: 14.h),
-      fillColor: theme.inputDecorationTheme.fillColor,
+      fillColor: theme.cardColor,
       prefixIcon: Padding(
         padding: EdgeInsets.only(left: 10.w, right: 6.w),
         child: Icon(Icons.search, color: Colors.grey, size: 20.sp),
@@ -122,7 +122,7 @@ class _MailboxScreenState extends State<MailboxScreen> {
                   vertical: 8,
                 ),
                 itemCount: chatList.items.length,
-                separatorBuilder: (_, __) => _buildDivider(),
+                separatorBuilder: (_, __) => _buildDivider(theme),
                 itemBuilder: (_, index) {
                   final chat = chatList.items[index];
                   return ChatTile(chat: chat, controller: controller);
@@ -160,8 +160,12 @@ class _MailboxScreenState extends State<MailboxScreen> {
     );
   }
 
-  Widget _buildDivider() {
-    return Divider(height: 20.h, thickness: 0.6, color: AppColors.grey200);
+  Widget _buildDivider(ThemeData theme) {
+    return Divider(
+      height: 20.h,
+      thickness: 0.6,
+      color: theme.dividerTheme.color!,
+    );
   }
 
   Widget emptyData(ThemeData theme) {

@@ -144,6 +144,7 @@ class RegisterController extends GetxController {
           res['user']['id'].toString(),
         );
         await LocalStorage.setBool('isOnboarded', true);
+        getIt<NavigationController>().currentIndex.value = 0;
         Get.offAllNamed(Routes.mainScreen);
       } else {
         CustomSnackbar.show(

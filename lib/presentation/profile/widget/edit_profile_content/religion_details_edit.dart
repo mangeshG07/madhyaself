@@ -42,7 +42,9 @@ class ReligionDetailsEdit extends GetView<ProfileController> {
     return IgnorePointer(
       ignoring: true,
       child: AppTextField(
-        fillColor: theme.scaffoldBackgroundColor,
+        fillColor: theme.brightness == Brightness.light
+            ? AppColors.grey100
+            : theme.cardColor,
         enabledBorder: theme.inputDecorationTheme.enabledBorder,
         filled: true,
         contentPadding: const EdgeInsets.all(15),

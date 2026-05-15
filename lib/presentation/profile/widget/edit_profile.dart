@@ -306,6 +306,18 @@ class EditProfile extends GetView<ProfileController> {
               ),
             ],
           ),
+          Row(
+            spacing: 16.w,
+            children: [
+              buildDetailItem(
+                label: 'Address',
+                value: capitalizeFirst(
+                  controller.profileDetails['address'] ?? '-',
+                ),
+                isFill: false,
+              ),
+            ],
+          ),
         ],
       ),
       'Location',

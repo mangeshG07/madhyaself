@@ -35,16 +35,24 @@ class _ChatDetailsState extends State<ChatDetails> {
           ),
         );
       }
-      return Scaffold(
-        appBar: _buildAppBar(theme),
-        backgroundColor: theme.scaffoldBackgroundColor,
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildAllChat(chatList, theme),
-              _buildAttachmentsPreview(),
-              _buildTextField(theme),
-            ],
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) async {
+          if (didPop) return;
+          Get.back();
+          await controller.getChatList(isRefresh: true);
+        },
+        child: Scaffold(
+          appBar: _buildAppBar(theme),
+          backgroundColor: theme.scaffoldBackgroundColor,
+          body: SafeArea(
+            child: Column(
+              children: [
+                _buildAllChat(chatList, theme),
+                _buildAttachmentsPreview(),
+                _buildTextField(theme),
+              ],
+            ),
           ),
         ),
       );
