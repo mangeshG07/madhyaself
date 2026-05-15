@@ -12,14 +12,14 @@ class VerifyOTPScreen extends GetView<OtpController> {
           : theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
-          children: [buildBackgroundImage(theme), _buildForm(theme)],
+          children: [buildBackgroundImage(theme), _buildForm(theme, context)],
         ),
       ),
     );
   }
 
   /// ---------------- OTP FORM ----------------
-  Widget _buildForm(ThemeData theme) {
+  Widget _buildForm(ThemeData theme, BuildContext context) {
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -37,7 +37,7 @@ class VerifyOTPScreen extends GetView<OtpController> {
                 theme,
               ),
               const SizedBox(height: 10),
-              _buildOTPField('OTP', theme),
+              _buildOTPField('OTP', theme, context),
               _buildResendOtp(),
               const SizedBox(height: 22),
               _buildVerifyButton(),
@@ -50,7 +50,7 @@ class VerifyOTPScreen extends GetView<OtpController> {
   }
 
   /// ---------------- OTP FIELD ----------------
-  Widget _buildOTPField(String label, ThemeData theme) {
+  Widget _buildOTPField(String label, ThemeData theme, BuildContext context) {
     final defaultPinTheme = PinTheme(
       width: 50.w,
       height: 50.h,
@@ -89,7 +89,9 @@ class VerifyOTPScreen extends GetView<OtpController> {
                 border: Border.all(color: AppColors.lightPrimary),
               ),
             ),
-            onCompleted: (pin) {},
+            onCompleted: (pin) {
+              FocusScope.of(context).unfocus();
+            },
           ),
         ),
       ],
