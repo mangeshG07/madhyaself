@@ -1626,7 +1626,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "61260041fe49dcad2d19f72be3c4a246ba92c842"
+      resolved-ref: "7852563b82b1b638bf9dafef6da5ebdc133f6515"
       url: "https://github.com/mangeshG07/ui_package.git"
     source: git
     version: "0.0.1"
