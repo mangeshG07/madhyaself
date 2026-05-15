@@ -104,7 +104,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? AppColors.bgColor
           : theme.scaffoldBackgroundColor,
       centerTitle: false,
-      title: Image.asset(AppAssets.appLogoEnglish, height: 28.h),
+      title: Image.asset(
+        theme.brightness == Brightness.light
+            ? AppAssets.appLogoEnglish
+            : AppAssets.appLogoWhite,
+        height: 28.h,
+      ),
     );
   }
 

@@ -300,7 +300,7 @@ class _OtherProfileState extends State<OtherProfile> {
               controller.currentIndex.value = index;
             },
             itemBuilder: (_, index) {
-              final imageUrl = images[index] ?? '';
+              final imageUrl = images[index];
               return Stack(
                 fit: StackFit.expand,
                 children: [
@@ -440,6 +440,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                 msg,
                               )
                               .then((v) async {
+                                Get.back();
                                 await controller.otherProfileDetails(
                                   controller.profileDetails['id'].toString(),
                                 );

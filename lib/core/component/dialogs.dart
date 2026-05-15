@@ -146,7 +146,7 @@ class AllDialogs {
               onPressed: () {
                 Get.back();
               },
-              child: const Text('Cancel'),
+              child: const Text('Cancel',style: TextStyle(color: Colors.grey),),
             ),
             CupertinoDialogAction(
               isDestructiveAction: true,
