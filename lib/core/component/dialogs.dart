@@ -84,7 +84,7 @@ class AllDialogs {
             ),
             CupertinoDialogAction(
               onPressed: () {
-                getIt<LoginController>().numberController.clear();
+                Get.find<LoginController>().numberController.clear();
                 Get.offAllNamed(Routes.login);
               },
               child: const Text('Yes'),
@@ -146,7 +146,7 @@ class AllDialogs {
               onPressed: () {
                 Get.back();
               },
-              child: const Text('Cancel',style: TextStyle(color: Colors.grey),),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             CupertinoDialogAction(
               isDestructiveAction: true,
@@ -199,7 +199,10 @@ class AllDialogs {
                   children: [
                     ElevatedButton(
                       onPressed: () => Get.back(),
-                      child: const Text('Cancel',style: TextStyle(color: Colors.grey),),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
