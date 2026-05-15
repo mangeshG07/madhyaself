@@ -103,7 +103,7 @@ class _SearchResultState extends State<SearchResult> {
                       'isVerified': match['isVerified'] ?? false,
                       'isPremium': match['isPremium'] ?? false,
                       'isHide': match['hide_photos'] != '0',
-                      'matchPercent': match['match_percentage'] ?? 0,
+                      // 'matchPercent': match['match_percentage'] ?? 0,
                     },
                     onTap: () => Get.toNamed(
                       Routes.othersProfile,
