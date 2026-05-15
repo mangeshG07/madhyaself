@@ -38,7 +38,7 @@ class RegisterController extends GetxController {
   final isDataLoading = false.obs;
   final isCasteLoading = false.obs;
   final isSubCasteLoading = false.obs;
-
+  final isWhatsappSame = false.obs;
   final isTermsAccepted = false.obs;
 
   /// ------------------ FILES ------------------ ///

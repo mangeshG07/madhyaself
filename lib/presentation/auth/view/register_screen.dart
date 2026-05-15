@@ -42,6 +42,7 @@ class RegisterScreen extends GetView<RegisterController> {
                     ),
                     _buildNameField(theme),
                     _buildNumberField(theme),
+                    _buildWhatsappSameCheckbox(theme),
                     _buildGender(theme),
                     _buildDOB(theme, context),
                     _buildAgeDropdown(),
@@ -97,6 +98,42 @@ class RegisterScreen extends GetView<RegisterController> {
         FilteringTextInputFormatter.digitsOnly,
         LengthLimitingTextInputFormatter(10),
       ],
+    );
+  }
+
+  Widget _buildWhatsappSameCheckbox(ThemeData theme) {
+    return Obx(
+      () => Row(
+        children: [
+          SizedBox(
+            width: 22.r,
+            height: 22.r,
+            child: Checkbox(
+              value: controller.isWhatsappSame.value,
+              activeColor: AppColors.lightPrimary,
+              onChanged: (value) {
+                controller.isWhatsappSame.value = value!;
+
+                if (value) {
+                  controller.whatsappNumber.text =
+                      Get.find<LoginController>().numberController.text;
+                } else {
+                  controller.whatsappNumber.clear();
+                }
+              },
+            ),
+          ),
+
+          SizedBox(width: 8.w),
+
+          Expanded(
+            child: Text(
+              "Same as mobile number",
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

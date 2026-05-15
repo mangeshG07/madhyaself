@@ -65,7 +65,10 @@ class _ChatDetailsState extends State<ChatDetails> {
       surfaceTintColor: theme.scaffoldBackgroundColor,
       centerTitle: true,
       leading: IconButton(
-        onPressed: () => Get.back(),
+        onPressed: () async {
+          Get.back();
+          await controller.getChatList(isRefresh: true);
+        },
         icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
       ),
       title: Obx(
