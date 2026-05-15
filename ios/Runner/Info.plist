@@ -47,8 +47,7 @@
 		<string>tel</string>
 		<string>https</string>
 		<string>http</string>
-		<string>maps</string>
-		<string>comgooglemaps</string>
+
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -61,8 +60,13 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Madhyasthi needs access to your camera so you can capture and upload photos related to your profile.</string>
+
 	<key>NSDocumentsFolderUsageDescription</key>
 	<string>Madhyasthi needs access to your files so you can upload documents related to your profile.</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Madhyasthi needs access to your photo library so you can select and upload images for your profile.</string>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
