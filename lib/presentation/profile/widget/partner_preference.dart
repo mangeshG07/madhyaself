@@ -42,6 +42,7 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
                     _buildProfessionalDetails(theme),
                     _buildReligionDetails(theme),
                     _buildLocationDetails(theme),
+                    _buildLifeStyleDetails(theme),
                   ],
                 ),
               ),
@@ -146,12 +147,15 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
       Column(
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 16.w,
             children: [
               buildDetailItem(
                 label: 'Education Category',
                 value: _val(
-                  controller.preferenceDetails['education_category_name'],
+                  controller.preferenceDetails['education_category_name'].join(
+                    ' ,',
+                  ),
                 ),
                 isFill: false,
               ),
@@ -163,11 +167,14 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             ],
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 16.w,
             children: [
               buildDetailItem(
                 label: 'Job Category',
-                value: _val(controller.preferenceDetails['job_category_name']),
+                value: _val(
+                  controller.preferenceDetails['job_category_name'].join(' ,'),
+                ),
                 isFill: false,
               ),
               buildDetailItem(
@@ -191,16 +198,19 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
       Column(
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 16.w,
             children: [
               buildDetailItem(
                 label: 'Religion',
-                value: _val(controller.preferenceDetails['religion']),
+                value: _val(
+                  controller.preferenceDetails['religion'].join(' ,'),
+                ),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Caste / Community',
-                value: _val(controller.preferenceDetails['caste']),
+                value: controller.preferenceDetails['caste'].join(' ,'),
                 isFill: false,
               ),
             ],
@@ -210,7 +220,9 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Sub Caste',
-                value: _val(controller.preferenceDetails['sub_caste']),
+                value: _val(
+                  controller.preferenceDetails['sub_caste'].join(' ,'),
+                ),
                 isFill: false,
               ),
             ],
@@ -258,6 +270,63 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
       'Location',
       HugeIcons.strokeRoundedLocation05,
       () => Get.toNamed(Routes.partnerLocationDetailsEdit),
+      theme,
+    );
+  }
+
+  Widget _buildLifeStyleDetails(ThemeData theme) {
+    return buildSection(
+      Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16.w,
+            children: [
+              buildDetailItem(
+                label: 'Dietary Habits',
+                value: getDisplayValue(
+                  key: _val(controller.preferenceDetails['dietary_habits']),
+                  options: controller.dietOptionsList,
+                ),
+                isFill: false,
+              ),
+              buildDetailItem(
+                label: 'Smoking Habits',
+                value: getDisplayValue(
+                  key: controller.preferenceDetails['smoking_habits'],
+                  options: controller.smokingOptionsList,
+                ),
+                isFill: false,
+              ),
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16.w,
+            children: [
+              buildDetailItem(
+                label: 'Drinking Habits',
+                value: getDisplayValue(
+                  key: controller.preferenceDetails['drinking_habits'],
+                  options: controller.drinkingOptionsList,
+                ),
+                isFill: false,
+              ),
+              buildDetailItem(
+                label: 'Special Case',
+                value: getDisplayValue(
+                  key: controller.preferenceDetails['special_case'],
+                  options: controller.specialCasesList,
+                ),
+                isFill: false,
+              ),
+            ],
+          ),
+        ],
+      ),
+      'Partner Lifestyle &\nAppearances',
+      HugeIcons.strokeRoundedDrink,
+      () => Get.toNamed(Routes.partnerLifestylesEdit),
       theme,
     );
   }

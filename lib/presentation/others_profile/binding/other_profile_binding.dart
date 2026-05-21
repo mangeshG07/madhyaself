@@ -1,6 +1,5 @@
 import 'package:madhya/core/exporters/app_export.dart';
 
-
 class OtherProfileBinding extends Bindings {
   @override
   void dependencies() {

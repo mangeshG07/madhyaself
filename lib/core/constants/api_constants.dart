@@ -81,4 +81,8 @@ class ApiConstants {
 
   static const String getNotification = '/get-notification';
   static const String readNotification = '/read-notification';
+  static const String getMultiCasteByReligion =
+      '/get-multiple-caste-by-religion';
+  static const String getMultiSubCasteByCaste =
+      '/get-multiple-sub-caste-by-caste';
 }

@@ -175,7 +175,7 @@ OutlineInputBorder buildOutlineInputBorder() {
     borderSide: const BorderSide(
       color: Colors.grey,
       width: 0.2,
-    ), // Replace with AppColors.primaryColor
+    ),
     borderRadius: BorderRadius.circular(10.r),
   );
 }

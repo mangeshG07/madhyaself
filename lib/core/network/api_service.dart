@@ -61,6 +61,10 @@ abstract class ApiService {
   @MultiPart()
   Future<dynamic> updateUserProfile(@Body() FormData formData);
 
+  @POST(ApiConstants.updatePartnerPreference)
+  @MultiPart()
+  Future<dynamic> updatePartnerPreference(@Body() dynamic formData);
+
   @POST(ApiConstants.getOtherProfile)
   Future<dynamic> getOtherProfile(
     @Part(name: "user_id") String userId,
@@ -167,11 +171,6 @@ abstract class ApiService {
   @POST(ApiConstants.getPartnerPreference)
   Future<dynamic> getPartnerPreference(@Part(name: "user_id") String userId);
 
-  @POST(ApiConstants.updatePartnerPreference)
-  Future<dynamic> updatePartnerPreference(
-    @Body() Map<String, dynamic> formData,
-  );
-
   @POST(ApiConstants.getMatches)
   Future<dynamic> getMatches(
     @Part(name: "user_id") String userId,
@@ -213,12 +212,10 @@ abstract class ApiService {
   );
 
   @POST(ApiConstants.globalSearch)
-  Future<dynamic> globalSearch(@Body() Map<String, dynamic> formData);
+  Future<dynamic> globalSearch(@Body() dynamic formData);
 
   @POST(ApiConstants.getPlans)
-  Future<dynamic> getPlans(
-      @Part(name: "user_id") String userId,
-      );
+  Future<dynamic> getPlans(@Part(name: "user_id") String userId);
 
   @POST(ApiConstants.getPlanDetails)
   Future<dynamic> getPlanDetails(
@@ -277,4 +274,10 @@ abstract class ApiService {
     @Part(name: "user_id") String userId,
     @Part(name: "notification_id") String notificationId,
   );
+
+  @POST(ApiConstants.getMultiCasteByReligion)
+  Future<dynamic> getMultiCasteByReligion(@Body() dynamic formData);
+
+  @POST(ApiConstants.getMultiSubCasteByCaste)
+  Future<dynamic> getMultiSubCasteByCaste(@Body() dynamic formData);
 }

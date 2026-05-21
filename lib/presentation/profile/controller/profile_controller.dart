@@ -200,6 +200,7 @@ class ProfileController extends GetxController {
   // ].obs;
 
   List<Map<String, dynamic>> get menuList => [
+    {'title': 'Biodata', 'icon': HugeIcons.strokeRoundedFile01, 'onTap': () {}},
     {
       'title': 'Profile',
       'icon': HugeIcons.strokeRoundedUserCircle,

@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:madhya/core/component/app_share.dart';
 import 'package:madhya/core/exporters/app_export.dart';
 
@@ -69,6 +68,8 @@ class _OtherProfileState extends State<OtherProfile> {
                                 _buildLocationDetails(),
                                 _buildFamilyDetails(),
                                 _buildHoroscopeDetails(),
+                                _buildLookingForDetails(),
+                                SizedBox(height: 24.h),
                               ],
                             ),
                           ),
@@ -757,7 +758,6 @@ class _OtherProfileState extends State<OtherProfile> {
   }
 
   /// 🔹 PROFESSIONAL DETAILS
-
   Widget _buildProfessionalDetails() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -984,8 +984,148 @@ class _OtherProfileState extends State<OtherProfile> {
             ),
           ),
 
-        const SizedBox(height: 16),
+        _buildDivider(),
       ],
+    );
+  }
+
+  /// 🔹 LOCATION DETAILS
+  Widget _buildLookingForDetails() {
+    if (controller.preferenceDetails.isEmpty) return SizedBox();
+    final heShe = controller.profileDetails['gender'] == '0' ? 'He' : 'She';
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0).copyWith(right: 16, left: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            buildSectionHeader(
+              'What $heShe is looking for',
+              HugeIcons.strokeRoundedSearch02,
+              isPrimary: true,
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Age',
+                  value: getAgeRange(controller.preferenceDetails),
+                  // '${controller.preferenceDetails['patner_age_from'] ?? ''} to ${controller.preferenceDetails['patner_age_to'] ?? ''} yrs',
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Height',
+                  value: getHeightRange(controller.preferenceDetails),
+                  // '${controller.preferenceDetails['patner_height_from'] ?? ''} to ${controller.preferenceDetails['patner_height_to '] ?? ''} cm',
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Education',
+                  value: controller.preferenceDetails['education'].join(' , '),
+                ),
+              ],
+            ),
+
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Occupation',
+                  value: controller.preferenceDetails['job'].join(' , '),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Religion',
+                  value: controller.preferenceDetails['religions'].join(' , '),
+                ),
+              ],
+            ),
+
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Caste',
+                  value: controller.preferenceDetails['casts'].join(' , '),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Sub Caste',
+                  value: controller.preferenceDetails['sub_casts'].join(' , '),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Diet Preference',
+                  value: getDisplayValue(
+                    key: controller.preferenceDetails['dietary_habits'],
+                    options: Get.find<PreferenceController>().dietOptionsList,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Smoking',
+                  value: getDisplayValue(
+                    key: controller.preferenceDetails['smoking_habits'],
+                    options:
+                        Get.find<PreferenceController>().smokingOptionsList,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Drinking',
+                  value: getDisplayValue(
+                    key: controller.preferenceDetails['drinking_habits'],
+                    options:
+                        Get.find<PreferenceController>().drinkingOptionsList,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                buildDetailItem(
+                  isFill: false,
+                  label: 'Special Case',
+                  value: getDisplayValue(
+                    key: controller.preferenceDetails['special_case'],
+                    options: Get.find<PreferenceController>().specialCasesList,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 

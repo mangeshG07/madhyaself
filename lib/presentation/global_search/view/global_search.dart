@@ -20,22 +20,35 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                     children: [
                       _searchUsername(theme),
 
-                      _dropdownField(
-                        isDynamic: true,
-                        title: "Religion",
-                        value: controller.selectedReligion,
+                      _buildMultiDropdown(
+                        title: 'Religion',
+                        selectedItems: controller.selectedReligionList,
+                        selectedItemsIds: controller.selectedReligionIdsList,
                         items: controller.religionList,
                         isCaste: true,
                       ),
 
-                      _dropdownField(
-                        isDynamic: true,
-                        title: "Caste",
-                        value: controller.selectedCaste,
+                      // _dropdownField(
+                      //   isDynamic: true,
+                      //   title: "Religion",
+                      //   value: controller.selectedReligion,
+                      //   items: controller.religionList,
+                      //   isCaste: true,
+                      // ),
+                      _buildMultiDropdown(
+                        title: 'Caste',
+                        selectedItems: controller.selectedCasteList,
+                        selectedItemsIds: controller.selectedCasteIdsList,
                         items: controller.casteList,
-                        isSelectCaste: true,
                       ),
 
+                      // _dropdownField(
+                      //   isDynamic: true,
+                      //   title: "Caste",
+                      //   value: controller.selectedCaste,
+                      //   items: controller.casteList,
+                      //   isSelectCaste: true,
+                      // ),
                       _buildRangeRow(
                         isDynamic: true,
                         isHeight: true,
@@ -76,53 +89,38 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                             .toList(),
                       ),
 
-                      // AppDropdownSearch<String>(
-                      //   title: "State",
-                      //   isRequired: false,
-                      //   value: controller.selectedState.value,
-                      //   items: controller.stateList
-                      //       .map<String>((e) => e['name'])
-                      //       .toList(),
-                      //   hintText: "State",
-                      //   showSearchBox: true,
-                      //   searchHintText: "",
-                      //   onChanged: (val) => controller.selectedState.value = val,
-                      //   validator: AppValidators.required,
-                      // ),
-                      // AppDropdownSearch<String>(
-                      //   title: "City",
-                      //   isRequired: false,
-                      //   value: controller.selectedCity.value,
-                      //   items: controller.cityList
-                      //       .map<String>((e) => e['name'])
-                      //       .toList(),
-                      //   hintText: "City",
-                      //   showSearchBox: true,
-                      //   searchHintText: "",
-                      //   onChanged: (val) => controller.selectedCity.value = val,
-                      //   validator: AppValidators.required,
-                      // ),
                       _dropdownField(
                         isDynamic: true,
                         title: "Income",
-                        isPremium: true,
                         value: controller.selectedIncome,
                         items: controller.annualIncomeList,
                       ),
 
-                      _dropdownField(
-                        isDynamic: true,
-                        title: "Education",
-                        isPremium: true,
-                        value: controller.selectedEducation,
+                      _buildMultiDropdown(
+                        title: 'Education',
+                        selectedItems: controller.selectedEducationList,
+                        selectedItemsIds: controller.selectedEducationIdsList,
                         items: controller.educationCategoryList,
                       ),
 
-                      _dropdownField(
-                        isDynamic: true,
-                        title: "Occupation",
-                        isPremium: true,
-                        value: controller.selectedJob,
+                      // _dropdownField(
+                      //   isDynamic: true,
+                      //   title: "Education",
+                      //
+                      //   value: controller.selectedEducation,
+                      //   items: controller.educationCategoryList,
+                      // ),
+                      // _dropdownField(
+                      //   isDynamic: true,
+                      //   title: "Occupation",
+                      //
+                      //   value: controller.selectedJob,
+                      //   items: controller.jobCategoryList,
+                      // ),
+                      _buildMultiDropdown(
+                        title: 'Occupation',
+                        selectedItems: controller.selectedJobList,
+                        selectedItemsIds: controller.selectedJobIdsList,
                         items: controller.jobCategoryList,
                       ),
                     ],
@@ -172,6 +170,87 @@ class GlobalSearch extends GetView<GlobalSearchController> {
   }
 
   /// ================= COMMON DROPDOWN =================
+  Widget _buildMultiDropdown({
+    required String title,
+    required List selectedItems,
+    required List selectedItemsIds,
+    required List items,
+    bool isCaste = false,
+  }) {
+    return Obx(() {
+      final isLocked = controller.isFilterLocked(title);
+
+      return GestureDetector(
+        onTap: isLocked ? AllDialogs().showPremiumDialog : null,
+        child: AbsorbPointer(
+          absorbing: isLocked,
+          child: Opacity(
+            opacity: isLocked ? 0.6 : 1.0,
+            child: Stack(
+              children: [
+                AppMultiDropdown(
+                  title: title,
+                  items: items.map((item) => item['name'].toString()).toList(),
+                  selectedItems: List<String>.from(selectedItems),
+                  hintText: title,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please select $title";
+                    }
+                    return null;
+                  },
+                  onChanged: (selected) async {
+                    print('selected========>$selected');
+                    selectedItems.assignAll(selected);
+
+                    final selectedIds = items
+                        .where(
+                          (item) => selected.contains(item['name'].toString()),
+                        )
+                        .map((item) => item['id'].toString())
+                        .toList();
+                    print('selectedIds========>$selectedIds');
+                    selectedItemsIds.assignAll(selectedIds);
+                    if (isCaste) {
+                      await controller.fetchCasteByReligionList(
+                        selectedItemsIds,
+                      );
+                    }
+
+                    print('selectedItemsIds========>$selectedItemsIds');
+                  },
+                ),
+                if (isLocked)
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: AllDialogs().showPremiumDialog,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+
+    // AppDropdownField(
+    //   isRequired: true,
+    //   isDynamic: true,
+    //   title: "Religion",
+    //   value: controller.selectedReligion.value,
+    //   items: controller.religionList,
+    //   hintText: 'Select',
+    //   validator: AppValidators.required,
+    //   onChanged: (val) {
+    //     controller.selectedReligion.value = val;
+    //     controller.fetchCaste(val.toString());
+    //   },
+    // );
+  }
 
   Widget _dropdownField({
     required String title,
@@ -179,7 +258,6 @@ class GlobalSearch extends GetView<GlobalSearchController> {
     required List items,
     bool isHeight = false,
     bool isDynamic = false,
-    bool isPremium = false,
     bool isCaste = false,
     bool isSelectCaste = false,
   }) {

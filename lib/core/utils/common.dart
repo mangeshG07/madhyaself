@@ -1,6 +1,10 @@
 import 'package:background_downloader/background_downloader.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../exporters/app_export.dart' hide DateFormat;
 import 'package:intl/intl.dart';
 
@@ -181,7 +185,11 @@ Widget badge(
   );
 }
 
-Widget buildSectionHeader(String title, dynamic icon) {
+Widget buildSectionHeader(
+  String title,
+  dynamic icon, {
+  bool isPrimary = false,
+}) {
   final theme = Theme.of(Get.context!);
   final isLight = theme.brightness == Brightness.light;
   return Row(
@@ -206,6 +214,7 @@ Widget buildSectionHeader(String title, dynamic icon) {
         fontSize: 16.sp,
         style: theme.textTheme.bodyMedium!.copyWith(
           fontWeight: FontWeight.w600,
+          color: isPrimary ? AppColors.lightPrimary : null,
         ),
       ),
     ],
@@ -259,6 +268,7 @@ Widget buildDetailItem({
               AppText(
                 text: value.isEmpty ? "-" : value,
                 fontSize: 14.sp,
+                maxLines: 4,
                 style: theme.textTheme.labelLarge,
                 fontWeight: FontWeight.w500,
               ),
@@ -323,6 +333,7 @@ Widget buildSection(
               child: AppText(
                 text: title,
                 fontSize: 14.sp,
+                maxLines: 2,
                 style: theme.textTheme.bodyLarge,
                 fontWeight: FontWeight.w600,
               ),
@@ -580,4 +591,140 @@ Future<void> downloadFile(String url) async {
       snackPosition: SnackPosition.BOTTOM,
     );
   }
+}
+
+String getDisplayValue({
+  required String? key,
+  required RxList<Map<String, String>> options,
+}) {
+  if (key == null || key.isEmpty) return '-';
+
+  final map = options.first;
+  return map[key] ?? key;
+}
+
+String getListValue(dynamic value) {
+  if (value == null) return '-';
+
+  if (value is List) {
+    if (value.isEmpty) return '-';
+    return value.join(' , ');
+  }
+
+  if (value.toString().trim().isEmpty) return '-';
+
+  return value.toString();
+}
+
+String getValue(dynamic v) =>
+    (v == null || v.toString().isEmpty) ? '-' : v.toString();
+
+String getHeightRange(dynamic preference) {
+  final from = preference['patner_height_from'];
+  final to = preference['patner_height_to'];
+
+  final isFromEmpty = from == null || from.toString().trim().isEmpty;
+  final isToEmpty = to == null || to.toString().trim().isEmpty;
+
+  if (isFromEmpty && isToEmpty) {
+    return '-';
+  }
+
+  return '${from ?? '-'} to ${to ?? '-'} cm';
+}
+
+String getAgeRange(dynamic preference) {
+  final from = preference['patner_age_from'];
+  final to = preference['patner_age_to'];
+
+  final isFromEmpty = from == null || from.toString().trim().isEmpty;
+  final isToEmpty = to == null || to.toString().trim().isEmpty;
+
+  if (isFromEmpty && isToEmpty) {
+    return '-';
+  }
+
+  return '${from ?? '-'} to ${to ?? '-'} yrs';
+}
+
+Future<File> createFileOfPdfUrl({required var url2}) async {
+  Completer<File> completer = Completer();
+  try {
+    final url = url2;
+    final filename = url.substring(url.lastIndexOf("/") + 1);
+    var request = await HttpClient().getUrl(Uri.parse(url));
+    var response = await request.close();
+    var bytes = await consolidateHttpClientResponseBytes(response);
+    var dir = await getApplicationDocumentsDirectory();
+    File file = File("${dir.path}/$filename");
+
+    await file.writeAsBytes(bytes, flush: true);
+    completer.complete(file);
+  } catch (e) {
+    throw Exception('Error parsing asset file!');
+  }
+  return completer.future;
+}
+
+Future<void> downloadPDFFile(String url) async {
+  // final file = await createFileOfPdfUrl(url2: url);
+
+  showDialog(
+    context: Get.context!,
+    barrierDismissible: true,
+    fullscreenDialog: true,
+    builder: (_) {
+      final content = Container(
+        width: Get.width * 0.8.w,
+        height: Get.height * 0.5.h,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadiusGeometry.circular(12.r),
+          color: Colors.white,
+        ),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(12.r),
+              child: SfPdfViewer.network(url),
+            ),
+            Row(
+              children: [
+                AppButton(
+                  text: 'Download',
+                  onTap: () {},
+                  backgroundColor: AppColors.lightPrimary,
+                ),
+
+                TextButton(onPressed: () => Get.back(), child: const Text('Close')),
+              ],
+            )
+          ],
+        ),
+      );
+
+      if (Platform.isIOS) {
+        /// 🍎 iOS STYLE
+        return CupertinoAlertDialog(
+          content: content,
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Get.back(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      }
+
+      /// 🤖 ANDROID STYLE
+      return AlertDialog(
+        surfaceTintColor: Colors.white,
+        backgroundColor: Colors.white,
+        contentPadding: const EdgeInsets.all(5),
+        content: content,
+        // actions: [
+        //
+        // ],
+      );
+    },
+  );
 }

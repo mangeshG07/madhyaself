@@ -43,6 +43,7 @@ class OtherProfileController extends GetxController {
   final isWhatsappLoading = false.obs;
   final isViewLoading = false.obs;
   final profileDetails = {}.obs;
+  final preferenceDetails = {}.obs;
   final chipsData = [].obs;
 
   Future<void> otherProfileDetails(
@@ -60,6 +61,11 @@ class OtherProfileController extends GetxController {
         final data = res['data'] ?? {};
         profileDetails.value = data['user_data'][0] ?? {};
         final interestList = data['interest_messages'] ?? [];
+        final preferenceData = data['preferance_data'] ?? [];
+
+        if (preferenceData != null || preferenceData.length != 0) {
+          preferenceDetails.value = preferenceData[0] ?? {};
+        }
 
         interestOptions.value = interestList
             .map<InterestOptionModel>((e) => InterestOptionModel.fromJson(e))

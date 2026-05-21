@@ -9,6 +9,7 @@ class GlobalSearchBindings extends Bindings {
         getIt<LocationDataUsecase>(),
         getIt<GlobalSearchUsecase>(),
         getIt<CasteByRelUsecase>(),
+        getIt<CasteByReligionListUsecase>(),
       ),
       fenix: true,
     );

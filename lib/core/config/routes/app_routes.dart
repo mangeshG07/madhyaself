@@ -39,6 +39,6 @@ class Routes {
       "/partnerProfessionalDetailsEdit";
   static const String partnerReligionDetailsEdit =
       "/partnerReligionDetailsEdit";
-  static const String partnerLocationDetailsEdit =
-      "/partnerLocationDetailsEdit";
+  static const String partnerLocationDetailsEdit = "/partnerLocationDetailsEdit";
+  static const String partnerLifestylesEdit = "/partnerLifeStyleEdit";
 }

@@ -115,8 +115,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // 🔥 PROFILE HEADER
   Widget _buildProfileHeader(ThemeData theme) {
-    final imageUrl = controller.profileDetails['hide_photos'] == '0'
-        ? controller.profileDetails['profile_image']
+    final imageUrl = controller.profileDetails['hide_photos'].toString() == '0'
+        ? controller.profileDetails['profile_image'] ?? ''
         : '';
 
     return Container(
@@ -295,13 +295,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // 🎯 MENU ITEM
+  // 🎯 MENU ITEM0
   Widget _menuItem(dynamic menu, ThemeData theme) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(12.r),
-        onTap: menu['onTap'],
+        onTap: menu['title'] == 'Biodata'
+            ? () {
+                downloadPDFFile(
+                  controller.profileDetails['biodata_download'] ?? '',
+                );
+              }
+            : menu['onTap'],
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
           child: Row(

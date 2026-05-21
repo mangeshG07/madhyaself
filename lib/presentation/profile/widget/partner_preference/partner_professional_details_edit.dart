@@ -31,16 +31,43 @@ class PartnerProfessionalDetailsEdit extends GetView<PreferenceController> {
   }
 
   Widget _buildEduCategoryDropdown() {
-    return AppDropdownField(
-      isRequired: true,
-      isDynamic: true,
+    return AppMultiDropdown(
       title: "Education Category",
-      value: controller.selectedEducation.value,
-      items: controller.educationCategoryList,
-      hintText: 'Choose category',
-      validator: AppValidators.required,
-      onChanged: (val) => controller.selectedEducation.value = val,
+      isRequired: true,
+      items: controller.educationCategoryList
+          .map((item) => item['name'].toString())
+          .toList(),
+      selectedItems: List<String>.from(controller.selectedEducationList),
+      hintText: "Education Category",
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Please select Education Category";
+        }
+        return null;
+      },
+      onChanged: (selected) {
+        controller.selectedEducationList.value = selected;
+
+        // get selected ids
+        final selectedIds = controller.educationCategoryList
+            .where((item) => selected.contains(item['name'].toString()))
+            .map((item) => item['id'].toString())
+            .toList();
+
+        controller.selectedEducationIdsList.value = selectedIds;
+      },
     );
+
+    //   AppDropdownField(
+    //   isRequired: true,
+    //   isDynamic: true,
+    //   title: "Education Category",
+    //   value: controller.selectedEducation.value,
+    //   items: controller.educationCategoryList,
+    //   hintText: 'Choose category',
+    //   validator: AppValidators.required,
+    //   onChanged: (val) => controller.selectedEducation.value = val,
+    // );
   }
 
   Widget _buildEducationDetail(ThemeData theme) {
@@ -65,16 +92,43 @@ class PartnerProfessionalDetailsEdit extends GetView<PreferenceController> {
   }
 
   Widget _buildJobCatDropdown() {
-    return AppDropdownField(
-      isRequired: true,
-      isDynamic: true,
+    return AppMultiDropdown(
       title: "Job Category",
-      value: controller.selectedJob.value,
-      items: controller.jobCategoryList,
-      hintText: 'Select Category',
-      validator: AppValidators.required,
-      onChanged: (val) => controller.selectedJob.value = val,
+      isRequired: true,
+      items: controller.jobCategoryList
+          .map((item) => item['name'].toString())
+          .toList(),
+      selectedItems: List<String>.from(controller.selectedJobList),
+      hintText: "Job Category",
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Please select Job Category";
+        }
+        return null;
+      },
+      onChanged: (selected) {
+        controller.selectedJobList.value = selected;
+
+        // get selected ids
+        final selectedIds = controller.jobCategoryList
+            .where((item) => selected.contains(item['name'].toString()))
+            .map((item) => item['id'].toString())
+            .toList();
+
+        controller.selectedJobIdsList.value = selectedIds;
+      },
     );
+
+    //   AppDropdownField(
+    //   isRequired: true,
+    //   isDynamic: true,
+    //   title: "Job Category",
+    //   value: controller.selectedJob.value,
+    //   items: controller.jobCategoryList,
+    //   hintText: 'Select Category',
+    //   validator: AppValidators.required,
+    //   onChanged: (val) => controller.selectedJob.value = val,
+    // );
   }
 
   Widget _buildJobDetail(ThemeData theme) {
@@ -103,14 +157,14 @@ class PartnerProfessionalDetailsEdit extends GetView<PreferenceController> {
       (e) => e['name'].toString() == controller.selectedIncome.value,
     );
     return AppDropdownField(
-      isRequired: true,
+      isRequired: false,
       title: "Annual Income",
       value: isMatched && controller.selectedIncome.value!.isNotEmpty
           ? controller.selectedIncome.value
           : null,
       items: controller.annualIncomeList.map((e) => e['name']).toList(),
       hintText: 'Annual Income',
-      validator: AppValidators.required,
+      // validator: AppValidators.required,
       onChanged: (val) => controller.selectedIncome.value = val,
     );
   }

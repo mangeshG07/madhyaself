@@ -25,6 +25,7 @@ import 'package:madhya/presentation/profile/widget/manage_photos.dart';
 import 'package:madhya/presentation/profile/widget/package.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_basic_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference.dart';
+import 'package:madhya/presentation/profile/widget/partner_preference/partner_lifestyle_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_professional_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/partner_preference/partner_religion_details_edit.dart';
 import 'package:madhya/presentation/profile/widget/delete_screen.dart';
@@ -76,7 +77,11 @@ class AppPages {
     GetPage(
       name: Routes.othersProfile,
       page: () => OtherProfile(),
-      bindings: [OtherProfileBinding(), ProfileBindings()],
+      bindings: [
+        OtherProfileBinding(),
+        ProfileBindings(),
+        PartnerPrefsBindings(),
+      ],
     ),
     GetPage(name: Routes.chatDetails, page: () => ChatDetails()),
     GetPage(name: Routes.chatProfileDetails, page: () => ChatUserProfile()),
@@ -168,6 +173,14 @@ class AppPages {
       name: Routes.partnerLocationDetailsEdit,
       page: () => PartnerLocationDetailsEdit(),
     ),
-    GetPage(name: Routes.notificationScreen, page: () => NotificationList(),binding: HomeBindings()),
+    GetPage(
+      name: Routes.notificationScreen,
+      page: () => NotificationList(),
+      binding: HomeBindings(),
+    ),
+    GetPage(
+      name: Routes.partnerLifestylesEdit,
+      page: () => PartnerLifestyleEdit(),
+    ),
   ];
 }

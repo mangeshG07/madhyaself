@@ -48,60 +48,158 @@ class PartnerReligionDetailsEdit extends GetView<PreferenceController> {
   }
 
   Widget _buildReligionDropdown() {
-    return AppDropdownField(
-      isRequired: true,
-      isDynamic: true,
+    return AppMultiDropdown(
       title: "Religion",
-      value: controller.selectedReligion.value,
-      items: controller.religionList,
-      hintText: 'Select',
-      validator: AppValidators.required,
-      onChanged: (val) {
-        controller.selectedReligion.value = val;
-        controller.fetchCaste(val.toString());
+      isRequired: true,
+      items: controller.religionList
+          .map((item) => item['name'].toString())
+          .toList(),
+      selectedItems: List<String>.from(controller.selectedReligionList),
+      hintText: "Religion",
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Please select Religion";
+        }
+        return null;
+      },
+      onChanged: (selected) async {
+        controller.selectedReligionList.value = selected;
+
+        // get selected ids
+        final selectedIds = controller.religionList
+            .where((item) => selected.contains(item['name'].toString()))
+            .map((item) => item['id'].toString())
+            .toList();
+
+        controller.selectedReligionIdsList.value = selectedIds;
+        controller.selectedCasteList.clear();
+        controller.selectedCasteIdsList.clear();
+
+        controller.selectedSubCasteList.clear();
+        controller.selectedSubCasteIdsList.clear();
+        await controller.fetchCaste();
       },
     );
+
+    // AppDropdownField(
+    //   isRequired: true,
+    //   isDynamic: true,
+    //   title: "Religion",
+    //   value: controller.selectedReligion.value,
+    //   items: controller.religionList,
+    //   hintText: 'Select',
+    //   validator: AppValidators.required,
+    //   onChanged: (val) {
+    //     controller.selectedReligion.value = val;
+    //     controller.fetchCaste(val.toString());
+    //   },
+    // );
   }
 
   Widget _buildCasteDropdown() {
-    return Obx(() {
-      return AppDropdownField(
+    return Obx(
+      () => AppMultiDropdown(
+        title: "Caste",
         isRequired: true,
-        isDynamic: true,
-        title: "Select Your Caste",
-        value: controller.selectedCaste.value,
-        items: controller.casteList,
+        items: controller.casteList
+            .map((item) => item['name'].toString())
+            .toList(),
+        selectedItems: List<String>.from(controller.selectedCasteList),
         hintText: controller.isCasteLoading.value
             ? "Loading caste..."
             : "Select your Caste",
-        validator: AppValidators.required,
-        onChanged: controller.isCasteLoading.value
-            ? null
-            : (val) {
-                controller.selectedCaste.value = val;
-                controller.fetchSubCaste(val.toString());
-              },
-      );
-    });
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Please select Caste";
+          }
+          return null;
+        },
+        onChanged: (selected) async {
+          controller.selectedCasteList.value = selected;
+
+          // get selected ids
+          final selectedIds = controller.casteList
+              .where((item) => selected.contains(item['name'].toString()))
+              .map((item) => item['id'].toString())
+              .toList();
+
+          controller.selectedCasteIdsList.value = selectedIds;
+          controller.selectedSubCasteList.clear();
+          controller.selectedSubCasteIdsList.clear();
+          await controller.fetchSubCaste();
+        },
+      ),
+    );
+
+    //   Obx(() {
+    //   return AppDropdownField(
+    //     isRequired: true,
+    //     isDynamic: true,
+    //     title: "Select Your Caste",
+    //     value: controller.selectedCaste.value,
+    //     items: controller.casteList,
+    //     hintText: controller.isCasteLoading.value
+    //         ? "Loading caste..."
+    //         : "Select your Caste",
+    //     validator: AppValidators.required,
+    //     onChanged: controller.isCasteLoading.value
+    //         ? null
+    //         : (val) {
+    //             controller.selectedCaste.value = val;
+    //             controller.fetchSubCaste(val.toString());
+    //           },
+    //   );
+    // });
   }
 
   Widget _buildSubCasteDropdown() {
-    return Obx(() {
-      return AppDropdownField(
+    return Obx(
+      () => AppMultiDropdown(
+        title: "Subcaste",
         isRequired: true,
-        isDynamic: true,
-        title: "Select Your Subcaste",
-        value: controller.selectedSubCaste.value,
-        items: controller.subCasteList,
+        items: controller.subCasteList
+            .map((item) => item['name'].toString())
+            .toList(),
+        selectedItems: List<String>.from(controller.selectedSubCasteList),
         hintText: controller.isSubCasteLoading.value
             ? "Loading Subcaste..."
             : "Select your Subcaste",
-        validator: AppValidators.required,
-        onChanged: controller.isSubCasteLoading.value
-            ? null
-            : (val) => controller.selectedSubCaste.value = val,
-      );
-    });
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Please select Subcaste";
+          }
+          return null;
+        },
+        onChanged: (selected) {
+          controller.selectedSubCasteList.value = selected;
+
+          // get selected ids
+          final selectedIds = controller.subCasteList
+              .where((item) => selected.contains(item['name'].toString()))
+              .map((item) => item['id'].toString())
+              .toList();
+
+          controller.selectedSubCasteIdsList.value = selectedIds;
+        },
+      ),
+    );
+
+    // Obx(() {
+    //   return AppDropdownField(
+    //     isRequired: true,
+    //     isDynamic: true,
+    //     title: "Select Your Subcaste",
+    //     value: controller.selectedSubCaste.value,
+    //     items: controller.subCasteList,
+    //     hintText: controller.isSubCasteLoading.value
+    //         ? "Loading Subcaste..."
+    //         : "Select your Subcaste",
+    //     validator: AppValidators.required,
+    //     onChanged: controller.isSubCasteLoading.value
+    //         ? null
+    //         : (val) => controller.selectedSubCaste.value = val,
+    //   );
+    // });
   }
 
   // Widget _buildCasteDropdown() {

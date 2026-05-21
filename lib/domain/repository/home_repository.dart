@@ -10,4 +10,8 @@ abstract class HomeRepository {
   Future<dynamic> getNotification(UserRequest request);
 
   Future<dynamic> readNotification(UserRequest request);
+
+  Future<dynamic> getMultiCasteByReligion(CasteByReligionRequest request);
+
+  Future<dynamic> getMultiSubCasteByCaste(SubcasteByCasteRequest request);
 }

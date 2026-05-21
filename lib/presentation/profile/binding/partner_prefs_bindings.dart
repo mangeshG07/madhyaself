@@ -9,8 +9,8 @@ class PartnerPrefsBindings extends Bindings {
         getIt<CommonDataUsecase>(),
         getIt<LocationDataUsecase>(),
         getIt<UpdatePrefsUsecase>(),
-        getIt<CasteByRelUsecase>(),
-        getIt<SubCasteByCasteUsecase>(),
+        getIt<CasteByReligionListUsecase>(),
+        getIt<SubcasteByCasteListUsecase>(),
       ),
     );
 

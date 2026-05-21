@@ -80,14 +80,14 @@ class PartnerLocationDetailsEdit extends GetView<PreferenceController> {
   Widget _buildCityDropdown() {
     return AppDropdownSearch<String>(
       title: "Select City",
-      isRequired: true,
+      // isRequired: true,
       value: controller.selectedCity.value,
       items: controller.cityList.map<String>((e) => e['name']).toList(),
       hintText: "City",
       showSearchBox: true,
       searchHintText: "",
       onChanged: (val) => controller.selectedCity.value = val,
-      validator: AppValidators.required,
+      // validator: AppValidators.required,
     );
   }
 }

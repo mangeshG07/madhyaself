@@ -51,7 +51,6 @@ class _MailboxScreenState extends State<MailboxScreen> {
       focusedBorder: theme.inputDecorationTheme.focusedBorder,
       enabledBorder: theme.inputDecorationTheme.enabledBorder,
       hint: 'Search',
-
       controller: controller.searchController,
       contentPadding: EdgeInsets.symmetric(vertical: 14.h),
       fillColor: theme.cardColor,
@@ -145,7 +144,7 @@ class _MailboxScreenState extends State<MailboxScreen> {
     );
   }
 
-  CustomShimmerWidget _loader(ThemeData theme) {
+  Widget _loader(ThemeData theme) {
     return CustomShimmerWidget.list(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       itemCount: 4,

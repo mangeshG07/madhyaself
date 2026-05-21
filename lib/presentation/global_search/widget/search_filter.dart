@@ -233,21 +233,36 @@ class _SearchFilterState extends State<SearchFilter> {
     return _buildSection(
       title: "Religion Details",
       children: [
-        _dropdownField(
-          isDynamic: true,
-          title: "Religion",
-          value: controller.selectedReligion,
+        _buildMultiDropdown(
+          title: 'Religion',
+          selectedItems: controller.selectedReligionList,
+          selectedItemsIds: controller.selectedReligionIdsList,
           items: controller.religionList,
           isCaste: true,
         ),
+
+        // _dropdownField(
+        //   isDynamic: true,
+        //   title: "Religion",
+        //   value: controller.selectedReligion,
+        //   items: controller.religionList,
+        //   isCaste: true,
+        // ),
         SizedBox(height: 12.h),
-        _dropdownField(
-          isDynamic: true,
-          title: "Caste",
-          value: controller.selectedCaste,
+
+        _buildMultiDropdown(
+          title: 'Caste',
+          selectedItems: controller.selectedCasteList,
+          selectedItemsIds: controller.selectedCasteIdsList,
           items: controller.casteList,
-          isSelectCaste: true,
         ),
+        // _dropdownField(
+        //   isDynamic: true,
+        //   title: "Caste",
+        //   value: controller.selectedCaste,
+        //   items: controller.casteList,
+        //   isSelectCaste: true,
+        // ),
         // _dropdownField(
         //   title: "Religion",
         //   value: controller.selectedReligion,
@@ -279,22 +294,25 @@ class _SearchFilterState extends State<SearchFilter> {
         ),
 
         SizedBox(height: 12.h),
-
-        _dropdownField(
-          title: "Education",
-          value: controller.selectedEducation,
+        _buildMultiDropdown(
+          title: 'Education',
+          selectedItems: controller.selectedEducationList,
+          selectedItemsIds: controller.selectedEducationIdsList,
           items: controller.educationCategoryList,
-          isDynamic: true,
         ),
-
         SizedBox(height: 12.h),
-
-        _dropdownField(
-          title: "Occupation",
-          value: controller.selectedJob,
+        _buildMultiDropdown(
+          title: 'Occupation',
+          selectedItems: controller.selectedJobList,
+          selectedItemsIds: controller.selectedJobIdsList,
           items: controller.jobCategoryList,
-          isDynamic: true,
         ),
+        // _dropdownField(
+        //   title: "Occupation",
+        //   value: controller.selectedJob,
+        //   items: controller.jobCategoryList,
+        //   isDynamic: true,
+        // ),
       ],
     );
   }
@@ -348,6 +366,71 @@ class _SearchFilterState extends State<SearchFilter> {
         // ),
       ],
     );
+  }
+
+  /// ================= COMMON DROPDOWN =================
+  Widget _buildMultiDropdown({
+    required String title,
+    required List selectedItems,
+    required List selectedItemsIds,
+    required List items,
+    bool isCaste = false,
+  }) {
+    return Obx(() {
+      final isLocked = controller.isFilterLocked(title);
+
+      return GestureDetector(
+        onTap: isLocked ? AllDialogs().showPremiumDialog : null,
+        child: AbsorbPointer(
+          absorbing: isLocked,
+          child: Opacity(
+            opacity: isLocked ? 0.6 : 1.0,
+            child: Stack(
+              children: [
+                AppMultiDropdown(
+                  title: title,
+                  items: items.map((item) => item['name'].toString()).toList(),
+                  selectedItems: List<String>.from(selectedItems),
+                  hintText: title,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please select $title";
+                    }
+                    return null;
+                  },
+                  onChanged: (selected) async {
+                    selectedItems.assignAll(selected);
+
+                    final selectedIds = items
+                        .where(
+                          (item) => selected.contains(item['name'].toString()),
+                        )
+                        .map((item) => item['id'].toString())
+                        .toList();
+                    selectedItemsIds.assignAll(selectedIds);
+                    if (isCaste) {
+                      await controller.fetchCasteByReligionList(
+                        selectedItemsIds,
+                      );
+                    }
+                  },
+                ),
+                if (isLocked)
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: AllDialogs().showPremiumDialog,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _dropdownField({

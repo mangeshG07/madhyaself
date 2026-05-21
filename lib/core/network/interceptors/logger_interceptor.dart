@@ -5,16 +5,16 @@ import 'package:madhya/core/exporters/app_export.dart';
 class LoggerInterceptor extends Interceptor {
   @override
   void onRequest(options, handler) {
-    // log("➡️ REQUEST: ${options.method} ${options.uri}");
-    // log("Headers: ${options.headers}");
-    // log("Body: ${options.data}");
+    log("➡️ REQUEST: ${options.method} ${options.uri}");
+    log("Headers: ${options.headers}");
+    log("Body: ${options.data}");
     handler.next(options);
   }
 
   @override
   void onResponse(response, handler) {
-    // log("✅ RESPONSE: ${response.statusCode} ${response.requestOptions.uri}");
-    // log("Data: ${response.data}");
+    log("✅ RESPONSE: ${response.statusCode} ${response.requestOptions.uri}");
+    log("Data: ${response.data}");
     final isLoggedOut = response.data['user_login'] == false;
     if (isLoggedOut) {
       CustomSnackbar.show(
@@ -36,7 +36,7 @@ class LoggerInterceptor extends Interceptor {
 
   @override
   void onError(err, handler) {
-    // log("❌ ERROR: ${err.message}");
+    log("❌ ERROR: ${err.message}");
     handler.next(err);
   }
 }

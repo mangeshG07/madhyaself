@@ -5,8 +5,8 @@ class PreferenceController extends GetxController {
   final CommonDataUsecase commonDataUsecase;
   final LocationDataUsecase _locationDataUsecase;
   final UpdatePrefsUsecase _updateUsecase;
-  final CasteByRelUsecase casteUsecase;
-  final SubCasteByCasteUsecase subCasteUsecase;
+  final CasteByReligionListUsecase casteUsecase;
+  final SubcasteByCasteListUsecase subCasteUsecase;
 
   PreferenceController(
     this.getPartPrefUsecase,
@@ -37,6 +37,16 @@ class PreferenceController extends GetxController {
   final jobCtrl = TextEditingController();
 
   /// ================= SELECTED VALUES =================
+  final selectedEducationList = [].obs;
+  final selectedEducationIdsList = [].obs;
+  final selectedJobList = [].obs;
+  final selectedJobIdsList = [].obs;
+  final selectedReligionList = [].obs;
+  final selectedReligionIdsList = [].obs;
+  final selectedCasteList = [].obs;
+  final selectedCasteIdsList = [].obs;
+  final selectedSubCasteList = [].obs;
+  final selectedSubCasteIdsList = [].obs;
   final selectedAgeFrom = Rxn<String>();
   final selectedAgeTo = Rxn<String>();
   final selectedMaritalStatus = Rxn<String>();
@@ -51,6 +61,10 @@ class PreferenceController extends GetxController {
   final selectedCountry = Rxn<String>();
   final selectedState = Rxn<String>();
   final selectedCity = Rxn<String>();
+  final selectedDiet = Rxn<String>();
+  final selectedSmoking = Rxn<String>();
+  final selectedDrinking = Rxn<String>();
+  final selectedSpecialCase = Rxn<String>();
 
   /// ================= LISTS =================
   final ageList = [].obs;
@@ -64,12 +78,54 @@ class PreferenceController extends GetxController {
   final countryList = ['India'].obs;
   final stateList = [].obs;
   final cityList = [].obs;
+
+
+
   final mStatusList = [
     'Never Married',
     'Married',
     'Widowed',
     'Awaiting Divorce',
     'Divorced',
+  ].obs;
+
+  final dietOptionsList = [
+    {
+      'doesnt_matter': "Doesn't Matter",
+      'vegetarian': 'Vegetarian',
+      'non_vegetarian': "Non Vegetarian",
+      'jain': 'Jain',
+      'eggetarian': 'Eggetarian',
+    },
+  ].obs;
+
+  final smokingOptionsList = [
+    {
+      'doesnt_matter': "Doesn't Matter",
+      'yes': 'Yes',
+      'no': "No",
+      'occasionally': 'Occasionally',
+    },
+  ].obs;
+
+  final drinkingOptionsList = [
+    {
+      'doesnt_matter': "Doesn't Matter",
+      'yes': 'Yes',
+      'no': "No",
+      'occasionally': 'Occasionally',
+    },
+  ].obs;
+
+  final specialCasesList = [
+    {
+      'doesnt_matter': "Doesn't Matter",
+      'none': 'None',
+      'physical_birth': "Physically disabled from birth",
+      'physical_accident': 'Physically disabled due to accident',
+      'mental_birth': 'Mentally disabled from birth',
+      'mental_accident': 'Mentally disabled due to accident',
+    },
   ].obs;
 
   /// ================= FORM KEYS =================
@@ -90,23 +146,30 @@ class PreferenceController extends GetxController {
     selectedHeightTo.value = _val(data['patner_height_to']);
     selectedMaritalStatus.value = _val(data['marital_status']);
 
-    selectedEducation.value = _val(data['education_category_id']);
-    selectedJob.value = _val(data['job_category_id']);
+    // selectedEducation.value = _val(data['education_category_id']);
+    selectedEducationList.value = data['education_category_name'] ?? [];
+    selectedJobList.value = data['job_category_name'] ?? [];
+    // selectedJob.value = _val(data['job_category_id']);
     selectedIncome.value = _val(data['annual_income']);
 
-    selectedCaste.value = _val(data['caste_id']);
-    selectedSubCaste.value = _val(data['sub_caste_id']);
-    selectedReligion.value = _val(data['religion_id']);
+    // selectedCaste.value = _val(data['caste_id']);
+    selectedCasteList.value = data['caste'] ?? [];
+    selectedSubCasteList.value = data['sub_caste'] ?? [];
+    selectedReligionList.value = data['religion'] ?? [];
 
     selectedCountry.value = _val(data['country']);
     selectedState.value = _val(data['state']);
     selectedCity.value = _val(data['city']);
+    selectedDiet.value = _val(data['dietary_habits']);
+    selectedSmoking.value = _val(data['smoking_habits']);
+    selectedDrinking.value = _val(data['drinking_habits']);
+    selectedSpecialCase.value = _val(data['special_case']);
     getInitialValues();
   }
 
   void getInitialValues() async {
-    await fetchCaste(selectedReligion.value.toString());
-    await fetchSubCaste(selectedCaste.value.toString());
+    await fetchCaste();
+    await fetchSubCaste();
   }
 
   String? _val(dynamic v) {
@@ -131,15 +194,18 @@ class PreferenceController extends GetxController {
   }
 
   /// ------------------ CASTE ------------------ ///
-  Future<void> fetchCaste(String religionId) async {
+  Future<void> fetchCaste() async {
     try {
       isCasteLoading(true);
-      // selectedCaste.value = null;
-      // selectedSubCaste.value = null;
       casteList.clear();
       subCasteList.clear();
-
-      final res = await casteUsecase.call(CasteRequest(religionId));
+      final userid = await SecureStorageService.read('user_id') ?? '';
+      final res = await casteUsecase.call(
+        CasteByReligionRequest(
+          userId: userid,
+          religionId: List<String>.from(selectedReligionIdsList),
+        ),
+      );
 
       if (res['common']['status'] == true) {
         final data = res['data'];
@@ -151,12 +217,18 @@ class PreferenceController extends GetxController {
   }
 
   /// ------------------ SUB CASTE ------------------ ///
-  Future<void> fetchSubCaste(String casteId) async {
+  Future<void> fetchSubCaste() async {
     try {
       isSubCasteLoading(true);
       // selectedSubCaste.value = null;
       subCasteList.clear();
-      final res = await subCasteUsecase.call(SubCasteRequest(casteId));
+      final userid = await SecureStorageService.read('user_id') ?? '';
+      final res = await subCasteUsecase.call(
+        SubcasteByCasteRequest(
+          userId: userid,
+          casteIds: List<String>.from(selectedCasteIdsList),
+        ),
+      );
 
       if (res['common']['status'] == true) {
         final data = res['data'];
@@ -203,6 +275,8 @@ class PreferenceController extends GetxController {
 
       final res = await _updateUsecase.call(request);
 
+      print('=========================>$res');
+
       if (res['common']['status'] == true) {
         Get.back();
         CustomSnackbar.show(
@@ -220,6 +294,9 @@ class PreferenceController extends GetxController {
         );
         // Get.snackbar('Error', res['common']['message']);
       }
+    } catch (e) {
+      print('errrrror');
+      print(e);
     } finally {
       isUpdating(false);
     }
@@ -248,9 +325,9 @@ class PreferenceController extends GetxController {
     await _handleUpdate(
       PartnerPreferenceRequest(
         userId: userId,
-        educationCategoryId: selectedEducation.value,
+        educationCategoryId: List<String>.from(selectedEducationIdsList),
         educationDetail: educationCtrl.text.trim(),
-        jobCategoryId: selectedJob.value,
+        jobCategoryId: List<String>.from(selectedJobIdsList),
         jobDetail: jobCtrl.text.trim(),
         annualIncome: selectedIncome.value,
       ),
@@ -264,9 +341,9 @@ class PreferenceController extends GetxController {
     await _handleUpdate(
       PartnerPreferenceRequest(
         userId: userId,
-        casteId: selectedCaste.value,
-        subCasteId: selectedSubCaste.value,
-        religionId: selectedReligion.value,
+        casteId: List<String>.from(selectedCasteIdsList),
+        subCasteId: List<String>.from(selectedSubCasteIdsList),
+        religionId: List<String>.from(selectedReligionIdsList),
       ),
     );
   }
@@ -281,6 +358,21 @@ class PreferenceController extends GetxController {
         country: selectedCountry.value,
         state: selectedState.value,
         city: selectedCity.value,
+      ),
+    );
+  }
+
+  /// ================= UPDATE LIFESTYLE DETAILS=================
+  Future<void> updateLifestyleDetails() async {
+    final userId = await SecureStorageService.read('user_id') ?? '';
+
+    await _handleUpdate(
+      PartnerPreferenceRequest(
+        userId: userId,
+        dietaryHabits: selectedDiet.value,
+        drinkingHabits: selectedDrinking.value,
+        smokingHabits: selectedSmoking.value,
+        specialCase: selectedSpecialCase.value,
       ),
     );
   }

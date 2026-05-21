@@ -28,6 +28,8 @@ import 'package:madhya/data/repository_impl/profile_repository_impl.dart'
 import 'package:madhya/domain/usecase/block_user_usecase.dart' as _i419;
 import 'package:madhya/domain/usecase/blocked_profile_usecase.dart' as _i377;
 import 'package:madhya/domain/usecase/caste_by_rel_usecase.dart' as _i407;
+import 'package:madhya/domain/usecase/caste_by_religion_list_usecase.dart'
+    as _i162;
 import 'package:madhya/domain/usecase/chat_details_usecase.dart' as _i496;
 import 'package:madhya/domain/usecase/chat_list_usecase.dart' as _i594;
 import 'package:madhya/domain/usecase/checkout_usecase.dart' as _i331;
@@ -62,6 +64,8 @@ import 'package:madhya/domain/usecase/send_interest_usecase.dart' as _i851;
 import 'package:madhya/domain/usecase/send_msg_usecase.dart' as _i799;
 import 'package:madhya/domain/usecase/shortlist_profile_usecase.dart' as _i697;
 import 'package:madhya/domain/usecase/subcaste_by_caste.dart' as _i240;
+import 'package:madhya/domain/usecase/subcaste_by_caste_list_usecase.dart'
+    as _i926;
 import 'package:madhya/domain/usecase/typing_usecase.dart' as _i182;
 import 'package:madhya/domain/usecase/update_interest_usecase.dart' as _i585;
 import 'package:madhya/domain/usecase/update_prefs_usecase.dart' as _i577;
@@ -160,6 +164,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1012.LoginUsecase>(
       () => _i1012.LoginUsecase(gh<_i571.AuthRepository>()),
     );
+    gh.lazySingleton<_i162.CasteByReligionListUsecase>(
+      () => _i162.CasteByReligionListUsecase(gh<_i571.HomeRepository>()),
+    );
     gh.lazySingleton<_i819.FirebaseTokenUsecase>(
       () => _i819.FirebaseTokenUsecase(gh<_i571.HomeRepository>()),
     );
@@ -168,6 +175,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i10.ReadNotification>(
       () => _i10.ReadNotification(gh<_i571.HomeRepository>()),
+    );
+    gh.lazySingleton<_i926.SubcasteByCasteListUsecase>(
+      () => _i926.SubcasteByCasteListUsecase(gh<_i571.HomeRepository>()),
     );
     gh.lazySingleton<_i737.OtherProfileUsecase>(
       () => _i737.OtherProfileUsecase(gh<_i571.OtherUserRepository>()),
