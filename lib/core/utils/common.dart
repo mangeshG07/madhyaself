@@ -1,10 +1,4 @@
 import 'package:background_downloader/background_downloader.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../exporters/app_export.dart' hide DateFormat;
 import 'package:intl/intl.dart';
 
@@ -645,86 +639,4 @@ String getAgeRange(dynamic preference) {
   }
 
   return '${from ?? '-'} to ${to ?? '-'} yrs';
-}
-
-Future<File> createFileOfPdfUrl({required var url2}) async {
-  Completer<File> completer = Completer();
-  try {
-    final url = url2;
-    final filename = url.substring(url.lastIndexOf("/") + 1);
-    var request = await HttpClient().getUrl(Uri.parse(url));
-    var response = await request.close();
-    var bytes = await consolidateHttpClientResponseBytes(response);
-    var dir = await getApplicationDocumentsDirectory();
-    File file = File("${dir.path}/$filename");
-
-    await file.writeAsBytes(bytes, flush: true);
-    completer.complete(file);
-  } catch (e) {
-    throw Exception('Error parsing asset file!');
-  }
-  return completer.future;
-}
-
-Future<void> downloadPDFFile(String url) async {
-  // final file = await createFileOfPdfUrl(url2: url);
-
-  showDialog(
-    context: Get.context!,
-    barrierDismissible: true,
-    fullscreenDialog: true,
-    builder: (_) {
-      final content = Container(
-        width: Get.width * 0.8.w,
-        height: Get.height * 0.5.h,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadiusGeometry.circular(12.r),
-          color: Colors.white,
-        ),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadiusGeometry.circular(12.r),
-              child: SfPdfViewer.network(url),
-            ),
-            Row(
-              children: [
-                AppButton(
-                  text: 'Download',
-                  onTap: () {},
-                  backgroundColor: AppColors.lightPrimary,
-                ),
-
-                TextButton(onPressed: () => Get.back(), child: const Text('Close')),
-              ],
-            )
-          ],
-        ),
-      );
-
-      if (Platform.isIOS) {
-        /// 🍎 iOS STYLE
-        return CupertinoAlertDialog(
-          content: content,
-          actions: [
-            CupertinoDialogAction(
-              onPressed: () => Get.back(),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      }
-
-      /// 🤖 ANDROID STYLE
-      return AlertDialog(
-        surfaceTintColor: Colors.white,
-        backgroundColor: Colors.white,
-        contentPadding: const EdgeInsets.all(5),
-        content: content,
-        // actions: [
-        //
-        // ],
-      );
-    },
-  );
 }

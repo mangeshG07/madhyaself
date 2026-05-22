@@ -189,10 +189,12 @@ class GlobalSearch extends GetView<GlobalSearchController> {
             child: Stack(
               children: [
                 AppMultiDropdown(
+                  suffixIcon: isLocked ? _buildPremiumIcon() : null,
                   title: title,
                   items: items.map((item) => item['name'].toString()).toList(),
                   selectedItems: List<String>.from(selectedItems),
                   hintText: title,
+
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Please select $title";
@@ -200,7 +202,7 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                     return null;
                   },
                   onChanged: (selected) async {
-                    print('selected========>$selected');
+
                     selectedItems.assignAll(selected);
 
                     final selectedIds = items
@@ -209,15 +211,12 @@ class GlobalSearch extends GetView<GlobalSearchController> {
                         )
                         .map((item) => item['id'].toString())
                         .toList();
-                    print('selectedIds========>$selectedIds');
                     selectedItemsIds.assignAll(selectedIds);
                     if (isCaste) {
                       await controller.fetchCasteByReligionList(
                         selectedItemsIds,
                       );
                     }
-
-                    print('selectedItemsIds========>$selectedItemsIds');
                   },
                 ),
                 if (isLocked)
@@ -236,20 +235,6 @@ class GlobalSearch extends GetView<GlobalSearchController> {
         ),
       );
     });
-
-    // AppDropdownField(
-    //   isRequired: true,
-    //   isDynamic: true,
-    //   title: "Religion",
-    //   value: controller.selectedReligion.value,
-    //   items: controller.religionList,
-    //   hintText: 'Select',
-    //   validator: AppValidators.required,
-    //   onChanged: (val) {
-    //     controller.selectedReligion.value = val;
-    //     controller.fetchCaste(val.toString());
-    //   },
-    // );
   }
 
   Widget _dropdownField({

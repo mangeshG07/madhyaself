@@ -75,8 +75,6 @@ dependencies:
   image_cropper: ^12.2.1
   open_filex: ^4.7.0
   background_downloader: ^9.5.4
-  syncfusion_flutter_pdfviewer: ^33.2.7
-
 
 dev_dependencies:
   flutter_test:

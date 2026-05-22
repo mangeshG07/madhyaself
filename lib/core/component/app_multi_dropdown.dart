@@ -9,6 +9,7 @@ class AppMultiDropdown extends StatelessWidget {
   final void Function(List<dynamic>) onChanged;
   final bool isRequired;
   final String title;
+  final Widget? suffixIcon;
 
   const AppMultiDropdown({
     super.key,
@@ -18,6 +19,7 @@ class AppMultiDropdown extends StatelessWidget {
     required this.title,
     this.hintText = "Select",
     this.validator,
+    this.suffixIcon,
     this.isRequired = false,
   });
 
@@ -54,6 +56,7 @@ class AppMultiDropdown extends StatelessWidget {
               fillColor: theme.scaffoldBackgroundColor,
               filled: true,
               border: _border(),
+              prefixIcon: suffixIcon,
               enabledBorder: _border(),
               focusedBorder: _border(),
               contentPadding: const EdgeInsets.all(12),

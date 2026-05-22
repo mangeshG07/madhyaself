@@ -275,7 +275,6 @@ class PreferenceController extends GetxController {
 
       final res = await _updateUsecase.call(request);
 
-      print('=========================>$res');
 
       if (res['common']['status'] == true) {
         Get.back();
@@ -294,9 +293,7 @@ class PreferenceController extends GetxController {
         );
         // Get.snackbar('Error', res['common']['message']);
       }
-    } catch (e) {
-      print('errrrror');
-      print(e);
+    } catch (_) {
     } finally {
       isUpdating(false);
     }

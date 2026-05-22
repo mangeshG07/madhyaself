@@ -185,8 +185,10 @@ class HomeController extends GetxController {
         'onTap': () async {
           searchController.resetFilters();
           if (hasAdvancedFilter.value) {
-            searchController.selectedJob.value =
-                data['user_profession']?.toString() ?? '';
+            searchController.selectedJobIdsList.value =
+                data['user_profession'] != null
+                ? [data['user_profession'].toString()]
+                : [];
             await searchController.globalSearch(isRefresh: true);
           } else {
             CustomSnackbar.show(
@@ -205,8 +207,13 @@ class HomeController extends GetxController {
         'onTap': () async {
           searchController.resetFilters();
           if (hasAdvancedFilter.value) {
-            searchController.selectedEducation.value =
-                data['user_education']?.toString() ?? '';
+            searchController.selectedEducationIdsList.value =
+                data['user_education'] != null
+                ? [data['user_education'].toString()]
+                : [];
+
+            // searchController.selectedEducation.value =
+            //     data['user_education']?.toString() ?? '';
             await searchController.globalSearch(isRefresh: true);
           } else {
             CustomSnackbar.show(
@@ -224,8 +231,13 @@ class HomeController extends GetxController {
         'onTap': () async {
           searchController.resetFilters();
           if (hasBasicFilter.value || hasAdvancedFilter.value) {
-            searchController.selectedCaste.value =
-                data['user_caste']?.toString() ?? '';
+            searchController.selectedCasteIdsList.value =
+                data['user_caste'] != null
+                ? [data['user_caste'].toString()]
+                : [];
+
+            // searchController.selectedCaste.value =
+            //     data['user_caste']?.toString() ?? '';
             await searchController.globalSearch(isRefresh: true);
           } else {
             CustomSnackbar.show(
@@ -282,8 +294,13 @@ class HomeController extends GetxController {
         'onTap': () async {
           searchController.resetFilters();
           if (hasBasicFilter.value || hasAdvancedFilter.value) {
-            searchController.selectedReligion.value =
-                data['user_religion']?.toString() ?? '';
+            searchController.selectedReligionIdsList.value =
+                data['user_religion'] != null
+                ? [data['user_religion'].toString()]
+                : [];
+
+            // searchController.selectedReligion.value =
+            //     data['user_religion']?.toString() ?? '';
             await searchController.globalSearch(isRefresh: true);
           } else {
             CustomSnackbar.show(

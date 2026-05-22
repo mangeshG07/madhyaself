@@ -69,6 +69,7 @@ class HomeRepositoryImpl extends HomeRepository {
         );
       }
     }
+
     return await apiService.globalSearch(formData);
   }
 

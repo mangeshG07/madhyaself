@@ -296,7 +296,7 @@ class RegisterScreen extends GetView<RegisterController> {
         hintText: controller.isSubCasteLoading.value
             ? "Loading Subcaste..."
             : "Select your Subcaste",
-        validator: AppValidators.required,
+        // validator: AppValidators.required,
         onChanged: controller.isSubCasteLoading.value
             ? null
             : (val) => controller.selectedSubCaste.value = val,

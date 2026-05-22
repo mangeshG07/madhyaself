@@ -302,10 +302,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12.r),
         onTap: menu['title'] == 'Biodata'
-            ? () {
-                downloadPDFFile(
-                  controller.profileDetails['biodata_download'] ?? '',
-                );
+            ? () async {
+                // final uri = Uri.parse(
+                //   controller.profileDetails['biodata_preview'] ?? '',
+                // );
+                //
+                // if (await canLaunchUrl(uri)) {
+                //   await launchUrl(uri, mode: LaunchMode.inAppWebView);
+                // }
+                //
+                // downloadPDFFile(
+                //   controller.profileDetails['biodata_preview'] ?? '',
+                //   controller.profileDetails['download'] ?? false,
+                // );
               }
             : menu['onTap'],
         child: Padding(
@@ -341,15 +350,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: EdgeInsets.all(6.w),
-                child: HugeIcon(
-                  icon: HugeIcons.strokeRoundedArrowRight01,
-                  size: 18.r,
-                  color: theme.hintColor,
+              if (menu['title'] == 'Biodata')
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        controller.profileDetails['download'] == true
+                            ? downloadFile(
+                                controller.profileDetails['biodata_download'] ??
+                                    '',
+                              )
+                            : CustomSnackbar.show(
+                                context: Get.context!,
+                                message:
+                                    'Your limit is over.Please Subscribe .',
+                                type: SnackbarType.warning,
+                              );
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: EdgeInsets.all(6.w),
+                        child: HugeIcon(
+                          icon: HugeIcons.strokeRoundedDownloadSquare01,
+                          size: 22.r,
+                          color: theme.hintColor,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        final uri = Uri.parse(
+                          controller.profileDetails['biodata_preview'] ?? '',
+                        );
+
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri, mode: LaunchMode.inAppWebView);
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: EdgeInsets.all(6.w),
+                        child: HugeIcon(
+                          icon: HugeIcons.strokeRoundedEye,
+                          size: 22.r,
+                          color: theme.hintColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: EdgeInsets.all(6.w),
+                  child: HugeIcon(
+                    icon: HugeIcons.strokeRoundedArrowRight01,
+                    size: 18.r,
+                    color: theme.hintColor,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

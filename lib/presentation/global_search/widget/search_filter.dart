@@ -391,6 +391,7 @@ class _SearchFilterState extends State<SearchFilter> {
                   title: title,
                   items: items.map((item) => item['name'].toString()).toList(),
                   selectedItems: List<String>.from(selectedItems),
+                  suffixIcon: isLocked ? _buildPremiumIcon() : null,
                   hintText: title,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
