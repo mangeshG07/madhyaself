@@ -13,6 +13,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
   @override
   void initState() {
     controller.getPlanDetails(Get.arguments['id']?.toString() ?? '');
+    if (Platform.isIOS) {
+      controller.initAppleIAP();
+    }
     super.initState();
   }
 
@@ -243,18 +246,50 @@ class _PaymentMethodState extends State<PaymentMethod> {
           ? AppLoader.circular()
           : AppButton(
               text: 'Pay Now',
+              // onTap: () async {
               onTap: () async {
-                final pay = controller.paymentMethods.first;
-                controller.selectedPaymentId.value = pay['id'].toString();
+                /// IOS
+                if (Platform.isIOS) {
+                  if (controller.products.isEmpty) {
+                    Get.snackbar("Error", "Products not loaded");
+                    return;
+                  }
 
-                await controller.checkout(
-                  controller.planDetails['id'].toString(),
-                  controller.planDetails['final_price'].toString(),
-                  controller.selectedPaymentId.value,
-                  controller.planDetails['type'].toString(),
-                  pay['key_id'].toString(),
-                );
+                  final product = controller.products.first;
+
+                  await controller.buyApplePlan(product);
+                }
+                /// ANDROID
+                else {
+                  final pay = controller.paymentMethods.first;
+
+                  controller.selectedPaymentId.value = pay['id'].toString();
+
+                  await controller.checkout(
+                    controller.planDetails['id'].toString(),
+
+                    controller.planDetails['final_price'].toString(),
+
+                    controller.selectedPaymentId.value,
+
+                    controller.planDetails['type'].toString(),
+
+                    pay['key_id'].toString(),
+                  );
+                }
               },
+
+              // final pay = controller.paymentMethods.first;
+              // controller.selectedPaymentId.value = pay['id'].toString();
+              //
+              // await controller.checkout(
+              //   controller.planDetails['id'].toString(),
+              //   controller.planDetails['final_price'].toString(),
+              //   controller.selectedPaymentId.value,
+              //   controller.planDetails['type'].toString(),
+              //   pay['key_id'].toString(),
+              // );
+              // },
               backgroundColor: AppColors.lightSecondary,
             ),
     );

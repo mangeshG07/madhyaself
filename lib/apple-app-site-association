@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "9CHTXX5U3Q.com.madhyasthi.app",  // Replace with real teamID + bundleID
+         "paths": [
+                  "/*/profile-details/*",
+                ]
+      }
+    ]
+  }
+}
