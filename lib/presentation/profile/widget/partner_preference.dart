@@ -152,10 +152,8 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Education Category',
-                value: _val(
-                  controller.preferenceDetails['education_category_name'].join(
-                    ' ,',
-                  ),
+                value: _listValue(
+                  controller.preferenceDetails['education_category_name'],
                 ),
                 isFill: false,
               ),
@@ -172,8 +170,8 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Job Category',
-                value: _val(
-                  controller.preferenceDetails['job_category_name'].join(' ,'),
+                value: _listValue(
+                  controller.preferenceDetails['job_category_name'],
                 ),
                 isFill: false,
               ),
@@ -203,14 +201,16 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Religion',
-                value: _val(
-                  controller.preferenceDetails['religion'].join(' ,'),
+                value: _listValue(
+                  controller.preferenceDetails['religion'],
                 ),
                 isFill: false,
               ),
               buildDetailItem(
                 label: 'Caste / Community',
-                value: controller.preferenceDetails['caste'].join(' ,'),
+                value: _listValue(
+                  controller.preferenceDetails['caste'],
+                ),
                 isFill: false,
               ),
             ],
@@ -220,8 +220,8 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
             children: [
               buildDetailItem(
                 label: 'Sub Caste',
-                value: _val(
-                  controller.preferenceDetails['sub_caste'].join(' ,'),
+                value: _listValue(
+                  controller.preferenceDetails['sub_caste'],
                 ),
                 isFill: false,
               ),
@@ -329,5 +329,22 @@ class _PartnerPreferenceState extends State<PartnerPreference> {
       () => Get.toNamed(Routes.partnerLifestylesEdit),
       theme,
     );
+  }
+
+  String _listValue(dynamic value) {
+    if (value == null) return '-';
+
+    if (value is List) {
+      if (value.isEmpty) return '-';
+
+      return value
+          .map((e) => e?.toString() ?? '')
+          .where((e) => e.isNotEmpty)
+          .join(' , ');
+    }
+
+    final stringValue = value.toString().trim();
+
+    return stringValue.isEmpty ? '-' : stringValue;
   }
 }

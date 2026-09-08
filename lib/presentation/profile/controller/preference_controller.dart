@@ -79,8 +79,6 @@ class PreferenceController extends GetxController {
   final stateList = [].obs;
   final cityList = [].obs;
 
-
-
   final mStatusList = [
     'Never Married',
     'Married',
@@ -258,10 +256,32 @@ class PreferenceController extends GetxController {
       final userid = await SecureStorageService.read('user_id') ?? '';
       final res = await getPartPrefUsecase.call(UserRequest(userid));
 
-      if (res['common']['status'] == true) {
-        final data = res['data'] ?? {};
-        preferenceDetails.value = data['preferance'][0] ?? {};
-        _setInitialValues(preferenceDetails);
+      final common = res['common'];
+      final status = common?['status'] == true;
+
+      if (status) {
+        final data = res['data'];
+
+        if (data is Map && data['preferance'] is List) {
+          final preferences = data['preferance'] as List;
+
+          if (preferences.isNotEmpty && preferences.first is Map) {
+            preferenceDetails.value = Map<String, dynamic>.from(
+              preferences.first,
+            );
+
+            _setInitialValues(preferenceDetails);
+          } else {
+            preferenceDetails.clear();
+          }
+        } else {
+          preferenceDetails.clear();
+        }
+      } else {
+        // API says preference does not exist
+        preferenceDetails.clear();
+
+        // debugPrint('Preference not found: ${common?['message']}');
       }
     } finally {
       isLoading(false);
@@ -274,7 +294,6 @@ class PreferenceController extends GetxController {
       isUpdating(true);
 
       final res = await _updateUsecase.call(request);
-
 
       if (res['common']['status'] == true) {
         Get.back();

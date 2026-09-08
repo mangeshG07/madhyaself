@@ -88,7 +88,7 @@ class ManagePhotos extends GetView<ProfileController> {
                     size: 22.r,
                   )
                 : SafeArea(
-                  child: AppButton(
+                    child: AppButton(
                       text: 'Submit',
                       onTap: () async {
                         if (controller.profileImages.length < 3) {
@@ -104,7 +104,7 @@ class ManagePhotos extends GetView<ProfileController> {
                       },
                       backgroundColor: AppColors.lightPrimary,
                     ),
-                ),
+                  ),
           ),
         ],
       ),

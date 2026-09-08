@@ -61,9 +61,9 @@ class PlanController extends GetxController {
       if (response['common']['status'] == true) {
         dynamic plans;
 
-        if(Platform.isAndroid){
+        if (Platform.isAndroid) {
           plans = response['data']['android_plans'] ?? [];
-        }else{
+        } else {
           plans = response['data']['ios_plans'] ?? [];
         }
         // planList.value = response['data'] ?? [];
@@ -272,15 +272,16 @@ class PlanController extends GetxController {
 
   Future<void> initAppleIAP() async {
     final bool available = await iap.isAvailable();
-      print('available=====>$available');
+    // print('available=====>$available');
     if (!available) {
-      debugPrint("Apple IAP Not Available");
+      // debugPrint("Apple IAP Not Available");
       return;
     }
 
     /// Listen Purchase Updates
     purchaseSubscription = iap.purchaseStream.listen(listenToPurchaseUpdated);
-    print('purchaseSubscription=====>$purchaseSubscription');
+    // print('purchaseSubscription=====>$purchaseSubscription');
+
     /// Load Products
     await loadProducts();
   }
@@ -294,13 +295,10 @@ class PlanController extends GetxController {
       final ProductDetailsResponse response = await iap.queryProductDetails(
         productIds,
       );
-      print('response= ProductDetailsResponse====>$response');
 
       if (response.error != null) {
-        print('response.error====>${response.error}');
         debugPrint(response.error.toString());
       }
-      print('esponse.productDetails====>${response.productDetails}');
       products.value = response.productDetails;
     } catch (e) {
       debugPrint(e.toString());
@@ -331,32 +329,32 @@ class PlanController extends GetxController {
     for (final purchase in purchases) {
       switch (purchase.status) {
         case PurchaseStatus.pending:
-          debugPrint("Payment Pending");
+          // debugPrint("Payment Pending");
           break;
 
         case PurchaseStatus.purchased:
-          debugPrint("Payment Success");
+          // debugPrint("Payment Success");
 
           await verifyApplePayment(purchase);
 
           break;
 
         case PurchaseStatus.restored:
-          debugPrint("Purchase Restored");
+          // debugPrint("Purchase Restored");
 
           await verifyApplePayment(purchase);
 
           break;
 
         case PurchaseStatus.error:
-          debugPrint(purchase.error.toString());
+          // debugPrint(purchase.error.toString());
 
           Get.snackbar("Failed", "Payment Failed");
 
           break;
 
         case PurchaseStatus.canceled:
-          debugPrint("Cancelled");
+          // debugPrint("Cancelled");
           break;
       }
 
@@ -378,8 +376,7 @@ class PlanController extends GetxController {
       // final userid = await SecureStorageService.read('user_id') ?? '';
 
       /// APPLE RECEIPT
-    // purchase.verificationData.serverVerificationData;
-
+      // purchase.verificationData.serverVerificationData;
 
       verifyPayment(
         purchase.productID,
@@ -387,9 +384,9 @@ class PlanController extends GetxController {
         selectedPaymentId.value,
         // response.signature!,
         ''
-        '','1'
+            '',
+        '1',
       );
-
 
       // final response = await _verifyPaymentUsecase(
       //   VerifyPaymentRequest(
@@ -441,7 +438,6 @@ class PlanController extends GetxController {
     }
   }
 }
-
 
 // 1. Upload build
 // 2. Wait 30 mins
